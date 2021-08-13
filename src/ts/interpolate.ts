@@ -1,15 +1,20 @@
 export const None = 0;
 export const Linear = 1;
+export const EaseOutQuad = 4;
 /*
 export const EaseInBack = 2;
 export const EaseInOutBack = 3;
-export const EaseOutQuad = 4;
 export const Bounce = 5;
 */
 
 function linear(t: number): number
 {
   return t;
+};
+
+function easeOutQuad(t: number)
+{
+  return t * (2 - t);
 };
 
 /*
@@ -43,11 +48,6 @@ function easeInOutBack(t: number)
   if (t < 1) { return 0.5 * (t * t * (((s *= (1.525)) + 1) * t - s)); }
   return 0.5 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
 };
-
-function easeOutQuad(t: number)
-{
-  return t * (2 - t);
-};
 */
 
 function ease(t: number, fn: number = Linear): number
@@ -55,8 +55,6 @@ function ease(t: number, fn: number = Linear): number
   switch (fn)
   {
     /*
-    case EaseOutQuad:
-      return easeOutQuad(t);
     case EaseInBack:
       return easeInBack(t);
     case EaseInOutBack:
@@ -64,6 +62,8 @@ function ease(t: number, fn: number = Linear): number
     case Bounce:
       return bounce(t);
     */
+    case EaseOutQuad:
+      return easeOutQuad(t);
     case Linear:
       return linear(t);
     case None:

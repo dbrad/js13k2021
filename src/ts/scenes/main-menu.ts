@@ -2,11 +2,15 @@ import { Align, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 
+import { MissionSelectScene } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
+import { createSpriteNode } from "../nodes/sprite-node";
+import { inputContext } from "../input";
+import { pushScene } from "../scene";
 
 export const MainMenuScene = 0;
 
-let startButtonId;
+let startButtonId: number;
 
 export function setupMainMenu(): number
 {
@@ -21,14 +25,21 @@ export function setupMainMenu(): number
   moveNode(textNodeId02, [SCREEN_CENTER_X, 30]);
   addChildNode(rootId, textNodeId02);
 
-  startButtonId = createButtonNode("Start", [60, 30]);
-  moveNode(startButtonId, [SCREEN_CENTER_X - 30, SCREEN_CENTER_Y]);
+  startButtonId = createButtonNode("New Game", [120, 40]);
+  moveNode(startButtonId, [SCREEN_CENTER_X - 60, SCREEN_CENTER_Y]);
   addChildNode(rootId, startButtonId);
+
+  const ship = createSpriteNode("p_ship", 2);
+  moveNode(ship, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
+  addChildNode(rootId, ship);
 
   return rootId;
 }
 
 export function updateMainMenu(now: number, delta: number): void
 {
-
+  if (inputContext._fire === startButtonId)
+  {
+    pushScene(MissionSelectScene);
+  }
 }

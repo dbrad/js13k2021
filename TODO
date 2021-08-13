@@ -1,0 +1,39 @@
+✔ Game state object @done(21-08-13 13:25)
+  ✔ Generator Level @done(21-08-13 13:25)
+  ✔ Ship Systems max levels @done(21-08-13 13:25)
+  ✔ Ship Systems current levels @done(21-08-13 13:25)
+  ✔ Currencies @done(21-08-13 13:25)
+    ✔ Materials @done(21-08-13 13:25)
+    ✔ Credits @done(21-08-13 13:25)
+    ✔ Bytes @done(21-08-13 13:25)
+  ✔ Current Adventure @done(21-08-13 13:25)
+    ✔ Bonuty @done(21-08-13 13:25)
+    ✔ Deck @done(21-08-13 13:25)
+      ✔ Events @done(21-08-13 13:25)
+        ✔ Progress / State @done(21-08-13 13:25)
+    ✔ Progress @done(21-08-13 13:25)
+
+☐ Save file system (3 Saves)
+☐ Main Menu
+  ☐ New Game
+  ☐ Load Game
+☐ Mission Select
+☐ Deck generation
+☐ Game Screen
+  ☐ Player Sprite
+  ☐ Engine Particles
+    - pick angle in range
+    - spawn a pt
+    - move and fade value over duration
+    - render quad at each pt
+    - at 0 alpha, remove or reset pt
+  ☐ Starfield Effect
+    - spawn star density, xyz
+    - move based on z and fixed amount
+    - reset overscrolled stars to edge of screen
+  ☐ Timeline Node
+  ☐ System Node
+  ☐ Generator Node
+  ☐ In-Game Menu
+    ☐ Save and Quit
+    ☐ Mute Music

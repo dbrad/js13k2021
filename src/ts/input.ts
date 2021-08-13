@@ -7,6 +7,14 @@ export const inputContext = {
   _active: -1,
   _fire: -1
 };
+
+export function clearInput(): void
+{
+  inputContext._hot = -1;
+  inputContext._active = -1;
+  inputContext._mouseDown = false;
+}
+
 let canvasRef: HTMLCanvasElement;
 
 const isTouch = (e: Event | PointerEvent | TouchEvent): e is TouchEvent =>

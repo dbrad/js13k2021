@@ -7,3 +7,10 @@ export function assert(predicate: (() => boolean) | boolean, message: string): a
   }
   // @endif
 }
+
+export function log(...message: any[]): void
+{
+  // @ifdef DEBUG
+  console.log(...message);
+  // @endif
+}

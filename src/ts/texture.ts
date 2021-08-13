@@ -59,6 +59,14 @@ let sheet: TextureAssetJson = {
       _y: 16,
       _w: 8,
       _h: 8
+    },
+    {
+      _type: "r",
+      _name: ["p_ship"],
+      _x: 0,
+      _y: 24,
+      _w: 16,
+      _h: 16
     }
   ]
 };
