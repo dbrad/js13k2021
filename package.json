@@ -1,0 +1,47 @@
+{
+  "name": "js13k-2021",
+  "main": "index.html",
+  "author": "David Brad",
+  "license": "MIT",
+  "scripts": {
+    "install": ".\\tools\\7z\\7za x .\\tools.7z -otools -y",
+    "uninstall": "yarn run rm-dist-folder && yarn run rm-build-folder && yarn run clean-up-modules && yarn run clean-up-tools",
+    "clean-up-tools": "del /q .\\tools\\*.*",
+    "clean-up-modules": "if exist node_modules rd /s /q node_modules",
+    "rm-build-folder": "if exist build rd /s /q build",
+    "rm-dist-folder": "if exist dist rd /s /q dist",
+    "mk-dist-folder": "mkdir dist\\src",
+    "dev": "gulp build --env development && concurrently --kill-others \"yarn run dev:server\" \"yarn run dev:gulp\" \"yarn run dev:build\"",
+    "dev:server": "node scripts/server.js --env development",
+    "dev:gulp": "gulp watch --env development",
+    "dev:build": "esbuild build/debug/ts/game.ts --bundle --format=iife --sourcemap --outfile=build/debug/www/game.js --watch",
+    "release": "yarn rm-dist-folder && yarn mk-dist-folder && yarn release:gulp && yarn release:build && yarn inline-files && yarn zip",
+    "release:play": "yarn release && yarn release:server",
+    "release:gulp": "gulp build",
+    "release:server": "node scripts/server.js",
+    "release:build": "esbuild build/release/ts/game.ts --bundle --format=iife | terser --config-file scripts/terser.config.json -o build/release/www/game.js",
+    "inline-files": "html-inline -i ./build/release/www/index.html -o ./dist/src/index.html",
+    "zip": ".\\tools\\7z\\7za a -tzip dist\\game.zip dist\\src\\*.* && ./tools/ect-0.8.3.exe -9 -zip ./dist/game.zip  && yarn size -s",
+    "size": "yarn node ./scripts/check-file-size.js"
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.1",
+    "express": "^4.17.1",
+    "path": "^0.12.7"
+  },
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "esbuild": "^0.12.9",
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-cli": "^2.3.0",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-minify-html": "^1.0.6",
+    "gulp-preprocess": "^3.0.3",
+    "html-inline": "^1.2.0",
+    "minimist": "^1.2.5",
+    "terser": "^5.7.0",
+    "typescript": "^4.2.4"
+  }
+}
