@@ -4,7 +4,7 @@ import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 
 import { MissionSelectScene } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
-import { createSpriteNode } from "../nodes/sprite-node";
+import { createShipNode } from "../nodes/ship-node";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
 
@@ -17,19 +17,23 @@ export function setupMainMenu(): number
   const rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  const textNodeId = createTextNode("Js13kGames Jam 2021", SCREEN_WIDTH, { textAlign: Align.C });
+  const textNodeId = createTextNode("Js13kGames Jam 2021", SCREEN_WIDTH, { _textAlign: Align.C });
   moveNode(textNodeId, [SCREEN_CENTER_X, 20]);
   addChildNode(rootId, textNodeId);
 
-  const textNodeId02 = createTextNode("Entry by David Brad", SCREEN_WIDTH, { textAlign: Align.C });
+  const textNodeId02 = createTextNode("Entry by David Brad", SCREEN_WIDTH, { _textAlign: Align.C });
   moveNode(textNodeId02, [SCREEN_CENTER_X, 30]);
   addChildNode(rootId, textNodeId02);
 
-  startButtonId = createButtonNode("New Game", [120, 40]);
-  moveNode(startButtonId, [SCREEN_CENTER_X - 60, SCREEN_CENTER_Y]);
+  startButtonId = createButtonNode("New Game", [180, 40]);
+  moveNode(startButtonId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 90]);
   addChildNode(rootId, startButtonId);
 
-  const ship = createSpriteNode("p_ship", 2);
+  const loadButtonId = createButtonNode("Load Game", [180, 40]);
+  moveNode(loadButtonId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 30]);
+  addChildNode(rootId, loadButtonId);
+
+  const ship = createShipNode();
   moveNode(ship, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
   addChildNode(rootId, ship);
 

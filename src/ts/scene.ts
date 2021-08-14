@@ -16,7 +16,7 @@ const TRANSITION_KEY = 'xsit';
 let transitionColour = 0;
 
 const Scenes: Map<number, Scene> = new Map();
-const SceneStack: Scene[] = [];
+//const SceneStack: Scene[] = [];
 let CurrentScene: Scene;
 export function registerScene(sceneId: number, setupFn: () => number, updateFn: (now: number, delta: number) => void): void
 {
@@ -27,7 +27,7 @@ export function registerScene(sceneId: number, setupFn: () => number, updateFn: 
   if (!CurrentScene)
   {
     CurrentScene = scene;
-    SceneStack.push(scene);
+    // SceneStack.push(scene);
   }
 }
 
@@ -39,7 +39,7 @@ export function pushScene(sceneId: number): void
   let transition = createInterpolationData(250, [0], [255], EaseOutQuad, () =>
   {
     CurrentScene = scene;
-    SceneStack.push(scene);
+    // SceneStack.push(scene);
     clearInput();
 
     let transition = createInterpolationData(250, [255], [0], EaseOutQuad);
@@ -53,8 +53,8 @@ export function popScene(): void
 {
   let transition = createInterpolationData(250, [0], [255], EaseOutQuad, () =>
   {
-    SceneStack.pop();
-    CurrentScene = SceneStack[SceneStack.length - 1];
+    // SceneStack.pop();
+    // CurrentScene = SceneStack[SceneStack.length - 1];
 
     let transition = createInterpolationData(250, [255], [0], EaseOutQuad);
     Interpolators.set(TRANSITION_KEY, transition);

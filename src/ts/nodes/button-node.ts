@@ -11,8 +11,8 @@ export function createButtonNode(text: string, size: v2): number
   const nodeId = createNode();
   node_render_function[nodeId] = renderButtonNode;
   node_size[nodeId] = size;
-  const textId = createTextNode(text, size[0], { textAlign: Align.C });
-  moveNode(textId, [Math.floor(size[0] / 2), Math.floor(size[1] / 2) - 4]);
+  const textId = createTextNode(text, size[0], { _scale: 2, _textAlign: Align.C });
+  moveNode(textId, [Math.floor(size[0] / 2), Math.floor(size[1] / 2) - 8]);
   addChildNode(nodeId, textId);
   node_button_text_id[nodeId] = textId;
   return nodeId;

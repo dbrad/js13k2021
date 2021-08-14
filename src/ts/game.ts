@@ -1,3 +1,4 @@
+import { AdventureScene, setupAdventure, updateAdventure } from "./scenes/adventure";
 import { Align, createTextNode } from "./nodes/text-node";
 import { Interpolators, interpolate } from "./interpolate";
 import { MainMenuScene, setupMainMenu, updateMainMenu } from "./scenes/main-menu";
@@ -41,13 +42,14 @@ window.addEventListener("load", async () =>
     setupAudio();
     registerScene(MainMenuScene, setupMainMenu, updateMainMenu);
     registerScene(MissionSelectScene, setupMissionSelect, updateMissionSelect);
+    registerScene(AdventureScene, setupAdventure, updateAdventure);
 
     makeStars();
   };
 
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
-  const touchToPlayId = createTextNode("TOUCH TO START", SCREEN_WIDTH, { scale: 1, textAlign: Align.C });
+  const touchToPlayId = createTextNode("TOUCH TO START", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
   moveNode(touchToPlayId, [SCREEN_CENTER_X, SCREEN_CENTER_Y - 10]);
 
   const stars: [number, number, number][] = [];

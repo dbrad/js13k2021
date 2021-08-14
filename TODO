@@ -20,14 +20,14 @@
 ☐ Mission Select
 ☐ Deck generation
 ☐ Game Screen
-  ☐ Player Sprite
-  ☐ Engine Particles
+  ✔ Player Sprite @done(21-08-13 20:15)
+  ✔ Engine Particles @done(21-08-13 20:15)
     - pick angle in range
     - spawn a pt
     - move and fade value over duration
     - render quad at each pt
     - at 0 alpha, remove or reset pt
-  ☐ Starfield Effect
+  ✔ Starfield Effect @done(21-08-13 20:15)
     - spawn star density, xyz
     - move based on z and fixed amount
     - reset overscrolled stars to edge of screen

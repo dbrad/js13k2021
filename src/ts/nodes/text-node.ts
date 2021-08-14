@@ -13,9 +13,9 @@ export const enum Align
 
 export type TextParameters =
   {
-    colour?: number,
-    textAlign?: Align,
-    scale?: number;
+    _colour?: number,
+    _textAlign?: Align,
+    _scale?: number;
   };
 
 const textCache: Map<string, string[]> = new Map();
@@ -34,9 +34,9 @@ export function createTextNode(text: string, width: number, parameters: TextPara
   node_render_function[nodeId] = renderTextNode;
 
   node_text[nodeId] = text;
-  node_text_align[nodeId] = parameters.textAlign || Align.L;
-  node_text_scale[nodeId] = parameters.scale || 1;
-  node_text_colour[nodeId] = parameters.colour || 0xFFFFFFFF;
+  node_text_align[nodeId] = parameters._textAlign || Align.L;
+  node_text_scale[nodeId] = parameters._scale || 1;
+  node_text_colour[nodeId] = parameters._colour || 0xFFFFFFFF;
 
   const numberOfLines = parseText(node_text[nodeId], width, node_text_scale[nodeId]);
   const textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
@@ -49,9 +49,9 @@ export function createTextNode(text: string, width: number, parameters: TextPara
 export function updateTextNode(nodeId: number, text: string, parameters: TextParameters = {}): void
 {
   node_text[nodeId] = text;
-  node_text_align[nodeId] = parameters.textAlign || node_text_align[nodeId];
-  node_text_scale[nodeId] = parameters.scale || node_text_scale[nodeId];
-  node_text_colour[nodeId] = parameters.colour || node_text_colour[nodeId];
+  node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
+  node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
+  node_text_colour[nodeId] = parameters._colour || node_text_colour[nodeId];
 
   const numberOfLines = parseText(node_text[nodeId], node_size[nodeId][0], node_text_scale[nodeId]);
   const textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
