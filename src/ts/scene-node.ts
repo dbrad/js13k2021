@@ -53,6 +53,7 @@ export function addChildNode(nodeId: number, childNodeId: number, zIndex: number
   }
 
   node_parent[childNodeId] = nodeId;
+  node_z_index[childNodeId] = zIndex;
 
   node_children[nodeId].push(childNodeId);
   node_children[nodeId].sort((nodeIdA: number, nodeIdB: number) =>
@@ -71,8 +72,9 @@ export function moveNode(nodeId: number, pos: v2, ease: number = None, duration:
 
   const interpKey = `node-mv-${ nodeId }`;
   // Check if we've been given an easing function, a duration, and we don't currently have an interpolation ongoing.
-  if (ease !== None && !Interpolators.has(interpKey) && duration > 0)
+  if (ease !== None && duration > 0)
   {
+    if (Interpolators.has(interpKey)) return Promise.resolve();
     return new Promise((resolve, _) =>
     {
       // Setup a new interpolator, it will begin iterating on the next frame.

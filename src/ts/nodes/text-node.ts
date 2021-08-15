@@ -33,6 +33,7 @@ export function createTextNode(text: string, width: number, parameters: TextPara
   node_interactive[nodeId] = false;
   node_render_function[nodeId] = renderTextNode;
 
+  text = text.toUpperCase();
   node_text[nodeId] = text;
   node_text_align[nodeId] = parameters._textAlign || Align.L;
   node_text_scale[nodeId] = parameters._scale || 1;
@@ -48,6 +49,7 @@ export function createTextNode(text: string, width: number, parameters: TextPara
 
 export function updateTextNode(nodeId: number, text: string, parameters: TextParameters = {}): void
 {
+  text = text.toUpperCase();
   node_text[nodeId] = text;
   node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
