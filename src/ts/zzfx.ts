@@ -38,9 +38,11 @@ export function startMusic(): void
 }
 */
 export let buttonHover: number[];
+export let powerChange: number[];
 
 export function setupAudio(): void
 {
   zzfxX = new AudioContext();
+  powerChange = zzfxG(...[, .01, 261.6256, .02, .03, .01, , .94, , , , , , , , , , .75, .04]); // Blip 240
   buttonHover = zzfxG(.5, 0, 220, 0, 0, .1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
 }

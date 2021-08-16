@@ -111,11 +111,11 @@ function renderTextNode(nodeId: number, now: number, delta: number): void
     let alignmentOffset: number = 0;
     if (align === Align.C)
     {
-      alignmentOffset = ~~((-lineLength + (1 * scale)) / 2);
+      alignmentOffset = Math.floor(-lineLength / 2);
     }
     else if (align === Align.R)
     {
-      alignmentOffset = ~~-(lineLength - (1 * scale));
+      alignmentOffset = Math.floor(-(lineLength - scale));
     }
 
     for (const word of words)

@@ -6,21 +6,25 @@ type Encounter = {
 type GameState = {
   _generatorLevel: number,
   _fieldLevel: number,
-  _qLevel: number,
   _hullLevel: number,
+  _qLevel: number,
+  _currentHull: number,
+  _currentShield: number,
   _availablePower: number,
-  _enginedLevel: [number, number],
-  _shieldLevel: [number, number],
-  _scannerLevel: [number, number],
-  _minerLevel: [number, number],
-  _weaponLevel: [number, number],
+  _systemLevels: [number, number][],
   _materials: number,
   _credits: number,
   _research: number,
-  _distance: number,
+  _shipPosition: number,
   _adventureReward: number,
   _adventureEncounters: Encounter[],
 };
+
+export const ENGINES = 0;
+export const SHIELDS = 1;
+export const SCANNERS = 2;
+export const MINING_LASERS = 3;
+export const WEAPONS = 4;
 
 export let gameState: GameState;
 
@@ -30,7 +34,17 @@ export function nextQCost(): number
   return 200;
 }
 
-function availablePower(): number
+export function maxHull(): number
+{
+  return 4 + (gameState._hullLevel);
+}
+
+export function maxShield(): number
+{
+  return gameState._systemLevels[SHIELDS][1];
+}
+
+export function maxAvailablePower(): number
 {
   return 3 + gameState._generatorLevel * 2;
 }
@@ -46,16 +60,20 @@ export function initGameState(slot: number): void
     _fieldLevel: 0,
     _hullLevel: 0,
     _qLevel: 0,
+    _currentHull: 4,
+    _currentShield: 0,
     _availablePower: 3,
-    _enginedLevel: [0, 0],
-    _shieldLevel: [0, 0],
-    _scannerLevel: [0, 0],
-    _minerLevel: [0, 0],
-    _weaponLevel: [0, 0],
+    _systemLevels: [
+      [0, 1],
+      [0, 1],
+      [0, 1],
+      [0, 1],
+      [0, 1],
+    ],
     _materials: 0,
     _credits: 0,
     _research: 0,
-    _distance: 0,
+    _shipPosition: 0,
     _adventureReward: 0,
     _adventureEncounters: [],
   };

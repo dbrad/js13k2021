@@ -14,7 +14,12 @@ export const node_visible: boolean[] = [];
 export const node_interactive: boolean[] = [];
 export const node_parent: number[] = [];
 export const node_children: number[][] = [];
+export const node_tag: number[] = [];
 
+//#region TAGS
+export const TAG_LOWER_POWER = 1 << 0;
+export const TAG_RAISE_POWER = 1 << 1;
+//#endregion TAGS
 
 export function createNode(): number
 {
@@ -30,6 +35,8 @@ export function createNode(): number
 
   node_parent[nodeId] = 0;
   node_children[nodeId] = [];
+
+  node_tag[nodeId] = 0;
 
   return nodeId;
 }
@@ -60,6 +67,20 @@ export function addChildNode(nodeId: number, childNodeId: number, zIndex: number
   {
     return node_z_index[nodeIdA] - node_z_index[nodeIdB];
   });
+}
+
+export function calculateNodeSize(nodeId: number): v2
+{
+  let maxX = 0;
+  let maxY = 0;
+  for (const child of node_children[nodeId])
+  {
+    const size = node_size[child];
+    const position = node_position[child];
+    if (position[0] + size[0] > maxX) maxX = position[0] + size[0];
+    if (position[1] + size[1] > maxY) maxY = position[1] + size[1];
+  }
+  return [maxX, maxY];
 }
 
 export function moveNode(nodeId: number, pos: v2, ease: number = None, duration: number = 0): Promise<void>

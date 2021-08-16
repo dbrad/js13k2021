@@ -5,6 +5,7 @@ import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 import { MissionSelectScene } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
 import { createShipNode } from "../nodes/ship-node";
+import { initGameState } from "../game-state";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
 
@@ -45,5 +46,6 @@ export function updateMainMenu(now: number, delta: number): void
   if (inputContext._fire === startButtonId)
   {
     pushScene(MissionSelectScene);
+    initGameState(0);
   }
 }
