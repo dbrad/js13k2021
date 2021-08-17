@@ -5,6 +5,7 @@ import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segment
 
 import { createButtonNode } from "../nodes/button-node";
 import { createShipNode } from "../nodes/ship-node";
+import { createSpriteNode } from "../nodes/sprite-node";
 import { createTextNode } from "../nodes/text-node";
 import { inputContext } from "../input";
 
@@ -20,10 +21,17 @@ let hullBar: number;
 
 let shieldContainer: number;
 let shieldBar: number;
+let shieldTimer: number = 0;
+const SHIELD_COOLDOWN = 1000;
 
 const systems: number[][] = [];
 
 let generatorBar: number;
+
+let windowOfOppertunity: number[] = [];
+const WOO_WIDTH_BASE = 128;
+const WOO_INCREMENT = 8;
+let windowWidth = WOO_WIDTH_BASE;
 
 export function setupAdventure(): number
 {
@@ -32,7 +40,7 @@ export function setupAdventure(): number
 
   const shipId = createShipNode();
   moveNode(shipId, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
-  addChildNode(rootId, shipId, 100);
+  addChildNode(rootId, shipId, 1000);
 
   ////////////////////////////////////////
 
@@ -102,12 +110,57 @@ export function setupAdventure(): number
   moveNode(generatorBar, [2, 342]);
   addChildNode(rootId, generatorBar);
 
+  ////////////////////////////////////////
+
+  windowOfOppertunity[0] = createSpriteNode("brk");
+  moveNode(windowOfOppertunity[0], [SCREEN_CENTER_X - windowWidth, SCREEN_CENTER_Y - 64]);
+  addChildNode(rootId, windowOfOppertunity[0]);
+
+  windowOfOppertunity[1] = createSpriteNode("brk", { _hFlip: true });
+  moveNode(windowOfOppertunity[1], [SCREEN_CENTER_X + windowWidth - 16, SCREEN_CENTER_Y - 64]);
+  addChildNode(rootId, windowOfOppertunity[1]);
+
+  windowOfOppertunity[2] = createSpriteNode("brk", { _vFlip: true });
+  moveNode(windowOfOppertunity[2], [SCREEN_CENTER_X - windowWidth, SCREEN_CENTER_Y]);
+  addChildNode(rootId, windowOfOppertunity[2]);
+
+  windowOfOppertunity[3] = createSpriteNode("brk", { _hFlip: true, _vFlip: true });
+  moveNode(windowOfOppertunity[3], [SCREEN_CENTER_X + windowWidth - 16, SCREEN_CENTER_Y]);
+  addChildNode(rootId, windowOfOppertunity[3]);
+
   return rootId;
 }
 
 let systemAffected = -1;
 export function updateAdventure(now: number, delta: number): void
 {
+  windowWidth = WOO_WIDTH_BASE + (WOO_INCREMENT * gameState._systemLevels[SCANNERS][0]);
+  moveNode(windowOfOppertunity[0], [SCREEN_CENTER_X - windowWidth, SCREEN_CENTER_Y - 64]);
+  moveNode(windowOfOppertunity[1], [SCREEN_CENTER_X + windowWidth - 16, SCREEN_CENTER_Y - 64]);
+  moveNode(windowOfOppertunity[2], [SCREEN_CENTER_X - windowWidth, SCREEN_CENTER_Y]);
+  moveNode(windowOfOppertunity[3], [SCREEN_CENTER_X + windowWidth - 16, SCREEN_CENTER_Y]);
+
+  //#region SHIELDS
+  // NOTE(david): We only increment the sheild cooldown is the current shield value is lower than the max.
+  if (gameState._currentShield < gameState._systemLevels[SHIELDS][0])
+  {
+    shieldTimer += delta;
+  }
+  else
+  {
+    shieldTimer = 0;
+  }
+
+  if (shieldTimer > SHIELD_COOLDOWN)
+  {
+    shieldTimer -= SHIELD_COOLDOWN;
+    if (gameState._currentShield < gameState._systemLevels[SHIELDS][0])
+    {
+      gameState._currentShield += 1;
+    }
+  }
+  //#endregion SHIELDS
+
   //#region Segmented Bars
   updateSegmentedBarNode(hullBar, maxHull(), gameState._currentHull);
   updateSegmentedBarNode(shieldBar, gameState._systemLevels[SHIELDS][0], gameState._currentShield);
@@ -150,6 +203,10 @@ export function updateAdventure(now: number, delta: number): void
     {
       gameState._systemLevels[systemAffected][0] -= 1;
       gameState._availablePower += 1;
+      if (systemAffected === SHIELDS)
+      {
+        gameState._currentShield = Math.min(gameState._currentShield, gameState._systemLevels[SHIELDS][0]);
+      }
     }
 
     if ((node_tag[inputContext._fire] & TAG_RAISE_POWER) && gameState._systemLevels[systemAffected][0] < gameState._systemLevels[systemAffected][1] && gameState._availablePower > 0)
@@ -160,5 +217,4 @@ export function updateAdventure(now: number, delta: number): void
   }
   systemAffected = -1;
   //#endregion Segmented Bars
-
 }

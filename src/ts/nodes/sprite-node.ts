@@ -2,16 +2,29 @@ import { Texture, getTexture } from "../texture";
 import { createNode, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
+type SpriteParams = {
+  _scale?: number,
+  _colour?: number,
+  _hFlip?: boolean,
+  _vFlip?: boolean;
+};
+
 type Frame = [Texture, number];
 const node_sprite: Frame[][] = [];
 const node_sprite_duration: number[] = [];
 const node_sprite_scale: number[] = [];
-const node_sprite_flip: boolean[] = [];
+const node_sprite_flip: [boolean, boolean][] = [];
 const node_sprite_colour: number[] = [];
 const node_sprite_timestamp: number[] = [];
 const node_sprite_loop: boolean[] = [];
-export function createSpriteNode(textureName: string, scale: number = 1, flip: boolean = false, colour: number = 0xFFFFFFFF): number
+
+export function createSpriteNode(textureName: string, params: SpriteParams = {}): number
 {
+  const scale = params._scale || 1;
+  const hFlip = params._hFlip || false;
+  const vFlip = params._vFlip || false;
+  const colour = params._colour || 0xFFFFFFFF;
+
   const nodeId = createNode();
   node_render_function[nodeId] = renderSpriteNode;
 
@@ -19,7 +32,7 @@ export function createSpriteNode(textureName: string, scale: number = 1, flip: b
   node_sprite[nodeId] = [[texture, 0]];
   node_size[nodeId] = [texture._w * scale, texture._h * scale];
   node_sprite_scale[nodeId] = scale;
-  node_sprite_flip[nodeId] = flip;
+  node_sprite_flip[nodeId] = [hFlip, vFlip];
   node_sprite_colour[nodeId] = colour;
   node_sprite_timestamp[nodeId] = 0;
   node_sprite_loop[nodeId] = false;
@@ -27,8 +40,13 @@ export function createSpriteNode(textureName: string, scale: number = 1, flip: b
   return nodeId;
 }
 
-export function createAnimatedSpriteNode(frames: [string, number][], scale: number = 1, flip: boolean = false, colour: number = 0xFFFFFFFF): number
+export function createAnimatedSpriteNode(frames: [string, number][], params: SpriteParams = {}): number
 {
+  const scale = params._scale || 1;
+  const hFlip = params._hFlip || false;
+  const vFlip = params._vFlip || false;
+  const colour = params._colour || 0xFFFFFFFF;
+
   const nodeId = createNode();
   node_render_function[nodeId] = renderSpriteNode;
 
@@ -44,7 +62,7 @@ export function createAnimatedSpriteNode(frames: [string, number][], scale: numb
   }
   node_sprite_duration[nodeId] = duration;
   node_sprite_scale[nodeId] = scale;
-  node_sprite_flip[nodeId] = flip;
+  node_sprite_flip[nodeId] = [hFlip, vFlip];
   node_sprite_colour[nodeId] = colour;
   node_sprite_timestamp[nodeId] = 0;
   node_sprite_loop[nodeId] = true;
@@ -95,10 +113,15 @@ function renderSpriteNode(nodeId: number, now: number, delta: number): void
     }
     const t = currentFrame[0];
     gl_save();
-    if (node_sprite_flip[nodeId])
+    if (node_sprite_flip[nodeId][0])
     {
       gl_translate(t._w * scale, 0);
       gl_scale(-1, 1);
+    }
+    if (node_sprite_flip[nodeId][1])
+    {
+      gl_translate(0, t._h * scale);
+      gl_scale(1, -1);
     }
     gl_pushTextureQuad(t._atlas, 0, 0, t._w * scale, t._h * scale, t._u0, t._v0, t._u1, t._v1, colour);
     gl_restore();

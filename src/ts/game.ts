@@ -12,6 +12,7 @@ import { registerScene, renderScene, updateScene } from "./scene";
 
 import { assert } from "./debug";
 import { colourToHex } from "./colour";
+import { initGameState } from "./game-state";
 import { loadSpriteSheet } from "./texture";
 import { pushQuad } from "./draw";
 import { setupAudio } from "./zzfx";
@@ -38,6 +39,7 @@ window.addEventListener("load", async () =>
     canvas.removeEventListener("touchstart", loadGame);
 
     initializeInput(canvas);
+    initGameState(-1);
 
     setupAudio();
     registerScene(MainMenuScene, setupMainMenu, updateMainMenu);
@@ -90,23 +92,18 @@ window.addEventListener("load", async () =>
         if (stars[i][0] >= SCREEN_WIDTH)
         {
           stars[i][0] = -5;
-        }
-        if (stars[i][1] >= SCREEN_HEIGHT)
-        {
-          stars[i][1] = -5;
+          stars[i][1] = Math.floor(Math.random() * (SCREEN_HEIGHT - 1) + 1);
         }
         if (stars[i][0] < -6)
         {
           stars[i][0] = SCREEN_WIDTH;
-        }
-        if (stars[i][1] < -6)
-        {
-          stars[i][1] = SCREEN_HEIGHT;
+          stars[i][1] = Math.floor(Math.random() * (SCREEN_HEIGHT - 1) + 1);
         }
       }
 
       for (const i in stars)
       {
+        // TODO(dbrad): make stars move based on ms instead of frames
         const value = Math.ceil(255 - 185 * (1 - stars[i][2] / 4));
         const colour = colourToHex(value, value, value, value);
         const size = Math.ceil(stars[i][2] / 2);

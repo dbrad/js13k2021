@@ -1,11 +1,13 @@
-import { addChildNode, createNode, node_position, node_render_function } from "../scene-node";
+import { addChildNode, createNode, moveNode, node_position, node_render_function, node_visible } from "../scene-node";
 
 import { colourToHex } from "../colour";
 import { createSpriteNode } from "./sprite-node";
+import { gameState } from "../game-state";
 import { pushQuad } from "../draw";
 import { rand } from "../random";
 
 const node_ship_spriteId: number[] = [];
+const node_ship_shield_sprite: number[] = [];
 const node_ship_particles: [number, number, number][][] = [];
 const node_ship_yOffset: [number, number][] = [];
 const node_ship_offsetTimer: [number, number][] = [];
@@ -15,9 +17,15 @@ export function createShipNode()
   const nodeId = createNode();
   node_render_function[nodeId] = renderShipNode;
 
-  const shipId = createSpriteNode(`p_ship`, 2);
+  const shipId = createSpriteNode(`p_ship`, { _scale: 2 });
   addChildNode(nodeId, shipId);
   node_ship_spriteId[nodeId] = shipId;
+
+  const shieldSprite = createSpriteNode("shld", { _scale: 4, _colour: 0xBBFFAAAA });
+
+  moveNode(shieldSprite, [-16, -16]);
+  addChildNode(shipId, shieldSprite);
+  node_ship_shield_sprite[nodeId] = shieldSprite;
 
   node_ship_yOffset[nodeId] = [0, 1];
   node_ship_offsetTimer[nodeId] = [0, 250];
@@ -43,6 +51,9 @@ function renderShipNode(nodeId: number, now: number, delta: number): void
     offset[0] += offset[1];
     node_position[node_ship_spriteId[nodeId]][1] = offset[0];
   }
+
+  node_visible[node_ship_shield_sprite[nodeId]] = gameState._currentShield > 0;
+
   const particles = node_ship_particles[nodeId];
   let colour = 0;
   let size = 0;

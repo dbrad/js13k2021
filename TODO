@@ -17,12 +17,14 @@
 ☐ Main Menu
   ☐ New Game
   ☐ Load Game
-☐ Mission Select
+  ☐ Import/Export Data?
+☐ Mission Select / Contract Select
   ☐ Deck generation
 ☐ Game Screen
   ✔ Player Sprite @done(21-08-13 20:15)
   ✔ Engine Particles @done(21-08-13 20:15)
   ✔ Starfield Effect @done(21-08-13 20:15)
+    ☐ Change the code so the speed can be controlled via time instead of per frame speed
   ✔ System Node @done(21-08-15 14:54)
   ✔ Generator Node @done(21-08-15 14:54)
   ☐ In-Game Menu
@@ -33,8 +35,11 @@
     ✔ Hook up to data @done(21-08-15 19:15)
     ☐ Program in the effects of the systems per level
   ☐ Spawn and scroll the deck
-  ☐ Window of Opertunity
+  ✔ Window of Opertunity @done(21-08-16 19:12)
+    ✔ Add VFlip @done(21-08-16 19:12)
+    ✔ Add scaling based on scanners level @done(21-08-16 19:12)
   ☐ Player interacting with events
     ☐ Get data based interaction working
     ☐ Add Visuals and souns (shots, scanning, etc.)
 ☐ Store / Upgrades Scene
+☐ End Game / Scoring / Metadata / Score History??
