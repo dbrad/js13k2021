@@ -1,7 +1,4 @@
-type Encounter = {
-  type: number,
-  data: any;
-};
+import { Encounter } from "./gameplay/encounters";
 
 type GameState = {
   _generatorLevel: number,
@@ -20,11 +17,13 @@ type GameState = {
   _adventureEncounters: Encounter[],
 };
 
+// Ship System Indexes
 export const ENGINES = 0;
 export const SHIELDS = 1;
 export const SCANNERS = 2;
 export const MINING_LASERS = 3;
 export const WEAPONS = 4;
+
 
 export let gameState: GameState;
 

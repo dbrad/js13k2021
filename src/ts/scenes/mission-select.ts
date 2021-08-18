@@ -1,11 +1,12 @@
 import { Align, createTextNode } from "../nodes/text-node";
+import { RUN_MEDIUM, RUN_SHORT, THREAT_LOW, generateEncounterDeck } from "../gameplay/encounters";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 
 import { AdventureScene } from "./adventure";
 import { createButtonNode } from "../nodes/button-node";
+import { gameState } from "../game-state";
 import { inputContext } from "../input";
-import { pushQuad } from "../draw";
 import { pushScene } from "../scene";
 
 export const MissionSelectScene = 1;
@@ -47,11 +48,8 @@ export function updateMissionSelect(now: number, delta: number): void
 {
   if (inputContext._fire === smallSystemId)
   {
+    gameState._adventureEncounters = generateEncounterDeck(RUN_MEDIUM, THREAT_LOW);
+    console.log(gameState._adventureEncounters);
     pushScene(AdventureScene);
   }
-}
-
-function generateEncounterDeck(): void
-{
-
 }
