@@ -1,30 +1,30 @@
-export const None = 0;
-export const Linear = 1;
-export const EaseOutQuad = 4;
+export let None = 0;
+export let Linear = 1;
+export let EaseOutQuad = 4;
 /*
-export const EaseInBack = 2;
-export const EaseInOutBack = 3;
-export const Bounce = 5;
+export let EaseInBack = 2;
+export let EaseInOutBack = 3;
+export let Bounce = 5;
 */
 
-function linear(t: number): number
+let linear = (t: number): number =>
 {
   return t;
 };
 
-function easeOutQuad(t: number)
+let easeOutQuad = (t: number) =>
 {
   return t * (2 - t);
 };
 
 /*
-function easeInBack(t: number): number
+let easeInBack = (t: number): number=>
 {
-  const s: number = 1.70158;
+  let s: number = 1.70158;
   return (t) * t * ((s + 1) * t - s);
 };
 
-function bounce(t: number): number
+let bounce = (t: number): number=>
 {
   if (t < (1 / 2.75))
   {
@@ -41,7 +41,7 @@ function bounce(t: number): number
   }
 };
 
-function easeInOutBack(t: number)
+let easeInOutBack = (t: number)=>
 {
   let s: number = 1.70158;
   t /= 0.5;
@@ -50,27 +50,22 @@ function easeInOutBack(t: number)
 };
 */
 
-function ease(t: number, fn: number = Linear): number
+let ease = (t: number, fn: number = Linear): number =>
 {
-  switch (fn)
+  if (fn === Linear)
   {
-    /*
-    case EaseInBack:
-      return easeInBack(t);
-    case EaseInOutBack:
-      return easeInOutBack(t);
-    case Bounce:
-      return bounce(t);
-    */
-    case EaseOutQuad:
-      return easeOutQuad(t);
-    case Linear:
-      return linear(t);
-    case None:
-    default:
-      return 1;
+    return linear(t);
   }
-}
+  else if (fn === EaseOutQuad)
+  {
+    return easeOutQuad(t);
+
+  }
+  else
+  {
+    return 1;
+  }
+};
 
 export type InterpolationData =
   {
@@ -89,14 +84,9 @@ type InterpolationResult =
     _done: boolean;
   };
 
-export const Interpolators: Map<string, InterpolationData> = new Map();
+export let Interpolators: Map<string, InterpolationData> = new Map();
 
-export function createInterpolationData(
-  duration: number,
-  origin: number[],
-  destination: number[],
-  easing: number = Linear,
-  callback: ((...args: any[]) => void) | null = null): InterpolationData
+export let createInterpolationData = (duration: number, origin: number[], destination: number[], easing: number = Linear, callback: ((...args: any[]) => void) | null = null): InterpolationData =>
 {
   return {
     _startTime: -1,
@@ -106,9 +96,9 @@ export function createInterpolationData(
     _easing: easing,
     _callback: callback
   };
-}
+};
 
-export function interpolate(now: number, interpolationData: InterpolationData): void
+export let interpolate = (now: number, interpolationData: InterpolationData): void =>
 {
   if (interpolationData._startTime === -1)
   {
@@ -133,4 +123,4 @@ export function interpolate(now: number, interpolationData: InterpolationData): 
     values[i] = interpolationData._origin[i] + Math.round(interpolationData._target[i] - interpolationData._origin[i]) * p;
   }
   interpolationData._lastResult = { _values: values, _done: false };
-}
+};

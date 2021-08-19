@@ -3,9 +3,8 @@ import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from 
 
 import { assert } from "../debug";
 import { getTexture } from "../texture";
-import { pushQuad } from "../draw";
 
-export const enum Align
+export enum Align
 {
   L,
   C,
@@ -19,17 +18,17 @@ export type TextParameters =
     _scale?: number;
   };
 
-const textCache: Map<string, string[]> = new Map();
-const fontSize = 8 as const;
+let textCache: Map<string, string[]> = new Map();
+let fontSize = 8;
 
-const node_text: string[] = [];
-const node_text_align: Align[] = [];
-const node_text_scale: number[] = [];
-const node_text_colour: number[] = [];
+let node_text: string[] = [];
+let node_text_align: Align[] = [];
+let node_text_scale: number[] = [];
+let node_text_colour: number[] = [];
 
-export function createTextNode(text: string, width: number, parameters: TextParameters = {}): number
+export let createTextNode = (text: string, width: number, parameters: TextParameters = {}): number =>
 {
-  const nodeId = createNode();
+  let nodeId = createNode();
 
   node_interactive[nodeId] = false;
   node_render_function[nodeId] = renderTextNode;
@@ -40,15 +39,15 @@ export function createTextNode(text: string, width: number, parameters: TextPara
   node_text_scale[nodeId] = parameters._scale || 1;
   node_text_colour[nodeId] = parameters._colour || 0xFFFFFFFF;
 
-  const numberOfLines = parseText(node_text[nodeId], width, node_text_scale[nodeId]);
-  const textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
+  let numberOfLines = parseText(node_text[nodeId], width, node_text_scale[nodeId]);
+  let textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
 
   node_size[nodeId] = [width, textHeight];
 
   return nodeId;
-}
+};
 
-export function updateTextNode(nodeId: number, text: string, parameters: TextParameters = {}): void
+export let updateTextNode = (nodeId: number, text: string, parameters: TextParameters = {}): void =>
 {
   text = text.toUpperCase();
   node_text[nodeId] = text;
@@ -56,24 +55,24 @@ export function updateTextNode(nodeId: number, text: string, parameters: TextPar
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
   node_text_colour[nodeId] = parameters._colour || node_text_colour[nodeId];
 
-  const numberOfLines = parseText(node_text[nodeId], node_size[nodeId][0], node_text_scale[nodeId]);
-  const textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
+  let numberOfLines = parseText(node_text[nodeId], node_size[nodeId][0], node_text_scale[nodeId]);
+  let textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
 
   node_size[nodeId][1] = textHeight;
-}
+};
 
-function parseText(text: string, width: number, scale: number = 1): number
+let parseText = (text: string, width: number, scale: number = 1): number =>
 {
-  const letterSize: number = fontSize * scale;
-  const allWords: string[] = text.split(" ");
-  const lines: string[] = [];
+  let letterSize: number = fontSize * scale;
+  let allWords: string[] = text.split(" ");
+  let lines: string[] = [];
   let line: string[] = [];
-  for (const word of allWords)
+  for (let word of allWords)
   {
     line.push(word);
     if ((line.join(" ").length) * letterSize > width)
     {
-      const lastWord = line.pop();
+      let lastWord = line.pop();
       assert(lastWord !== undefined, `No last word to pop found.`);
       lines.push(line.join(" "));
       line = [lastWord];
@@ -85,29 +84,29 @@ function parseText(text: string, width: number, scale: number = 1): number
   }
   textCache.set(`${ text }_${ scale }_${ width }`, lines);
   return lines.length;
-}
+};
 
-function renderTextNode(nodeId: number, now: number, delta: number): void
+let renderTextNode = (nodeId: number, now: number, delta: number): void =>
 {
-  const text = node_text[nodeId];
-  const align = node_text_align[nodeId];
-  const scale = node_text_scale[nodeId];
-  const colour = node_text_colour[nodeId];
-  const size = node_size[nodeId];
+  let text = node_text[nodeId];
+  let align = node_text_align[nodeId];
+  let scale = node_text_scale[nodeId];
+  let colour = node_text_colour[nodeId];
+  let size = node_size[nodeId];
   let x = 0;
   let y = 0;
 
-  const letterSize: number = fontSize * scale;
+  let letterSize: number = fontSize * scale;
 
   let xOffset: number = 0;
 
-  const lines = textCache.get(`${ text }_${ scale }_${ size[0] }`);
+  let lines = textCache.get(`${ text }_${ scale }_${ size[0] }`);
   assert(lines !== undefined, `text lines not found`);
 
-  for (const line of lines)
+  for (let line of lines)
   {
-    const words: string[] = line.split(" ");
-    const lineLength: number = line.length * letterSize;
+    let words: string[] = line.split(" ");
+    let lineLength: number = line.length * letterSize;
 
     let alignmentOffset: number = 0;
     if (align === Align.C)
@@ -120,11 +119,11 @@ function renderTextNode(nodeId: number, now: number, delta: number): void
     }
 
 
-    for (const word of words)
+    for (let word of words)
     {
-      for (const letter of word.split(""))
+      for (let letter of word.split(""))
       {
-        const t = getTexture(letter);
+        let t = getTexture(letter);
         x = xOffset + alignmentOffset;
         gl_save();
         gl_translate(x, y);
@@ -138,4 +137,4 @@ function renderTextNode(nodeId: number, now: number, delta: number): void
     y += letterSize + scale * 2;
     xOffset = 0;
   }
-}
+};

@@ -18,41 +18,41 @@ type GameState = {
 };
 
 // Ship System Indexes
-export const ENGINES = 0;
-export const SHIELDS = 1;
-export const SCANNERS = 2;
-export const MINING_LASERS = 3;
-export const WEAPONS = 4;
+export let ENGINES = 0;
+export let SHIELDS = 1;
+export let SCANNERS = 2;
+export let MINING_LASERS = 3;
+export let WEAPONS = 4;
 
 
 export let gameState: GameState;
 
-export function nextQCost(): number
+export let nextQCost = (): number =>
 {
   // TODO: Algo to figure out cost of next prestige based on generator and field levels
   return 200;
-}
+};
 
-export function maxHull(): number
+export let maxHull = (): number =>
 {
   return 4 + (gameState._hullLevel);
-}
+};
 
-export function maxShield(): number
+export let maxShield = (): number =>
 {
   return gameState._systemLevels[SHIELDS][1];
-}
+};
 
-export function maxAvailablePower(): number
+export let maxAvailablePower = (): number =>
 {
   return 3 + gameState._generatorLevel * 2;
-}
+};
 
-export function reset(): void
+export let reset = (): void =>
 {
   // TODO(dbrad): Reset / reduce all temporal stats.
-}
-export function initGameState(slot: number): void
+};
+export let initGameState = (slot: number): void =>
 {
   gameState = {
     _generatorLevel: 0,
@@ -76,12 +76,12 @@ export function initGameState(slot: number): void
     _adventureReward: 0,
     _adventureEncounters: [],
   };
-}
-export function saveGame(slot: number): void
+};
+export let saveGame = (slot: number): void =>
 {
   // TODO(dbrad): save gamestate to local storage for given slot
-}
-export function loadGame(slot: number): void
+};
+export let loadGame = (slot: number): void =>
 {
   // TODO(dbrad): load gamestate from local storage for given slot
-}
+};

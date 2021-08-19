@@ -19,7 +19,7 @@ import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
 {
-  const canvas = document.querySelector(`canvas`);
+  let canvas = document.querySelector(`canvas`);
   assert(canvas !== null, `Unable to find canvas element on index.html`);
   canvas.width = SCREEN_WIDTH;
   canvas.height = SCREEN_HEIGHT;
@@ -32,9 +32,10 @@ window.addEventListener("load", async () =>
   let then: number;
 
   let playing: boolean = false;
-  const loadGame = () =>
+  let loadGame = () =>
   {
     playing = true;
+    assert(canvas !== null, `Unable to find canvas element on index.html`);
     canvas.removeEventListener("pointerdown", loadGame);
     canvas.removeEventListener("touchstart", loadGame);
 
@@ -51,11 +52,11 @@ window.addEventListener("load", async () =>
 
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
-  const touchToPlayId = createTextNode("TOUCH TO START", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
+  let touchToPlayId = createTextNode("TOUCH TO START", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
   moveNode(touchToPlayId, [SCREEN_CENTER_X, SCREEN_CENTER_Y - 10]);
 
-  const stars: [number, number, number][] = [];
-  const makeStars = () =>
+  let stars: [number, number, number][] = [];
+  let makeStars = () =>
   {
     let totalStars = (Math.floor(SCREEN_WIDTH / 72)) * (Math.floor(SCREEN_HEIGHT / 72)) * 1;
 
@@ -72,13 +73,13 @@ window.addEventListener("load", async () =>
     sortable.sort();
 
 
-    for (const i in stars)
+    for (let i in stars)
     {
       stars[i][2] = sortable[i];
     }
   };
 
-  function loop(now: number): void
+  let loop = (now: number): void =>
   {
     delta = now - then;
     then = now;
@@ -86,7 +87,7 @@ window.addEventListener("load", async () =>
 
     if (playing)
     {
-      for (const i in stars)
+      for (let i in stars)
       {
         stars[i][0] += -4 * (stars[i][2] / 8);
         if (stars[i][0] >= SCREEN_WIDTH)
@@ -101,17 +102,17 @@ window.addEventListener("load", async () =>
         }
       }
 
-      for (const i in stars)
+      for (let i in stars)
       {
         // TODO(dbrad): make stars move based on ms instead of frames
-        const value = Math.ceil(255 - 185 * (1 - stars[i][2] / 4));
-        const colour = colourToHex(value, value, value, value);
-        const size = Math.ceil(stars[i][2] / 2);
+        let value = Math.ceil(255 - 185 * (1 - stars[i][2] / 4));
+        let colour = colourToHex(value, value, value, value);
+        let size = Math.ceil(stars[i][2] / 2);
         pushQuad(stars[i][0], stars[i][1], size, size, colour);
       }
 
       // Step all active interpolators forwards
-      for (const [_, interpolator] of Interpolators)
+      for (let [_, interpolator] of Interpolators)
       {
         interpolate(now, interpolator);
       }
@@ -120,7 +121,7 @@ window.addEventListener("load", async () =>
       renderScene(now, delta);
 
       // Clean up any completed interpolators
-      for (const [id, interpolator] of Interpolators)
+      for (let [id, interpolator] of Interpolators)
       {
         if (interpolator._lastResult?._done)
         {
@@ -138,7 +139,7 @@ window.addEventListener("load", async () =>
     inputContext._fire = -1;
 
     requestAnimationFrame(loop);
-  }
+  };
   gl_setClear(6, 6, 6);
   then = performance.now();
   requestAnimationFrame(loop);

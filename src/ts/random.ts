@@ -1,12 +1,12 @@
-export function rand(min: number, max: number): number
+export let rand = (min: number, max: number): number =>
 {
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
-export function shuffle<T>(array: T[]): T[]
+export let shuffle = <T>(array: T[]): T[] =>
 {
   let currentIndex: number = array.length, temporaryValue: T, randomIndex: number;
-  const arr: T[] = array.slice();
+  let arr: T[] = array.slice();
   while (0 !== currentIndex)
   {
     randomIndex = Math.floor(Math.random() * currentIndex);
@@ -16,4 +16,4 @@ export function shuffle<T>(array: T[]): T[]
     arr[randomIndex] = temporaryValue;
   }
   return arr;
-}
+};

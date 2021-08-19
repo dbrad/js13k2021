@@ -12,16 +12,16 @@ type Scene =
     _rootId: number,
     _updateFn: (now: number, delta: number) => void;
   };
-const TRANSITION_KEY = 'xsit';
+let TRANSITION_KEY = 'xsit';
 let transitionColour = 0;
 
-const Scenes: Map<number, Scene> = new Map();
-//const SceneStack: Scene[] = [];
+let Scenes: Map<number, Scene> = new Map();
+//let SceneStack: Scene[] = [];
 let CurrentScene: Scene;
-export function registerScene(sceneId: number, setupFn: () => number, updateFn: (now: number, delta: number) => void): void
+export let registerScene = (sceneId: number, setupFn: () => number, updateFn: (now: number, delta: number) => void): void =>
 {
-  const rootId = setupFn();
-  const scene: Scene = { _rootId: rootId, _updateFn: updateFn };
+  let rootId = setupFn();
+  let scene: Scene = { _rootId: rootId, _updateFn: updateFn };
   Scenes.set(sceneId, scene);
 
   if (!CurrentScene)
@@ -29,15 +29,15 @@ export function registerScene(sceneId: number, setupFn: () => number, updateFn: 
     CurrentScene = scene;
     // SceneStack.push(scene);
   }
-}
+};
 
-export function pushScene(sceneId: number): void
+export let pushScene = (sceneId: number): void =>
 {
-  const scene = Scenes.get(sceneId);
-  assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
+  let scene = Scenes.get(sceneId);
 
   let transition = createInterpolationData(250, [0], [255], EaseOutQuad, () =>
   {
+    assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
     CurrentScene = scene;
     // SceneStack.push(scene);
     clearInput();
@@ -47,9 +47,9 @@ export function pushScene(sceneId: number): void
   });
   Interpolators.set(TRANSITION_KEY, transition);
   clearInput();
-}
+};
 
-export function popScene(): void
+export let popScene = (): void =>
 {
   let transition = createInterpolationData(250, [0], [255], EaseOutQuad, () =>
   {
@@ -60,33 +60,33 @@ export function popScene(): void
     Interpolators.set(TRANSITION_KEY, transition);
   });
   Interpolators.set(TRANSITION_KEY, transition);
-}
+};
 
-export function updateScene(now: number, delta: number): void
+export let updateScene = (now: number, delta: number): void =>
 {
-  const rootId = CurrentScene._rootId;
+  let rootId = CurrentScene._rootId;
   if (!Interpolators.has(TRANSITION_KEY))
   {
     nodeInput(rootId);
   }
   iterateNodeMovement(rootId);
   CurrentScene._updateFn(now, delta);
-}
+};
 
-export function renderScene(now: number, delta: number): void
+export let renderScene = (now: number, delta: number): void =>
 {
-  const rootId = CurrentScene._rootId;
+  let rootId = CurrentScene._rootId;
   renderNode(rootId, now, delta);
 
   if (Interpolators.has(TRANSITION_KEY))
   {
-    const transition = Interpolators.get(TRANSITION_KEY);
+    let transition = Interpolators.get(TRANSITION_KEY);
     if (transition?._lastResult)
     {
       let i = transition._lastResult;
-      const colour = colourToHex(i._values[0], 0, 0, 0);
+      let colour = colourToHex(i._values[0], 0, 0, 0);
       transitionColour = colour;
     }
     pushQuad(0, 0, SCREEN_WIDTH + 2, SCREEN_HEIGHT + 2, transitionColour);
   }
-}
+};

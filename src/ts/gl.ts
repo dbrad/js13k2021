@@ -5,21 +5,21 @@ let width: number;
 let height: number;
 
 // xy + uv + argb
-const VERTEX_SIZE: number = (4 * 2) + (4 * 2) + (4);
-const MAX_BATCH: number = 10922;
-const VERTICES_PER_QUAD: number = 6;
-const VERTEX_DATA_SIZE: number = VERTEX_SIZE * MAX_BATCH * 4;
-const INDEX_DATA_SIZE: number = MAX_BATCH * (2 * VERTICES_PER_QUAD);
+let VERTEX_SIZE: number = (4 * 2) + (4 * 2) + (4);
+let MAX_BATCH: number = 10922;
+let VERTICES_PER_QUAD: number = 6;
+let VERTEX_DATA_SIZE: number = VERTEX_SIZE * MAX_BATCH * 4;
+let INDEX_DATA_SIZE: number = MAX_BATCH * (2 * VERTICES_PER_QUAD);
 
-const vertexData: ArrayBuffer = new ArrayBuffer(VERTEX_DATA_SIZE);
-const vPositionData: Float32Array = new Float32Array(vertexData);
-const vColorData: Uint32Array = new Uint32Array(vertexData);
-const vIndexData: Uint16Array = new Uint16Array(INDEX_DATA_SIZE);
+let vertexData: ArrayBuffer = new ArrayBuffer(VERTEX_DATA_SIZE);
+let vPositionData: Float32Array = new Float32Array(vertexData);
+let vColorData: Uint32Array = new Uint32Array(vertexData);
+let vIndexData: Uint16Array = new Uint16Array(INDEX_DATA_SIZE);
 
-const mat: Float32Array = new Float32Array([1, 0, 0, 1, 0, 0]);
-const stack: Float32Array = new Float32Array(60);
+let mat: Float32Array = new Float32Array([1, 0, 0, 1, 0, 0]);
+let stack: Float32Array = new Float32Array(60);
 
-const TEXTURE_2D = 3553;
+let TEXTURE_2D = 3553;
 
 let indexBuffer: WebGLBuffer;
 let vertexBuffer: WebGLBuffer;
@@ -30,50 +30,50 @@ let vertexAttr: number;
 let textureAttr: number;
 let colourAttr: number;
 
-export function gl_getContext(canvas: HTMLCanvasElement): WebGLRenderingContext
+export let gl_getContext = (canvas: HTMLCanvasElement): WebGLRenderingContext =>
 {
   width = canvas.width;
   height = canvas.height;
   let context = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance", preserveDrawingBuffer: true });
   assert(context !== null, `Unable to get GL context.`);
   return context;
-}
+};
 
-export function gl_init(context: WebGLRenderingContext): void
+export let gl_init = (context: WebGLRenderingContext): void =>
 {
   ctx = context;
 
-  function compileShader(source: string, type: number): WebGLShader
+  let compileShader = (source: string, type: number): WebGLShader =>
   {
-    const glShader = ctx.createShader(type);
+    let glShader = ctx.createShader(type);
     assert(glShader !== null, `Unable to created shader`);
     ctx.shaderSource(glShader, source);
     ctx.compileShader(glShader);
     return glShader;
-  }
+  };
 
-  function createShaderProgram(vsSource: string, fsSource: string): WebGLProgram
+  let createShaderProgram = (vsSource: string, fsSource: string): WebGLProgram =>
   {
-    const program = ctx.createProgram();
+    let program = ctx.createProgram();
     assert(program !== null, `Unable to created program`);
-    const vShader: WebGLShader = compileShader(vsSource, 35633);
-    const fShader: WebGLShader = compileShader(fsSource, 35632);
+    let vShader: WebGLShader = compileShader(vsSource, 35633);
+    let fShader: WebGLShader = compileShader(fsSource, 35632);
     ctx.attachShader(program, vShader);
     ctx.attachShader(program, fShader);
     ctx.linkProgram(program);
     return program;
-  }
+  };
 
-  function createBuffer(bufferType: number, size: number, usage: number): WebGLBuffer
+  let createBuffer = (bufferType: number, size: number, usage: number): WebGLBuffer =>
   {
-    const buffer = ctx.createBuffer();
+    let buffer = ctx.createBuffer();
     assert(buffer !== null, `Unable to created buffer`);
     ctx.bindBuffer(bufferType, buffer);
     ctx.bufferData(bufferType, size, usage);
     return buffer;
-  }
+  };
 
-  const shader: WebGLShader = createShaderProgram(
+  let shader: WebGLShader = createShaderProgram(
     `precision lowp float;attribute vec2 v,t;attribute vec4 c;varying vec2 uv;varying vec4 col;uniform mat4 m;void main() {gl_Position = m * vec4(v, 1.0, 1.0);uv = t;col = c;}`,
     `precision lowp float;varying vec2 uv;varying vec4 col;uniform sampler2D s;void main() {gl_FragColor = texture2D(s, uv) * col;}`
   );
@@ -110,11 +110,11 @@ export function gl_init(context: WebGLRenderingContext): void
   ctx.vertexAttribPointer(colourAttr, 4, 5121, true, VERTEX_SIZE, 16);
   ctx.uniformMatrix4fv(ctx.getUniformLocation(shader, "m"), false, new Float32Array([2 / width, 0, 0, 0, 0, -2 / height, 0, 0, 0, 0, 1, 1, -1, 1, 0, 0]));
   ctx.activeTexture(33984);
-}
+};
 
-export function gl_createTexture(image: HTMLImageElement | HTMLCanvasElement): WebGLTexture
+export let gl_createTexture = (image: HTMLImageElement | HTMLCanvasElement): WebGLTexture =>
 {
-  const texture = ctx.createTexture();
+  let texture = ctx.createTexture();
   assert(texture !== null, `Unable to create texture.`);
   ctx.bindTexture(TEXTURE_2D, texture);
   ctx.texParameteri(TEXTURE_2D, 10242, 33071);
@@ -124,51 +124,51 @@ export function gl_createTexture(image: HTMLImageElement | HTMLCanvasElement): W
   ctx.texImage2D(TEXTURE_2D, 0, 6408, 6408, 5121, image);
   ctx.bindTexture(TEXTURE_2D, null);
   return texture;
-}
+};
 
 let background: [number, number, number] = [0, 0, 0];
-export function gl_setClear(r: number, g: number, b: number): void
+export let gl_setClear = (r: number, g: number, b: number): void =>
 {
   background = [r / 255, g / 255, b / 255];
   ctx.clearColor(background[0], background[1], background[2], 1);
-}
+};
 
-export function gl_getClear(): [number, number, number]
+export let gl_getClear = (): [number, number, number] =>
 {
   return [background[0] * 255, background[1] * 255, background[2] * 255];
-}
+};
 
-export function gl_clear(): void
+export let gl_clear = (): void =>
 {
   ctx.clear(16384);
-}
+};
 
-export function gl_translate(x: number, y: number): void
+export let gl_translate = (x: number, y: number): void =>
 {
   mat[4] = mat[0] * x + mat[2] * y + mat[4];
   mat[5] = mat[1] * x + mat[3] * y + mat[5];
-}
+};
 
-export function gl_scale(x: number, y: number): void
+export let gl_scale = (x: number, y: number): void =>
 {
   mat[0] = mat[0] * x;
   mat[1] = mat[1] * x;
   mat[2] = mat[2] * y;
   mat[3] = mat[3] * y;
-}
+};
 
-export function gl_rotate(r: number): void
+export let gl_rotate = (r: number): void =>
 {
-  const sr: number = Math.sin(r);
-  const cr: number = Math.cos(r);
+  let sr: number = Math.sin(r);
+  let cr: number = Math.cos(r);
 
   mat[0] = mat[0] * cr + mat[2] * sr;
   mat[1] = mat[1] * cr + mat[3] * sr;
   mat[2] = mat[0] * -sr + mat[2] * cr;
   mat[3] = mat[1] * -sr + mat[3] * cr;
-}
+};
 
-export function gl_save(): void
+export let gl_save = (): void =>
 {
   stack[stackp + 0] = mat[0];
   stack[stackp + 1] = mat[1];
@@ -177,9 +177,9 @@ export function gl_save(): void
   stack[stackp + 4] = mat[4];
   stack[stackp + 5] = mat[5];
   stackp += 6;
-}
+};
 
-export function gl_restore(): void
+export let gl_restore = (): void =>
 {
   stackp -= 6;
   mat[0] = stack[stackp + 0];
@@ -188,25 +188,25 @@ export function gl_restore(): void
   mat[3] = stack[stackp + 3];
   mat[4] = stack[stackp + 4];
   mat[5] = stack[stackp + 5];
-}
+};
 
-export function gl_pushTextureQuad(texture: WebGLTexture, x: number, y: number, w: number, h: number, u0: number, v0: number, u1: number, v1: number, aabbggrr: number = 0xFFFFFFFF): void
+export let gl_pushTextureQuad = (texture: WebGLTexture, x: number, y: number, w: number, h: number, u0: number, v0: number, u1: number, v1: number, aabbggrr: number = 0xFFFFFFFF): void =>
 {
-  const x0: number = x;
-  const y0: number = y;
-  const x1: number = x + w;
-  const y1: number = y + h;
-  const x2: number = x;
-  const y2: number = y + h;
-  const x3: number = x + w;
-  const y3: number = y;
-  const mat0: number = mat[0];
-  const mat1: number = mat[1];
-  const mat2: number = mat[2];
-  const mat3: number = mat[3];
-  const mat4: number = mat[4];
-  const mat5: number = mat[5];
-  const argb: number = aabbggrr;
+  let x0: number = x;
+  let y0: number = y;
+  let x1: number = x + w;
+  let y1: number = y + h;
+  let x2: number = x;
+  let y2: number = y + h;
+  let x3: number = x + w;
+  let y3: number = y;
+  let mat0: number = mat[0];
+  let mat1: number = mat[1];
+  let mat2: number = mat[2];
+  let mat3: number = mat[3];
+  let mat4: number = mat[4];
+  let mat5: number = mat[5];
+  let argb: number = aabbggrr;
 
   if (texture !== currentTexture || count + 1 >= MAX_BATCH)
   {
@@ -258,12 +258,12 @@ export function gl_pushTextureQuad(texture: WebGLTexture, x: number, y: number, 
     ctx.drawElements(4, count * VERTICES_PER_QUAD, 5123, 0);
     count = 0;
   }
-}
+};
 
-export function gl_flush(): void
+export let gl_flush = (): void =>
 {
   if (count === 0) return;
   ctx.bufferSubData(34962, 0, vPositionData.subarray(0, count * VERTEX_SIZE));
   ctx.drawElements(4, count * VERTICES_PER_QUAD, 5123, 0);
   count = 0;
-}
+};

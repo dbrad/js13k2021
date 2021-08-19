@@ -9,19 +9,19 @@ import { gameState } from "../game-state";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
 
-export const MissionSelectScene = 1;
+export let MissionSelectScene = 1;
 
 let smallSystemId: number;
 let mediumSystemId: number;
 let largeSystemId: number;
 let unchartedSystemId: number;
 
-export function setupMissionSelect(): number
+export let setupMissionSelect = (): number =>
 {
-  const rootId = createNode();
+  let rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  const textNodeId = createTextNode("Select System Size", SCREEN_WIDTH, { _textAlign: Align.C });
+  let textNodeId = createTextNode("Select System Size", SCREEN_WIDTH, { _textAlign: Align.C });
   moveNode(textNodeId, [SCREEN_CENTER_X, 20]);
   addChildNode(rootId, textNodeId);
 
@@ -42,9 +42,9 @@ export function setupMissionSelect(): number
   addChildNode(rootId, unchartedSystemId);
 
   return rootId;
-}
+};
 
-export function updateMissionSelect(now: number, delta: number): void
+export let updateMissionSelect = (now: number, delta: number): void =>
 {
   if (inputContext._fire === smallSystemId)
   {
@@ -52,4 +52,4 @@ export function updateMissionSelect(now: number, delta: number): void
     console.log(gameState._adventureEncounters);
     pushScene(AdventureScene);
   }
-}
+};

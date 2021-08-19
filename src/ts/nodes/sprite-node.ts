@@ -10,30 +10,30 @@ type SpriteParams = {
 };
 
 type Frame = [Texture, number];
-const node_sprite: Frame[][] = [];
-const node_sprite_duration: number[] = [];
-const node_sprite_scale: number[] = [];
-const node_sprite_flip: [boolean, boolean][] = [];
-const node_sprite_colour: number[] = [];
+let node_sprite: Frame[][] = [];
+let node_sprite_duration: number[] = [];
+let node_sprite_scale: number[] = [];
+let node_sprite_flip: [boolean, boolean][] = [];
+let node_sprite_colour: number[] = [];
 
-const node_sprite_timestamp: number[] = [];
-const node_sprite_loop: boolean[] = [];
+let node_sprite_timestamp: number[] = [];
+let node_sprite_loop: boolean[] = [];
 
-export function createSpriteNode(textureName: string, params: SpriteParams = {}): number
+export let createSpriteNode = (textureName: string, params: SpriteParams = {}): number =>
 {
-  const nodeId = createNode();
+  let nodeId = createNode();
   node_render_function[nodeId] = renderSpriteNode;
   setSpriteNode(nodeId, textureName, params);
   return nodeId;
-}
+};
 
-export function setSpriteNode(nodeId: number, textureName: string, params: SpriteParams = {}): void
+export let setSpriteNode = (nodeId: number, textureName: string, params: SpriteParams = {}): void =>
 {
-  const scale = params._scale || 1;
-  const hFlip = params._hFlip || false;
-  const vFlip = params._vFlip || false;
-  const colour = params._colour || 0xFFFFFFFF;
-  const texture = getTexture(textureName);
+  let scale = params._scale || 1;
+  let hFlip = params._hFlip || false;
+  let vFlip = params._vFlip || false;
+  let colour = params._colour || 0xFFFFFFFF;
+  let texture = getTexture(textureName);
 
   node_sprite[nodeId] = [[texture, 0]];
   node_size[nodeId] = [texture._w * scale, texture._h * scale];
@@ -44,24 +44,24 @@ export function setSpriteNode(nodeId: number, textureName: string, params: Sprit
   // TODO(dbrad): We might not need animation code, refacter and remove it all later if that is the case.
   node_sprite_timestamp[nodeId] = 0;
   node_sprite_loop[nodeId] = false;
-}
+};
 
-// export function createAnimatedSpriteNode(frames: [string, number][], params: SpriteParams = {}): number
+// export let createAnimatedSpriteNode = (frames: [string, number][], params: SpriteParams = {}): number =>
 // {
-//   const scale = params._scale || 1;
-//   const hFlip = params._hFlip || false;
-//   const vFlip = params._vFlip || false;
-//   const colour = params._colour || 0xFFFFFFFF;
+//   let scale = params._scale || 1;
+//   let hFlip = params._hFlip || false;
+//   let vFlip = params._vFlip || false;
+//   let colour = params._colour || 0xFFFFFFFF;
 
-//   const nodeId = createNode();
+//   let nodeId = createNode();
 //   node_render_function[nodeId] = renderSpriteNode;
 
 //   let duration = 0;
 //   node_sprite[nodeId] = [];
 
-//   for (const frame of frames)
+//   for (let frame of frames)
 //   {
-//     const texture = getTexture(frame[0]);
+//     let texture = getTexture(frame[0]);
 //     duration += frame[1];
 //     node_sprite[nodeId].push([texture, frame[1]]);
 //     node_size[nodeId] = [texture._w * scale, texture._h * scale];
@@ -76,16 +76,16 @@ export function setSpriteNode(nodeId: number, textureName: string, params: Sprit
 //   return nodeId;
 // }
 
-function renderSpriteNode(nodeId: number, now: number, delta: number): void
+let renderSpriteNode = (nodeId: number, now: number, delta: number): void =>
 {
-  const duration = node_sprite_duration[nodeId];
-  const frames = node_sprite[nodeId];
-  const scale = node_sprite_scale[nodeId];
-  const colour = node_sprite_colour[nodeId];
+  let duration = node_sprite_duration[nodeId];
+  let frames = node_sprite[nodeId];
+  let scale = node_sprite_scale[nodeId];
+  let colour = node_sprite_colour[nodeId];
 
   if (duration === 0)
   {
-    const t = frames[0][0];
+    let t = frames[0][0];
     gl_save();
     if (node_sprite_flip[nodeId])
     {
@@ -108,7 +108,7 @@ function renderSpriteNode(nodeId: number, now: number, delta: number): void
     }
     let currentFrame = frames[0];
     let totalDuration: number = 0;
-    for (const frame of frames)
+    for (let frame of frames)
     {
       totalDuration += frame[1];
       if (node_sprite_timestamp[nodeId] <= totalDuration)
@@ -117,7 +117,7 @@ function renderSpriteNode(nodeId: number, now: number, delta: number): void
         break;
       }
     }
-    const t = currentFrame[0];
+    let t = currentFrame[0];
     gl_save();
     if (node_sprite_flip[nodeId][0])
     {
@@ -132,4 +132,4 @@ function renderSpriteNode(nodeId: number, now: number, delta: number): void
     gl_pushTextureQuad(t._atlas, 0, 0, t._w * scale, t._h * scale, t._u0, t._v0, t._u1, t._v1, colour);
     gl_restore();
   }
-}
+};

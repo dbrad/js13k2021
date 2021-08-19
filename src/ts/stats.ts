@@ -13,7 +13,7 @@ let averageFrameTime = 0;
 export function initStats(): void
 {
   // @ifdef DEBUG
-  const container: HTMLDivElement = document.createElement("div");
+  let container: HTMLDivElement = document.createElement("div");
   container.style.position = "absolute";
   container.style.right = "0px";
   container.style.top = "0px";
@@ -21,7 +21,7 @@ export function initStats(): void
 
   document.body.prepend(container);
 
-  const overlay: HTMLDivElement = document.createElement("div");
+  let overlay: HTMLDivElement = document.createElement("div");
   overlay.style.position = "absolute";
   overlay.style.right = "0px";
   overlay.style.top = "0px";
@@ -37,11 +37,11 @@ export function initStats(): void
   overlay.style.width = "6em";
   container.appendChild(overlay);
 
-  const fpsDOM: HTMLDivElement = document.createElement("div");
+  let fpsDOM: HTMLDivElement = document.createElement("div");
   overlay.appendChild(fpsDOM);
-  const msDOM: HTMLDivElement = document.createElement("div");
+  let msDOM: HTMLDivElement = document.createElement("div");
   overlay.appendChild(msDOM);
-  const frameTimeDOM: HTMLDivElement = document.createElement("div");
+  let frameTimeDOM: HTMLDivElement = document.createElement("div");
   overlay.appendChild(frameTimeDOM);
 
   fpsTextNode = window.document.createTextNode("");
@@ -56,7 +56,7 @@ export function initStats(): void
 export function tickStats(frameStart: number, delta: number): void
 {
   // @ifdef DEBUG
-  const now = performance.now();
+  let now = performance.now();
 
   ms = (0.9 * delta) + (0.1 * ms);
   averageFrameTime = (0.9 * (now - frameStart)) + (0.1 * averageFrameTime);

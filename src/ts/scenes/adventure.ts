@@ -9,42 +9,42 @@ import { createSpriteNode } from "../nodes/sprite-node";
 import { createTextNode } from "../nodes/text-node";
 import { inputContext } from "../input";
 
-export const AdventureScene = 2;
+export let AdventureScene = 2;
 
-const systemNames = ["ENGINES", "SHIELDS", "SCANNERS", "MINING LASERS", "WEAPONS"];
+let systemNames = ["ENGINES", "SHIELDS", "SCANNERS", "MINING LASERS", "WEAPONS"];
 
-const MINUS_BUTTON = 0;
-const PLUS_BUTTON = 1;
-const BAR = 2;
+let MINUS_BUTTON = 0;
+let PLUS_BUTTON = 1;
+let BAR = 2;
 
 let hullBar: number;
 
 let shieldContainer: number;
 let shieldBar: number;
 let shieldTimer: number = 0;
-const SHIELD_COOLDOWN = 1000;
+let SHIELD_COOLDOWN = 1000;
 
-const systems: number[][] = [];
+let systems: number[][] = [];
 
 let generatorBar: number;
 
 let windowOfOppertunity: number[] = [];
-const WOO_WIDTH_BASE = 128;
-const WOO_INCREMENT = 8;
+let WOO_WIDTH_BASE = 128;
+let WOO_INCREMENT = 8;
 let windowWidth = WOO_WIDTH_BASE;
 
-export function setupAdventure(): number
+export let setupAdventure = (): number =>
 {
-  const rootId = createNode();
+  let rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  const shipId = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
+  let shipId = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
   moveNode(shipId, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
   addChildNode(rootId, shipId, 1000);
 
   ////////////////////////////////////////
 
-  const hullText = createTextNode("HULL", 32, { _colour: 0xFFFFFFFF });
+  let hullText = createTextNode("HULL", 32, { _colour: 0xFFFFFFFF });
   moveNode(hullText, [2, 2]);
   addChildNode(rootId, hullText);
 
@@ -58,7 +58,7 @@ export function setupAdventure(): number
   moveNode(shieldContainer, [2, 30]);
   addChildNode(rootId, shieldContainer);
 
-  const sheildText = createTextNode("SHIELDS", 56, { _colour: 0xFFFFFFFF });
+  let sheildText = createTextNode("SHIELDS", 56, { _colour: 0xFFFFFFFF });
   addChildNode(shieldContainer, sheildText);
 
   shieldBar = createSegmentedBarNode(0xFFFF0000, 34, 1, 0);
@@ -72,31 +72,31 @@ export function setupAdventure(): number
   for (let i = 0; i < 5; i++)
   {
     systems[i] = [];
-    const systemContainer = createNode();
+    let systemContainer = createNode();
     moveNode(systemContainer, [0, 120 + (44 * i)]);
     addChildNode(rootId, systemContainer);
 
-    const minusButton = createButtonNode("-", [26, 26]);
+    let minusButton = createButtonNode("-", [26, 26]);
     node_tag[minusButton] |= TAG_LOWER_POWER;
     moveNode(minusButton, [2, 0]);
     addChildNode(systemContainer, minusButton);
     systems[i][MINUS_BUTTON] = minusButton;
 
-    const plusButton = createButtonNode("+", [26, 26]);
+    let plusButton = createButtonNode("+", [26, 26]);
     node_tag[plusButton] |= TAG_RAISE_POWER;
     moveNode(plusButton, [30, 0]);
     addChildNode(systemContainer, plusButton);
     systems[i][PLUS_BUTTON] = plusButton;
 
-    const shadow = createTextNode(systemNames[i], 640, { _colour: 0xFF111111 });
+    let shadow = createTextNode(systemNames[i], 640, { _colour: 0xFF111111 });
     moveNode(shadow, [58, 1]);
     addChildNode(systemContainer, shadow);
 
-    const systemText = createTextNode(systemNames[i], 640, { _colour: 0xFFFFFFFF });
+    let systemText = createTextNode(systemNames[i], 640, { _colour: 0xFFFFFFFF });
     moveNode(systemText, [58, 0]);
     addChildNode(systemContainer, systemText);
 
-    const systemBar = createSegmentedBarNode(0xFF00FF00, 8, 1, 0);
+    let systemBar = createSegmentedBarNode(0xFF00FF00, 8, 1, 0);
     moveNode(systemBar, [58, 10]);
     addChildNode(systemContainer, systemBar);
     systems[i][BAR] = systemBar;
@@ -106,7 +106,7 @@ export function setupAdventure(): number
 
   ////////////////////////////////////////
 
-  const generatorText = createTextNode("AVAILABLE POWER", 640, { _colour: 0xFFFFFFFF });
+  let generatorText = createTextNode("AVAILABLE POWER", 640, { _colour: 0xFFFFFFFF });
   moveNode(generatorText, [2, 332]);
   addChildNode(rootId, generatorText);
 
@@ -132,26 +132,26 @@ export function setupAdventure(): number
   moveNode(windowOfOppertunity[3], [SCREEN_CENTER_X + windowWidth - 16, SCREEN_CENTER_Y]);
   addChildNode(rootId, windowOfOppertunity[3]);
 
-  const test = createEntityNode(TAG_ENTITY_NONE);
+  let test = createEntityNode(TAG_ENTITY_NONE);
   moveNode(test, [SCREEN_CENTER_X - 260, SCREEN_CENTER_Y - 40]);
   setEntityNode(test, TAG_ENTITY_GAS_PLANET, { _scale: 5, _colour: 0xFFAA77AA });
   addChildNode(rootId, test, -100);
 
-  const test02 = createEntityNode(TAG_ENTITY_NONE);
+  let test02 = createEntityNode(TAG_ENTITY_NONE);
   moveNode(test02, [SCREEN_CENTER_X + 100, SCREEN_CENTER_Y - 40]);
   setEntityNode(test02, TAG_ENTITY_PIRATE_SHIP);
   addChildNode(rootId, test02, -90);
 
-  const test04 = createEntityNode(TAG_ENTITY_NONE);
+  let test04 = createEntityNode(TAG_ENTITY_NONE);
   moveNode(test04, [SCREEN_CENTER_X + 300, SCREEN_CENTER_Y - 40]);
   setEntityNode(test04, TAG_ENTITY_SPACE_BEAST);
   addChildNode(rootId, test04, -90);
 
   return rootId;
-}
+};
 
 let systemAffected = -1;
-export function updateAdventure(now: number, delta: number): void
+export let updateAdventure = (now: number, delta: number): void =>
 {
   windowWidth = WOO_WIDTH_BASE + (WOO_INCREMENT * gameState._systemLevels[SCANNERS][0]);
   moveNode(windowOfOppertunity[0], [SCREEN_CENTER_X - windowWidth, SCREEN_CENTER_Y - 64]);
@@ -192,28 +192,26 @@ export function updateAdventure(now: number, delta: number): void
     updateSegmentedBarNode(systems[i][BAR], gameState._systemLevels[i][1], gameState._systemLevels[i][0]);
   }
 
-  switch (inputContext._fire)
+  if (inputContext._fire === systems[ENGINES][PLUS_BUTTON] || inputContext._fire === systems[ENGINES][MINUS_BUTTON])
   {
-    case systems[ENGINES][PLUS_BUTTON]:
-    case systems[ENGINES][MINUS_BUTTON]:
-      systemAffected = ENGINES;
-      break;
-    case systems[SHIELDS][PLUS_BUTTON]:
-    case systems[SHIELDS][MINUS_BUTTON]:
-      systemAffected = SHIELDS;
-      break;
-    case systems[SCANNERS][PLUS_BUTTON]:
-    case systems[SCANNERS][MINUS_BUTTON]:
-      systemAffected = SCANNERS;
-      break;
-    case systems[MINING_LASERS][PLUS_BUTTON]:
-    case systems[MINING_LASERS][MINUS_BUTTON]:
-      systemAffected = MINING_LASERS;
-      break;
-    case systems[WEAPONS][PLUS_BUTTON]:
-    case systems[WEAPONS][MINUS_BUTTON]:
-      systemAffected = WEAPONS;
-      break;
+    systemAffected = ENGINES;
+  }
+  else if (inputContext._fire === systems[SHIELDS][PLUS_BUTTON] || inputContext._fire === systems[SHIELDS][MINUS_BUTTON])
+  {
+    systemAffected = SHIELDS;
+  }
+  else if (inputContext._fire === systems[SCANNERS][PLUS_BUTTON] || inputContext._fire === systems[SCANNERS][MINUS_BUTTON])
+  {
+    systemAffected = SCANNERS;
+
+  }
+  else if (inputContext._fire === systems[MINING_LASERS][PLUS_BUTTON] || inputContext._fire === systems[MINING_LASERS][MINUS_BUTTON])
+  {
+    systemAffected = MINING_LASERS;
+  }
+  else if (inputContext._fire === systems[WEAPONS][PLUS_BUTTON] || inputContext._fire === systems[WEAPONS][MINUS_BUTTON])
+  {
+    systemAffected = WEAPONS;
   }
 
   if (systemAffected !== -1)
@@ -236,4 +234,4 @@ export function updateAdventure(now: number, delta: number): void
   }
   systemAffected = -1;
   //#endregion Segmented Bars
-}
+};

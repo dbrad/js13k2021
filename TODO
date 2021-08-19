@@ -41,9 +41,12 @@
   ☐ Player interacting with events
     ☐ Get data based interaction working
     ☐ Add Visuals and souns (shots, scanning, etc.)
-  ✔ Make ship node usable for pirates and space beasts @done(21-08-18 20:27)
+  ✔ Make ship node usable for pirates and space beasts (and more!) @done(21-08-18 20:27)
   ☐ Currency Display
   ☐ QDrive Gause
   ☐ Shop Button
 ☐ Store / Upgrades Scene
 ☐ End Game / Scoring / Metadata / Score History??
+
+✔ Convert all functions to export let = => @done(21-08-19 06:48)
+✔ Convert all switch to if @done(21-08-19 06:52)

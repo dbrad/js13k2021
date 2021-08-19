@@ -6,7 +6,7 @@ let zzfx = (...t) => zzfxP(zzfxG(...t));
 
 // zzfxP() - the sound player -- returns a AudioBufferSourceNode
 //@ts-ignore
-export const zzfxP = (...t) => { let e = zzfxX.createBufferSource(), f = zzfxX.createBuffer(t.length, t[0].length, zzfxR); t.map((d, i) => f.getChannelData(i).set(d)), e.buffer = f, e.connect(zzfxX.destination), e.start(); return e; };
+export let zzfxP = (...t) => { let e = zzfxX.createBufferSource(), f = zzfxX.createBuffer(t.length, t[0].length, zzfxR); t.map((d, i) => f.getChannelData(i).set(d)), e.buffer = f, e.connect(zzfxX.destination), e.start(); return e; };
 
 // zzfxG() - the sound generator -- returns an array of sample data
 //@ts-ignore

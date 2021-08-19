@@ -2,23 +2,23 @@ import { createNode, node_render_function } from "../scene-node";
 
 import { pushQuad } from "../draw";
 
-const SEGMENT_GAP = 2;
-const ENDS_PADDING = 2;
-const SIDES_PADDING = 2;
+let SEGMENT_GAP = 2;
+let ENDS_PADDING = 2;
+let SIDES_PADDING = 2;
 
-const BACKGROUND_COLOUR = 0xFF555555;
-const BAR_COLOUR = 0xFF333333;
-const EMPTY_SEGMENT_COLOUR = 0xFF111111;
-const BAR_HEIGHT = 16;
+let BACKGROUND_COLOUR = 0xFF555555;
+let BAR_COLOUR = 0xFF333333;
+let EMPTY_SEGMENT_COLOUR = 0xFF111111;
+let BAR_HEIGHT = 16;
 
-const node_bar_colour: number[] = [];
-const node_bar_segment_width: number[] = [];
-const node_bar_active_segments: number[] = [];
-const node_bar_filled_segments: number[] = [];
+let node_bar_colour: number[] = [];
+let node_bar_segment_width: number[] = [];
+let node_bar_active_segments: number[] = [];
+let node_bar_filled_segments: number[] = [];
 
-export function createSegmentedBarNode(segmentColour: number, segmentWidth: number, activeSegments: number, filledSegments: number): number
+export let createSegmentedBarNode = (segmentColour: number, segmentWidth: number, activeSegments: number, filledSegments: number): number =>
 {
-  const nodeId = createNode();
+  let nodeId = createNode();
   node_render_function[nodeId] = renderSegmentedBar;
   node_bar_colour[nodeId] = segmentColour;
   node_bar_segment_width[nodeId] = segmentWidth;
@@ -26,22 +26,22 @@ export function createSegmentedBarNode(segmentColour: number, segmentWidth: numb
   node_bar_filled_segments[nodeId] = filledSegments;
 
   return nodeId;
-}
+};
 
-export function updateSegmentedBarNode(nodeId: number, activeSegments: number, filledSegments: number): void
+export let updateSegmentedBarNode = (nodeId: number, activeSegments: number, filledSegments: number): void =>
 {
   node_bar_active_segments[nodeId] = activeSegments;
   node_bar_filled_segments[nodeId] = filledSegments;
-}
+};
 
-function renderSegmentedBar(nodeId: number, now: number, delta: number): void
+let renderSegmentedBar = (nodeId: number, now: number, delta: number): void =>
 {
-  const activeSegments = node_bar_active_segments[nodeId];
-  const filledSegments = node_bar_filled_segments[nodeId];
-  const segmentColour = node_bar_colour[nodeId];
-  const segmentWidth = node_bar_segment_width[nodeId];
+  let activeSegments = node_bar_active_segments[nodeId];
+  let filledSegments = node_bar_filled_segments[nodeId];
+  let segmentColour = node_bar_colour[nodeId];
+  let segmentWidth = node_bar_segment_width[nodeId];
 
-  const segmentsLength = (activeSegments * segmentWidth) + ((activeSegments + 1) * SEGMENT_GAP) + (SIDES_PADDING * 2);
+  let segmentsLength = (activeSegments * segmentWidth) + ((activeSegments + 1) * SEGMENT_GAP) + (SIDES_PADDING * 2);
   pushQuad(0, 0, segmentsLength, BAR_HEIGHT, BACKGROUND_COLOUR);
   pushQuad(SIDES_PADDING, ENDS_PADDING, segmentsLength - SIDES_PADDING * 2, BAR_HEIGHT - ENDS_PADDING * 2, BAR_COLOUR);
 
@@ -54,4 +54,4 @@ function renderSegmentedBar(nodeId: number, now: number, delta: number): void
   {
     pushQuad(SIDES_PADDING + SEGMENT_GAP + ((segmentWidth + SEGMENT_GAP) * i), ENDS_PADDING * 2, segmentWidth, BAR_HEIGHT - ENDS_PADDING * 4, segmentColour);
   }
-}
+};

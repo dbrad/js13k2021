@@ -63,17 +63,17 @@ let sheet: TextureAssetJson = {
   ]
 };
 
-const TEXTURE_CACHE: Map<string, Texture> = new Map();
-export function getTexture(textureName: string): Texture
+let TEXTURE_CACHE: Map<string, Texture> = new Map();
+export let getTexture = (textureName: string): Texture =>
 {
   let texture = TEXTURE_CACHE.get(textureName);
   assert(texture !== undefined, `Unable to load texture "${ textureName }"`);
   return texture;
-}
+};
 
-export function loadSpriteSheet(): Promise<void>
+export let loadSpriteSheet = (): Promise<void> =>
 {
-  const image: HTMLImageElement = new Image();
+  let image: HTMLImageElement = new Image();
 
   return new Promise((resolve, reject) =>
   {
@@ -81,14 +81,14 @@ export function loadSpriteSheet(): Promise<void>
     {
       image.addEventListener("load", () =>
       {
-        const canvas = document.createElement("canvas");
+        let canvas = document.createElement("canvas");
         canvas.width = image.width;
         canvas.height = image.height;
         canvas.getContext("2d")?.drawImage(image, 0, 0);
 
-        const glTexture: WebGLTexture = gl_createTexture(canvas);
+        let glTexture: WebGLTexture = gl_createTexture(canvas);
 
-        for (const texture of sheet._textures)
+        for (let texture of sheet._textures)
         {
           if (texture._type === "s")
           {
