@@ -1,10 +1,10 @@
 import { Align, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
+import { TAG_ENTITY_PLAYER_SHIP, createEntityNode } from "../nodes/entity-node";
 import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 
 import { MissionSelectScene } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
-import { createShipNode } from "../nodes/ship-node";
 import { initGameState } from "../game-state";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
@@ -34,7 +34,7 @@ export function setupMainMenu(): number
   moveNode(loadButtonId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 30]);
   addChildNode(rootId, loadButtonId);
 
-  const ship = createShipNode();
+  const ship = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
   moveNode(ship, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
   addChildNode(rootId, ship);
 

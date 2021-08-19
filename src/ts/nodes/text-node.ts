@@ -3,6 +3,7 @@ import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from 
 
 import { assert } from "../debug";
 import { getTexture } from "../texture";
+import { pushQuad } from "../draw";
 
 export const enum Align
 {
@@ -117,6 +118,7 @@ function renderTextNode(nodeId: number, now: number, delta: number): void
     {
       alignmentOffset = Math.floor(-(lineLength - scale));
     }
+
 
     for (const word of words)
     {

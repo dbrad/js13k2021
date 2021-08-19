@@ -1,10 +1,10 @@
 import { ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, gameState, maxAvailablePower, maxHull } from "../game-state";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
+import { TAG_ENTITY_GAS_PLANET, TAG_ENTITY_NONE, TAG_ENTITY_PIRATE_SHIP, TAG_ENTITY_PLAYER_SHIP, TAG_ENTITY_SPACE_BEAST, TAG_ENTITY_STAR, createEntityNode, setEntityNode } from "../nodes/entity-node";
 import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, calculateNodeSize, createNode, moveNode, node_size, node_tag, node_visible } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
 
 import { createButtonNode } from "../nodes/button-node";
-import { createShipNode } from "../nodes/ship-node";
 import { createSpriteNode } from "../nodes/sprite-node";
 import { createTextNode } from "../nodes/text-node";
 import { inputContext } from "../input";
@@ -38,13 +38,13 @@ export function setupAdventure(): number
   const rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  const shipId = createShipNode();
+  const shipId = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
   moveNode(shipId, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
   addChildNode(rootId, shipId, 1000);
 
   ////////////////////////////////////////
 
-  const hullText = createTextNode("HULL", 32, { _colour: 0xFFDDDDDD });
+  const hullText = createTextNode("HULL", 32, { _colour: 0xFFFFFFFF });
   moveNode(hullText, [2, 2]);
   addChildNode(rootId, hullText);
 
@@ -58,7 +58,7 @@ export function setupAdventure(): number
   moveNode(shieldContainer, [2, 30]);
   addChildNode(rootId, shieldContainer);
 
-  const sheildText = createTextNode("SHIELDS", 56, { _colour: 0xFFDDDDDD });
+  const sheildText = createTextNode("SHIELDS", 56, { _colour: 0xFFFFFFFF });
   addChildNode(shieldContainer, sheildText);
 
   shieldBar = createSegmentedBarNode(0xFFFF0000, 34, 1, 0);
@@ -88,7 +88,11 @@ export function setupAdventure(): number
     addChildNode(systemContainer, plusButton);
     systems[i][PLUS_BUTTON] = plusButton;
 
-    const systemText = createTextNode(systemNames[i], 640, { _colour: 0xFFDDDDDD });
+    const shadow = createTextNode(systemNames[i], 640, { _colour: 0xFF111111 });
+    moveNode(shadow, [58, 1]);
+    addChildNode(systemContainer, shadow);
+
+    const systemText = createTextNode(systemNames[i], 640, { _colour: 0xFFFFFFFF });
     moveNode(systemText, [58, 0]);
     addChildNode(systemContainer, systemText);
 
@@ -102,7 +106,7 @@ export function setupAdventure(): number
 
   ////////////////////////////////////////
 
-  const generatorText = createTextNode("AVAILABLE POWER", 640, { _colour: 0xFFDDDDDD });
+  const generatorText = createTextNode("AVAILABLE POWER", 640, { _colour: 0xFFFFFFFF });
   moveNode(generatorText, [2, 332]);
   addChildNode(rootId, generatorText);
 
@@ -127,6 +131,21 @@ export function setupAdventure(): number
   windowOfOppertunity[3] = createSpriteNode("brk", { _hFlip: true, _vFlip: true });
   moveNode(windowOfOppertunity[3], [SCREEN_CENTER_X + windowWidth - 16, SCREEN_CENTER_Y]);
   addChildNode(rootId, windowOfOppertunity[3]);
+
+  const test = createEntityNode(TAG_ENTITY_NONE);
+  moveNode(test, [SCREEN_CENTER_X - 260, SCREEN_CENTER_Y - 40]);
+  setEntityNode(test, TAG_ENTITY_GAS_PLANET, { _scale: 5, _colour: 0xFFAA77AA });
+  addChildNode(rootId, test, -100);
+
+  const test02 = createEntityNode(TAG_ENTITY_NONE);
+  moveNode(test02, [SCREEN_CENTER_X + 100, SCREEN_CENTER_Y - 40]);
+  setEntityNode(test02, TAG_ENTITY_PIRATE_SHIP);
+  addChildNode(rootId, test02, -90);
+
+  const test04 = createEntityNode(TAG_ENTITY_NONE);
+  moveNode(test04, [SCREEN_CENTER_X + 300, SCREEN_CENTER_Y - 40]);
+  setEntityNode(test04, TAG_ENTITY_SPACE_BEAST);
+  addChildNode(rootId, test04, -90);
 
   return rootId;
 }
