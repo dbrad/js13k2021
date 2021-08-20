@@ -13,3 +13,6 @@ yarn.lock
 tools/*
 !tools/7z
 !tools/7z/*
+
+# Local Netlify folder
+.netlify

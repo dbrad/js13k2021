@@ -13,29 +13,21 @@ jobs:
     runs-on: windows-latest
     env:
       NODE_ENV: production
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
     # Steps in job
     steps:
       # Get code from repo
       - name: Checkout code
         uses: actions/checkout@v1
-      # Install NodeJS
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
+
       # Run npm install and build on our code
       - name: Setup Environment
         run: yarn install
         
       - name: Build and Zip the Game
         run: yarn netlify
+
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
-        uses: netlify/actions/cli@master
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        with:
-          args: deploy --dir=dist/src --prod
-          secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
-
+        run: ./node_modules/.bin/netlify deploy --dir=dist/src --prod

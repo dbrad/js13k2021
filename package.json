@@ -16,18 +16,19 @@
     "dev:gulp": "gulp watch --env development",
     "dev:build": "esbuild build/debug/ts/game.ts --bundle --format=iife --sourcemap --outfile=build/debug/www/game.js --watch",
     "release": "yarn rm-dist-folder && yarn mk-dist-folder && yarn release:gulp && yarn release:build && yarn inline-files && yarn zip",
+    "release:netlify": "yarn rm-dist-folder && yarn mk-dist-folder & yarn release:gulp && yarn release:build && yarn inline-files",
     "release:play": "yarn release && yarn release:server",
     "release:gulp": "gulp build",
     "release:server": "node scripts/server.js",
     "release:build": "esbuild build/release/ts/game.ts --bundle --format=iife | terser --config-file scripts/terser.config.json -o build/release/www/game.js",
     "inline-files": "html-inline -i ./build/release/www/index.html -o ./dist/src/index.html",
     "zip": ".\\tools\\7z\\7za a -tzip dist\\game.zip \".\\dist\\src\\*\" && ./tools/ect-0.8.3.exe -9 -zip ./dist/game.zip  && yarn size -s",
-    "size": "yarn node ./scripts/check-file-size.js",
-    "netlify": "yarn rm-dist-folder && yarn mk-dist-folder & yarn release:gulp && yarn release:build && yarn inline-files"
+    "size": "yarn node ./scripts/check-file-size.js"
   },
   "devDependencies": {
     "concurrently": "^6.0.1",
     "express": "^4.17.1",
+    "netlify-cli": "^6.7.1",
     "path": "^0.12.7"
   },
   "dependencies": {
