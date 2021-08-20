@@ -1,26 +1,34 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
 
-export const inputContext = {
+export let inputContext = {
   _cursor: [0, 0],
   _mouseDown: false,
   _hot: -1,
   _active: -1,
   _fire: -1
 };
+
+export let clearInput = (): void =>
+{
+  inputContext._hot = -1;
+  inputContext._active = -1;
+  inputContext._mouseDown = false;
+};
+
 let canvasRef: HTMLCanvasElement;
 
-const isTouch = (e: Event | PointerEvent | TouchEvent): e is TouchEvent =>
+let isTouch = (e: Event | PointerEvent | TouchEvent): e is TouchEvent =>
 {
   return (e.type[0] === "t");
 };
 
-const pointerMove = (e: PointerEvent | TouchEvent) =>
+let pointerMove = (e: PointerEvent | TouchEvent) =>
 {
-  const canvasBounds = canvasRef.getBoundingClientRect();
+  let canvasBounds = canvasRef.getBoundingClientRect();
   if (isTouch(e))
   {
     e.preventDefault();
-    const touch: Touch = e.touches[0];
+    let touch: Touch = e.touches[0];
     inputContext._cursor[0] = Math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
     inputContext._cursor[1] = Math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
     return;
@@ -30,14 +38,14 @@ const pointerMove = (e: PointerEvent | TouchEvent) =>
   inputContext._cursor[1] = Math.floor((e.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
 };
 
-const pointerDown = (e: PointerEvent | TouchEvent) =>
+let pointerDown = (e: PointerEvent | TouchEvent) =>
 {
   if (isTouch(e))
   {
-    const canvasBounds = canvasRef.getBoundingClientRect();
-    const touchEvent = e as TouchEvent;
+    let canvasBounds = canvasRef.getBoundingClientRect();
+    let touchEvent = e as TouchEvent;
     touchEvent.preventDefault();
-    const touch: Touch = touchEvent.touches[0];
+    let touch: Touch = touchEvent.touches[0];
     inputContext._cursor[0] = Math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
     inputContext._cursor[1] = Math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
   }
@@ -45,12 +53,12 @@ const pointerDown = (e: PointerEvent | TouchEvent) =>
   inputContext._mouseDown = true;
 };
 
-const pointerUp = (_: PointerEvent | TouchEvent) =>
+let pointerUp = (_: PointerEvent | TouchEvent) =>
 {
   inputContext._mouseDown = false;
 };
 
-export function initializeInput(canvas: HTMLCanvasElement)
+export let initializeInput = (canvas: HTMLCanvasElement) =>
 {
   canvasRef = canvas;
 
@@ -62,4 +70,4 @@ export function initializeInput(canvas: HTMLCanvasElement)
 
   canvas.addEventListener("pointerup", pointerUp);
   canvas.addEventListener("touchend", pointerUp);
-}
+};

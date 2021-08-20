@@ -31,7 +31,7 @@ let sheet: TextureAssetJson = {
     {
       _type: "s",
       _name: "#",
-      _x: 3,
+      _x: 0,
       _y: 0,
       _w: 1,
       _h: 1
@@ -46,7 +46,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
+      _name: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "(", ")", "!", "?", ".", ",", ";", ":", "'", "\"", "_", "-", "+", "/", "\\"],
       _x: 0,
       _y: 8,
       _w: 8,
@@ -54,26 +54,26 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "(", ")", "!", "?", ",", ".", ":", ";", "'", "\"", "&", "-", "_", "/", "\\", "[", "]", "+", "…"],
+      _name: ["p_ship", "star", "gas", "rock", "shld", "brk", "ast", "stn", "prt", "bst", "ano"],
       _x: 0,
       _y: 16,
-      _w: 8,
-      _h: 8
+      _w: 16,
+      _h: 16
     }
   ]
 };
 
-const TEXTURE_CACHE: Map<string, Texture> = new Map();
-export function getTexture(textureName: string): Texture
+let TEXTURE_CACHE: Map<string, Texture> = new Map();
+export let getTexture = (textureName: string): Texture =>
 {
   let texture = TEXTURE_CACHE.get(textureName);
   assert(texture !== undefined, `Unable to load texture "${ textureName }"`);
   return texture;
-}
+};
 
-export function loadSpriteSheet(): Promise<void>
+export let loadSpriteSheet = (): Promise<void> =>
 {
-  const image: HTMLImageElement = new Image();
+  let image: HTMLImageElement = new Image();
 
   return new Promise((resolve, reject) =>
   {
@@ -81,14 +81,14 @@ export function loadSpriteSheet(): Promise<void>
     {
       image.addEventListener("load", () =>
       {
-        const canvas = document.createElement("canvas");
+        let canvas = document.createElement("canvas");
         canvas.width = image.width;
         canvas.height = image.height;
         canvas.getContext("2d")?.drawImage(image, 0, 0);
 
-        const glTexture: WebGLTexture = gl_createTexture(canvas);
+        let glTexture: WebGLTexture = gl_createTexture(canvas);
 
-        for (const texture of sheet._textures)
+        for (let texture of sheet._textures)
         {
           if (texture._type === "s")
           {

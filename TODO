@@ -1,0 +1,55 @@
+✔ Game state object @done(21-08-13 13:25)
+  ✔ Generator Level @done(21-08-13 13:25)
+  ✔ Ship Systems max levels @done(21-08-13 13:25)
+  ✔ Ship Systems current levels @done(21-08-13 13:25)
+  ✔ Currencies @done(21-08-13 13:25)
+    ✔ Materials @done(21-08-13 13:25)
+    ✔ Credits @done(21-08-13 13:25)
+    ✔ Bytes @done(21-08-13 13:25)
+  ✔ Current Adventure @done(21-08-13 13:25)
+    ✔ Bonuty @done(21-08-13 13:25)
+    ✔ Deck @done(21-08-13 13:25)
+      ✔ Events @done(21-08-13 13:25)
+        ✔ Progress / State @done(21-08-13 13:25)
+    ✔ Progress @done(21-08-13 13:25)
+
+☐ Save file system (3 Saves)
+☐ Main Menu
+  ☐ New Game
+  ☐ Load Game
+  ☐ Import/Export Data?
+☐ Mission Select / Contract Select
+  ✔ Deck generation @done(21-08-19 20:34)
+☐ Game Screen
+  ✔ Player Sprite @done(21-08-13 20:15)
+  ✔ Engine Particles @done(21-08-13 20:15)
+  ✔ Starfield Effect @done(21-08-13 20:15)
+    ✔ Change the code so the speed can be controlled via time instead of per frame speed @done(21-08-19 20:34)
+  ✔ System Node @done(21-08-15 14:54)
+  ✔ Generator Node @done(21-08-15 14:54)
+  ☐ In-Game Menu
+    ☐ Save and Quit
+    ☐ Mute Music
+  ✔ Hull + Shield UI @done(21-08-15 14:55)
+  ☐ Systems
+    ✔ Hook up to data @done(21-08-15 19:15)
+    ☐ Program in the effects of the systems per level
+  ✔ Spawn and scroll the deck @done(21-08-19 20:38)
+  ✔ Window of Opertunity @done(21-08-16 19:12)
+    ✔ Add VFlip @done(21-08-16 19:12)
+    ✔ Add scaling based on scanners level @done(21-08-16 19:12)
+  ☐ Player interacting with events
+    ☐ Get data based interaction working
+    ☐ Add Visuals and sounds (shots, scanning, etc.)
+  ✔ Make ship node usable for pirates and space beasts (and more!) @done(21-08-18 20:27)
+  ☐ HUD
+  ☐ Currency Display
+  ☐ QDrive Gaudge
+    - What ratio of distance to qdrive should I use? (7500-8000 is short run, how many short runs would I want to be 1 level of qdrive?)
+      - 1,2,3,6,9 * 6000; 6000, 12000, 18000, 36000, 54000
+  ☐ Shop Button
+☐ Store / Upgrades Scene
+☐ End Game / Scoring / Metadata / Score History??
+
+✔ Convert all functions to export let = => @done(21-08-19 06:48)
+✔ Convert all switch to if @done(21-08-19 06:52)
