@@ -22,7 +22,8 @@
     "release:build": "esbuild build/release/ts/game.ts --bundle --format=iife | terser --config-file scripts/terser.config.json -o build/release/www/game.js",
     "inline-files": "html-inline -i ./build/release/www/index.html -o ./dist/src/index.html",
     "zip": ".\\tools\\7z\\7za a -tzip dist\\game.zip \".\\dist\\src\\*\" && ./tools/ect-0.8.3.exe -9 -zip ./dist/game.zip  && yarn size -s",
-    "size": "yarn node ./scripts/check-file-size.js"
+    "size": "yarn node ./scripts/check-file-size.js",
+    "netlify": "yarn rm-dist-folder && yarn mk-dist-folder & yarn release:gulp && yarn release:build && yarn inline-files"
   },
   "devDependencies": {
     "concurrently": "^6.0.1",
