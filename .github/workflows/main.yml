@@ -15,6 +15,7 @@ jobs:
       NODE_ENV: production
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      
     # Steps in job
     steps:
       # Get code from repo
@@ -30,4 +31,4 @@ jobs:
 
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
-        run: ./node_modules/.bin/netlify deploy --dir=dist/src --prod
+        run: yarn deploy:netlify
