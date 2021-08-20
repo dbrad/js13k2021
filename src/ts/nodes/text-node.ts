@@ -1,6 +1,7 @@
 import { createNode, node_interactive, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
+import { WHITE } from "../colour";
 import { assert } from "../debug";
 import { getTexture } from "../texture";
 
@@ -37,7 +38,7 @@ export let createTextNode = (text: string, width: number, parameters: TextParame
   node_text[nodeId] = text;
   node_text_align[nodeId] = parameters._textAlign || Align.L;
   node_text_scale[nodeId] = parameters._scale || 1;
-  node_text_colour[nodeId] = parameters._colour || 0xFFFFFFFF;
+  node_text_colour[nodeId] = parameters._colour || WHITE;
 
   let numberOfLines = parseText(node_text[nodeId], width, node_text_scale[nodeId]);
   let textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);

@@ -1,4 +1,5 @@
 import { Align, createTextNode } from "./text-node";
+import { GREY_333, GREY_666, GREY_999 } from "../colour";
 import { addChildNode, createNode, moveNode, node_render_function, node_size } from "../scene-node";
 
 import { inputContext } from "../input";
@@ -21,14 +22,14 @@ export let createButtonNode = (text: string, size: v2): number =>
 let renderButtonNode = (nodeId: number, now: number, delta: number): void =>
 {
   let size = node_size[nodeId];
-  let colour = 0xFF666666;
+  let colour = GREY_666;
   if (inputContext._active === nodeId)
   {
-    colour = 0xFF333333;
+    colour = GREY_333;
   }
   else if (inputContext._hot === nodeId)
   {
-    colour = 0xFF999999;
+    colour = GREY_999;
   }
   pushQuad(0, 0, size[0], size[1], colour);
 };

@@ -1,7 +1,7 @@
+import { SHIELD_BLUE, SPACE_BEAST_PURPLE, WHITE, colourToHex } from "../colour";
 import { addChildNode, createNode, moveNode, node_position, node_render_function, node_visible } from "../scene-node";
 import { createSpriteNode, setSpriteNode } from "./sprite-node";
 
-import { colourToHex } from "../colour";
 import { gameState } from "../game-state";
 import { pushQuad } from "../draw";
 import { rand } from "../random";
@@ -19,15 +19,15 @@ let node_entity_yOffset: [number, number][] = [];
 let node_entity_offsetTimer: [number, number][] = [];
 
 
-export let TAG_ENTITY_NONE = 0;
-export let TAG_ENTITY_STATION = 1;
-export let TAG_ENTITY_STAR = 2;
-export let TAG_ENTITY_GAS_PLANET = 3;
-export let TAG_ENTITY_ROCK_PLANET = 4;
-export let TAG_ENTITY_PIRATE_SHIP = 5;
-export let TAG_ENTITY_SPACE_BEAST = 6;
+export let TAG_ENTITY_NONE = -1;
+export let TAG_ENTITY_STATION = 0;
+export let TAG_ENTITY_STAR = 1;
+export let TAG_ENTITY_GAS_PLANET = 2;
+export let TAG_ENTITY_ROCK_PLANET = 3;
+export let TAG_ENTITY_PIRATE_SHIP = 4;
+export let TAG_ENTITY_SPACE_BEAST = 5;
+export let TAG_ENTITY_ASTEROID = 6;
 export let TAG_ENTITY_ANOMALY = 7;
-export let TAG_ENTITY_ASTEROID = 8;
 export let TAG_ENTITY_PLAYER_SHIP = 9;
 
 
@@ -40,7 +40,7 @@ export let createEntityNode = (tag: number): number =>
   addChildNode(nodeId, sprite);
   node_entity_spriteId[nodeId] = sprite;
 
-  let shieldSprite = createSpriteNode("shld", { _scale: 4, _colour: 0xBBFFAAAA });
+  let shieldSprite = createSpriteNode("shld", { _scale: 4, _colour: SHIELD_BLUE });
   moveNode(shieldSprite, [-16, -16]);
   addChildNode(sprite, shieldSprite);
   node_entity_shield_sprite[nodeId] = shieldSprite;
@@ -62,19 +62,19 @@ export type EncounterParams = {
 };
 export let setEntityNode = (nodeId: number, tag: number, extraParams: EncounterParams = {}): void =>
 {
-  if (node_entity_tag[nodeId] === tag) return;
-
   let textureName: string = "#";
-  let colour = extraParams._colour || 0xFFFFFFFF;
+  let colour = extraParams._colour || WHITE;
   let scale = extraParams._scale || 2;
   let sprite = node_entity_spriteId[nodeId];
   if (scale > 3)
   {
     moveNode(sprite, [0, -8 * scale]);
-  } else
+  }
+  else
   {
     moveNode(sprite, [0, 0]);
   }
+  node_visible[sprite] = true;
 
   if (tag === TAG_ENTITY_PLAYER_SHIP)
   {
@@ -94,7 +94,7 @@ export let setEntityNode = (nodeId: number, tag: number, extraParams: EncounterP
   else if (tag === TAG_ENTITY_SPACE_BEAST)
   {
     textureName = "bst";
-    colour = 0xFFEE66EE;
+    colour = SPACE_BEAST_PURPLE;
     scale = 3;
     node_entity_yOffset[nodeId] = [0, 1];
     node_entity_offsetTimer[nodeId] = [0, 250];
@@ -121,6 +121,10 @@ export let setEntityNode = (nodeId: number, tag: number, extraParams: EncounterP
   {
     textureName = "stn";
     scale = 3;
+  }
+  else
+  {
+    node_visible[sprite] = false;
   }
 
   setSpriteNode(sprite, textureName, { _scale: scale, _colour: colour });

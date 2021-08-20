@@ -1,5 +1,6 @@
 import { AdventureScene, setupAdventure, updateAdventure } from "./scenes/adventure";
 import { Align, createTextNode } from "./nodes/text-node";
+import { ENGINES, gameState, initGameState } from "./game-state";
 import { Interpolators, interpolate } from "./interpolate";
 import { MainMenuScene, setupMainMenu, updateMainMenu } from "./scenes/main-menu";
 import { MissionSelectScene, setupMissionSelect, updateMissionSelect } from "./scenes/mission-select";
@@ -12,9 +13,9 @@ import { registerScene, renderScene, updateScene } from "./scene";
 
 import { assert } from "./debug";
 import { colourToHex } from "./colour";
-import { initGameState } from "./game-state";
 import { loadSpriteSheet } from "./texture";
 import { pushQuad } from "./draw";
+import { rand } from "./random";
 import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
@@ -55,7 +56,8 @@ window.addEventListener("load", async () =>
   let touchToPlayId = createTextNode("TOUCH TO START", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
   moveNode(touchToPlayId, [SCREEN_CENTER_X, SCREEN_CENTER_Y - 10]);
 
-  let stars: [number, number, number][] = [];
+  // x,y,z,timer
+  let stars: [number, number, number, number][] = [];
   let makeStars = () =>
   {
     let totalStars = (Math.floor(SCREEN_WIDTH / 72)) * (Math.floor(SCREEN_HEIGHT / 72)) * 1;
@@ -64,10 +66,10 @@ window.addEventListener("load", async () =>
     let sortable = [];
     for (let i = 0; i < totalStars; i++)
     {
-      randomX = Math.floor(Math.random() * (SCREEN_WIDTH - 1) + 1);
-      randomY = Math.floor(Math.random() * (SCREEN_HEIGHT - 1) + 1);
-      randomZ = Math.ceil(Math.random() * 4);
-      stars[i] = [randomX, randomY, randomZ];
+      randomX = rand(1, SCREEN_WIDTH - 1);
+      randomY = rand(1, SCREEN_HEIGHT - 1);
+      randomZ = Math.ceil(rand(1, 4));
+      stars[i] = [randomX, randomY, randomZ, 0];
       sortable.push(randomZ);
     }
     sortable.sort();
@@ -79,6 +81,13 @@ window.addEventListener("load", async () =>
     }
   };
 
+  let starSpeedTable = [
+    [],
+    [640, 512, 384, 256, 128],
+    [480, 384, 288, 192, 96],
+    [320, 256, 192, 128, 64],
+    [160, 128, 96, 64, 32],
+  ];
   let loop = (now: number): void =>
   {
     delta = now - then;
@@ -89,22 +98,22 @@ window.addEventListener("load", async () =>
     {
       for (let i in stars)
       {
-        stars[i][0] += -4 * (stars[i][2] / 8);
-        if (stars[i][0] >= SCREEN_WIDTH)
+        stars[i][3] += delta;
+        if (stars[i][3] > starSpeedTable[stars[i][2]][gameState._systemLevels[ENGINES][0]])
         {
-          stars[i][0] = -5;
-          stars[i][1] = Math.floor(Math.random() * (SCREEN_HEIGHT - 1) + 1);
+          stars[i][3] = 0;
+          stars[i][0] -= 1;
         }
-        if (stars[i][0] < -6)
+
+        if (stars[i][0] < -2)
         {
-          stars[i][0] = SCREEN_WIDTH;
-          stars[i][1] = Math.floor(Math.random() * (SCREEN_HEIGHT - 1) + 1);
+          stars[i][0] = SCREEN_WIDTH + 2;
+          stars[i][1] = rand(1, SCREEN_HEIGHT - 1);
         }
       }
 
       for (let i in stars)
       {
-        // TODO(dbrad): make stars move based on ms instead of frames
         let value = Math.ceil(255 - 185 * (1 - stars[i][2] / 4));
         let colour = colourToHex(value, value, value, value);
         let size = Math.ceil(stars[i][2] / 2);

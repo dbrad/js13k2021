@@ -1,8 +1,9 @@
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_translate } from "./gl";
 
+import { WHITE } from "./colour";
 import { getTexture } from "./texture";
 
-export let pushQuad = (x: number, y: number, w: number, h: number, colour: number = 0xFFFFFFFF): void =>
+export let pushQuad = (x: number, y: number, w: number, h: number, colour: number = WHITE): void =>
 {
   let t = getTexture("#");
   gl_save();

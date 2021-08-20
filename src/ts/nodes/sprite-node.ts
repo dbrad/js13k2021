@@ -2,6 +2,8 @@ import { Texture, getTexture } from "../texture";
 import { createNode, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
+import { WHITE } from "../colour";
+
 type SpriteParams = {
   _scale?: number,
   _colour?: number,
@@ -32,7 +34,7 @@ export let setSpriteNode = (nodeId: number, textureName: string, params: SpriteP
   let scale = params._scale || 1;
   let hFlip = params._hFlip || false;
   let vFlip = params._vFlip || false;
-  let colour = params._colour || 0xFFFFFFFF;
+  let colour = params._colour || WHITE;
   let texture = getTexture(textureName);
 
   node_sprite[nodeId] = [[texture, 0]];
@@ -51,7 +53,7 @@ export let setSpriteNode = (nodeId: number, textureName: string, params: SpriteP
 //   let scale = params._scale || 1;
 //   let hFlip = params._hFlip || false;
 //   let vFlip = params._vFlip || false;
-//   let colour = params._colour || 0xFFFFFFFF;
+//   let colour = params._colour || WHITE;
 
 //   let nodeId = createNode();
 //   node_render_function[nodeId] = renderSpriteNode;

@@ -55,13 +55,13 @@ export let reset = (): void =>
 export let initGameState = (slot: number): void =>
 {
   gameState = {
-    _generatorLevel: 0,
+    _generatorLevel: 1,
     _fieldLevel: 0,
     _hullLevel: 0,
     _qLevel: 0,
     _currentHull: 4,
     _currentShield: 0,
-    _availablePower: 3,
+    _availablePower: 5,
     _systemLevels: [
       [0, 4],
       [0, 4],

@@ -1,5 +1,5 @@
 import { Align, createTextNode } from "../nodes/text-node";
-import { RUN_MEDIUM, RUN_SHORT, THREAT_LOW, generateEncounterDeck } from "../gameplay/encounters";
+import { RUN_MEDIUM, THREAT_LOW, generateEncounterDeck } from "../gameplay/encounters";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 

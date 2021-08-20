@@ -1,3 +1,4 @@
+import { GREY_111, GREY_333, GREY_666 } from "../colour";
 import { createNode, node_render_function } from "../scene-node";
 
 import { pushQuad } from "../draw";
@@ -6,9 +7,9 @@ let SEGMENT_GAP = 2;
 let ENDS_PADDING = 2;
 let SIDES_PADDING = 2;
 
-let BACKGROUND_COLOUR = 0xFF555555;
-let BAR_COLOUR = 0xFF333333;
-let EMPTY_SEGMENT_COLOUR = 0xFF111111;
+let BACKGROUND_COLOUR = GREY_666;
+let BAR_COLOUR = GREY_333;
+let EMPTY_SEGMENT_COLOUR = GREY_111;
 let BAR_HEIGHT = 16;
 
 let node_bar_colour: number[] = [];

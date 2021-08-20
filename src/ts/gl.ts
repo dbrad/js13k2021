@@ -1,3 +1,4 @@
+import { WHITE } from "./colour";
 import { assert } from "./debug";
 
 let ctx: WebGLRenderingContext;
@@ -190,7 +191,7 @@ export let gl_restore = (): void =>
   mat[5] = stack[stackp + 5];
 };
 
-export let gl_pushTextureQuad = (texture: WebGLTexture, x: number, y: number, w: number, h: number, u0: number, v0: number, u1: number, v1: number, aabbggrr: number = 0xFFFFFFFF): void =>
+export let gl_pushTextureQuad = (texture: WebGLTexture, x: number, y: number, w: number, h: number, u0: number, v0: number, u1: number, v1: number, aabbggrr: number = WHITE): void =>
 {
   let x0: number = x;
   let y0: number = y;
