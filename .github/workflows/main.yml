@@ -15,20 +15,23 @@ jobs:
       NODE_ENV: production
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      
+
     # Steps in job
     steps:
-      # Get code from repo
       - name: Checkout code
         uses: actions/checkout@v1
 
-      # Run npm install and build on our code
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12.10'
+          cache: 'yarn'
+            
       - name: Setup Environment
         run: yarn install
         
       - name: Build and Zip the Game
         run: yarn release:netlify
 
-      # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
         run: yarn deploy:netlify

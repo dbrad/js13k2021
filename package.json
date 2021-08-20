@@ -24,12 +24,11 @@
     "inline-files": "html-inline -i ./build/release/www/index.html -o ./dist/src/index.html",
     "zip": ".\\tools\\7z\\7za a -tzip dist\\game.zip \".\\dist\\src\\*\" && ./tools/ect-0.8.3.exe -9 -zip ./dist/game.zip  && yarn size -s",
     "size": "yarn node ./scripts/check-file-size.js",
-    "deploy:netlify": "netlify --dir dist/src --prod"
+    "deploy:netlify": "netlify deploy --dir dist/src --prod"
   },
   "devDependencies": {
     "concurrently": "^6.0.1",
     "express": "^4.17.1",
-    "netlify-cli": "^6.7.1",
     "path": "^0.12.7"
   },
   "dependencies": {
@@ -44,6 +43,7 @@
     "gulp-preprocess": "^3.0.3",
     "html-inline": "^1.2.0",
     "minimist": "^1.2.5",
+    "netlify-cli": "^6.7.1",
     "terser": "^5.7.0",
     "typescript": "^4.2.4"
   }
