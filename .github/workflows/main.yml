@@ -26,7 +26,7 @@ jobs:
         run: yarn install
         
       - name: Build and Zip the Game
-        run: yarn netlify
+        run: yarn release:netlify
 
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
