@@ -54,7 +54,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["p_ship", "star", "gas", "rock", "shld", "brk", "ast", "stn", "prt", "bst", "ano"],
+      _name: ["ps", "star", "gas", "rock", "shld", "brk", "ast", "stn", "prt", "bst", "ano"],
       _x: 0,
       _y: 16,
       _w: 16,

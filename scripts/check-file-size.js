@@ -26,5 +26,6 @@ if (fileIsUnderMaxSize(fileSize))
 } else
 {
     console.log(chalk.red(`The file is ${ fileSize } bytes (${ fileSizeDifference } bytes over the limit).`));
-    process.exit(1);
+    console.log(chalk.red(`USED: ${ (fileSize / MAX_BYTES * 100).toFixed(2).padStart(5) } % | ${ (fileSize + "").padStart(5) } BYTES`));
+    process.exit(0);
 }

@@ -13,13 +13,16 @@
         ✔ Progress / State @done(21-08-13 13:25)
     ✔ Progress @done(21-08-13 13:25)
 
-☐ Save file system (3 Saves)
+✘ Save file system (3 Saves) @cancelled(21-08-22 20:21)
 ☐ Main Menu
-  ☐ New Game
-  ☐ Load Game
+  ✔ New Game @done(21-08-22 19:47)
+  ✔ Load Game @done(21-08-22 19:47)
   ☐ Import/Export Data?
 ☐ Mission Select / Contract Select
   ✔ Deck generation @done(21-08-19 20:34)
+  ☐ Add ship select if new game
+    ☐ Coil ship goes here!
+  ☐ Add contract generation?
 ☐ Game Screen
   ✔ Player Sprite @done(21-08-13 20:15)
   ✔ Engine Particles @done(21-08-13 20:15)
@@ -31,25 +34,36 @@
     ☐ Save and Quit
     ☐ Mute Music
   ✔ Hull + Shield UI @done(21-08-15 14:55)
-  ☐ Systems
+  ✔ Systems @done(21-08-22 16:22)
     ✔ Hook up to data @done(21-08-15 19:15)
-    ☐ Program in the effects of the systems per level
+    ✔ Program in the effects of the systems per level @done(21-08-22 16:22)
   ✔ Spawn and scroll the deck @done(21-08-19 20:38)
   ✔ Window of Opertunity @done(21-08-16 19:12)
     ✔ Add VFlip @done(21-08-16 19:12)
     ✔ Add scaling based on scanners level @done(21-08-16 19:12)
-  ☐ Player interacting with events
-    ☐ Get data based interaction working
+  ✔ Player interacting with events @done(21-08-22 16:22)
+    ✔ Get data based interaction working @done(21-08-22 16:22)
     ☐ Add Visuals and sounds (shots, scanning, etc.)
   ✔ Make ship node usable for pirates and space beasts (and more!) @done(21-08-18 20:27)
-  ☐ HUD
-  ☐ Currency Display
-  ☐ QDrive Gaudge
+  ✔ HUD @done(21-08-21 14:28)
+  ✔ Currency Display @done(21-08-22 11:20)
+  ☐ Progress Bar Node
+  ☐ QDrive
     - What ratio of distance to qdrive should I use? (7500-8000 is short run, how many short runs would I want to be 1 level of qdrive?)
       - 1,2,3,6,9 * 6000; 6000, 12000, 18000, 36000, 54000
   ☐ Shop Button
 ☐ Store / Upgrades Scene
 ☐ End Game / Scoring / Metadata / Score History??
 
+Bonus Ideas
+☐ Add explosion particle effects?
+
+Space Saving Ideas
 ✔ Convert all functions to export let = => @done(21-08-19 06:48)
 ✔ Convert all switch to if @done(21-08-19 06:52)
+☐ Remove Interpolation code?
+  ☐ Remove node movement code related to Interpolation
+  ☐ Add smaller solution for scene transition fade
+☐ Remove calcuate node size code
+☐ Move all text to a text.ts module
+☐ Collapse some constants that are the same across domains?

@@ -25,7 +25,7 @@ let zzfxX: AudioContext;
 
 // ZzFXM (v2.0.3) | (C) Keith Clark | MIT | https://github.com/keithclark/ZzFXM
 //@ts-ignore
-let zzfxM = (n, f, t, e = 125) => { let l, o, z, r, g, h, x, a, u, c, d, i, m, p, G, M = 0, R = [], b = [], j = [], k = 0, q = 0, s = 1, v = {}, w = zzfxR / e * 60 >> 2; for (; s; k++)R = [s = a = d = m = 0], t.map((e, d) => { for (x = f[e][k] || [0, 0, 0], s |= !!f[e][k], G = m + (f[e][0].length - 2 - !a) * w, p = d == t.length - 1, o = 2, r = m; o < x.length + p; a = ++o) { for (g = x[o], u = o == x.length + p - 1 && p || c != (x[0] || 0) | g | 0, z = 0; z < w && a; z++ > w - 99 && u ? i += (i < 1) / 99 : 0)h = (1 - i) * R[M++] / 2 || 0, b[r] = (b[r] || 0) - h * q + h, j[r] = (j[r++] || 0) + h * q + h; g && (i = g % 1, q = x[1] || 0, (g |= 0) && (R = v[[c = x[M = 0] || 0, g]] = v[[c, g]] || (l = [...n[c]], l[2] *= 2 ** ((g - 12) / 12), g > 0 ? zzfxG(...l) : []))); } m = G; }); return [b, j]; };
+let zzfxM = (n, f, t, e = 125) => { let l, o, z, r, g, h, x, a, u, c, d, i, m, p, G, M = 0, R = [], b = [], j = [], k = 0, q = 0, s = 1, v = {}, w = zzfxR / e * 60 >> 2; for (; s; k++)R = [s = a = d = m = 0], t.map((e, d) => { for (x = f[e][k] || [0, 0, 0], s |= !!f[e][k], G = m + (f[e][0].length - 2 - !a) * w, p = d === t.length - 1, o = 2, r = m; o < x.length + p; a = ++o) { for (g = x[o], u = o === x.length + p - 1 && p || c != (x[0] || 0) | g | 0, z = 0; z < w && a; z++ > w - 99 && u ? i += (i < 1) / 99 : 0)h = (1 - i) * R[M++] / 2 || 0, b[r] = (b[r] || 0) - h * q + h, j[r] = (j[r++] || 0) + h * q + h; g && (i = g % 1, q = x[1] || 0, (g |= 0) && (R = v[[c = x[M = 0] || 0, g]] = v[[c, g]] || (l = [...n[c]], l[2] *= 2 ** ((g - 12) / 12), g > 0 ? zzfxG(...l) : []))); } m = G; }); return [b, j]; };
 
 
 //@ts-ignore
@@ -37,12 +37,21 @@ export function startMusic(): void
   music = zzfxP(...musicData);
 }
 */
-export let buttonHover: number[];
-export let powerChange: number[];
-
+export let powerSound: number[];
+export let shootSound: number[];
+export let scanSound: number[];
+export let hullHitSound: number[];
+export let shipDieSound: number[];
+export let beastDieSound: number[];
+export let qDriveSound: number[];
 export function setupAudio(): void
 {
   zzfxX = new AudioContext();
-  powerChange = zzfxG(...[, .01, 261.6256, .02, .03, .01, , .94, , , , , , , , , , .75, .04]); // Blip 240
-  buttonHover = zzfxG(.5, 0, 220, 0, 0, .1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+  powerSound = zzfxG(...[, .01, 261.6256, .02, .03, .01, , .94, , , , , , , , , , .75, .04]);
+  shootSound = zzfxG(...[1.68, .1, 500, , .1, , 1, 1.7, -6, .7, , , , , , , .1, .8, , .1]);
+  scanSound = zzfxG(...[1.22, , 42, .05, .08, .48, , .57, , -4, -65, .06, .13, , , , , .8, .01, .49]);
+  shipDieSound = zzfxG(...[1.2, , 129, .03, .13, .8, 4, 1.51, .1, .8, , , , .1, , .7, , .67, .02, .48]);
+  beastDieSound = zzfxG(...[1.2, .1, 500, , .29, .34, 3, 2.43, .8, .4, , , .14, .3, , .3, .29, .79, .08, .25]);
+  qDriveSound = zzfxG(...[1.08, , 27, .1, 2, .95, 4, , -0.5, , -62, .05, .12, , 46, , , .53, .1, .07]);
+  hullHitSound = zzfxG(...[1.69, .1, 400, , .05, .35, 4, 1.8, -7, -1, , , , , , .2, , .4]);
 }

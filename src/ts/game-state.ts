@@ -1,4 +1,4 @@
-import { Encounter } from "./gameplay/encounters";
+import { Encounter, THREAT_LEVEL, THREAT_LOW } from "./gameplay/encounters";
 
 type GameState = {
   _generatorLevel: number,
@@ -13,25 +13,22 @@ type GameState = {
   _credits: number,
   _research: number,
   _shipPosition: number,
+  _threatLevel: THREAT_LEVEL,
   _adventureReward: number,
   _adventureEncounters: Encounter[],
 };
 
 // Ship System Indexes
-export let ENGINES = 0;
-export let SHIELDS = 1;
-export let SCANNERS = 2;
-export let MINING_LASERS = 3;
-export let WEAPONS = 4;
+export let ENGINES = 0 as const;
+export let SHIELDS = 1 as const;
+export let SCANNERS = 2 as const;
+export let MINING_LASERS = 3 as const;
+export let WEAPONS = 4 as const;
 
 
 export let gameState: GameState;
 
-export let nextQCost = (): number =>
-{
-  // TODO: Algo to figure out cost of next prestige based on generator and field levels
-  return 200;
-};
+export let qDriveCosts = [6000, 12000, 18000, 36000, 54000];
 
 export let maxHull = (): number =>
 {
@@ -52,36 +49,54 @@ export let reset = (): void =>
 {
   // TODO(dbrad): Reset / reduce all temporal stats.
 };
-export let initGameState = (slot: number): void =>
+export let initGameState = (): void =>
 {
   gameState = {
-    _generatorLevel: 1,
+    _generatorLevel: 0,
     _fieldLevel: 0,
     _hullLevel: 0,
     _qLevel: 0,
     _currentHull: 4,
     _currentShield: 0,
-    _availablePower: 5,
+    _availablePower: 3,
     _systemLevels: [
-      [0, 4],
-      [0, 4],
-      [0, 4],
-      [0, 4],
-      [0, 4],
+      [0, 1],
+      [0, 1],
+      [0, 1],
+      [0, 1],
+      [0, 1],
     ],
     _materials: 0,
     _credits: 0,
     _research: 0,
     _shipPosition: 0,
+    _threatLevel: THREAT_LOW,
     _adventureReward: 0,
     _adventureEncounters: [],
   };
+  saveGame();
 };
-export let saveGame = (slot: number): void =>
+
+let saveName = `idle4xdb-save`;
+
+export let saveGame = (): void =>
 {
-  // TODO(dbrad): save gamestate to local storage for given slot
+  let json = JSON.stringify(gameState);
+  let b64 = btoa(json);
+  window.localStorage.setItem(saveName, b64);
 };
-export let loadGame = (slot: number): void =>
+export let loadGame = (): void =>
 {
-  // TODO(dbrad): load gamestate from local storage for given slot
+  let b64 = window.localStorage.getItem(saveName);
+  if (!b64)
+  {
+    initGameState();
+    return;
+  }
+  gameState = JSON.parse(atob(b64)) as GameState;
+};
+
+export let hasSaveFile = (): boolean =>
+{
+  return window.localStorage.getItem(saveName) !== null;
 };

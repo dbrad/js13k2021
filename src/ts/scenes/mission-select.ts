@@ -21,23 +21,23 @@ export let setupMissionSelect = (): number =>
   let rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  let textNodeId = createTextNode("Select System Size", SCREEN_WIDTH, { _textAlign: Align.C });
+  let textNodeId = createTextNode("select system size", SCREEN_WIDTH, { _textAlign: Align.C });
   moveNode(textNodeId, [SCREEN_CENTER_X, 20]);
   addChildNode(rootId, textNodeId);
 
-  smallSystemId = createButtonNode("Small", [180, 40]);
+  smallSystemId = createButtonNode("small", [180, 40]);
   moveNode(smallSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 100]);
   addChildNode(rootId, smallSystemId);
 
-  mediumSystemId = createButtonNode("Medium", [180, 40]);
+  mediumSystemId = createButtonNode("medium", [180, 40]);
   moveNode(mediumSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 50]);
   addChildNode(rootId, mediumSystemId);
 
-  largeSystemId = createButtonNode("Large", [180, 40]);
+  largeSystemId = createButtonNode("large", [180, 40]);
   moveNode(largeSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y]);
   addChildNode(rootId, largeSystemId);
 
-  unchartedSystemId = createButtonNode("Uncharted", [180, 40]);
+  unchartedSystemId = createButtonNode("uncharted", [180, 40]);
   moveNode(unchartedSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 50]);
   addChildNode(rootId, unchartedSystemId);
 

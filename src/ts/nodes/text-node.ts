@@ -116,9 +116,8 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
     }
     else if (align === Align.R)
     {
-      alignmentOffset = Math.floor(-(lineLength - scale));
+      alignmentOffset = Math.floor(-(lineLength));
     }
-
 
     for (let word of words)
     {
