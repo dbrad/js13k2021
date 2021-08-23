@@ -21,12 +21,10 @@ type TextureJson = {
 };
 
 type TextureAssetJson = {
-  _url: string;
   _textures: TextureJson[];
 };
 
 let sheet: TextureAssetJson = {
-  _url: "sheet.png",
   _textures: [
     {
       _type: "s",
@@ -38,7 +36,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+      _name: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
       _x: 0,
       _y: 0,
       _w: 8,
@@ -121,7 +119,7 @@ export let loadSpriteSheet = (): Promise<void> =>
         }
         resolve();
       });
-      image.src = sheet._url;
+      image.src = "data:image/webp;base64,UklGRvQDAABXRUJQVlA4TOcDAAAvz8AHEO+gKJLkJApYQir+TeXPzCSCbSRbbfCmCFJyGqJcWnAFeKSXKpOaSLaaq+miBvCGZyz81BLIpG1ivNeELwHB+v8BIQXZGNnICGFTEL4fzQYFkQayEQpiXFguFMQnYgddQmyA/mDfxN2A0yLbYZBl23bbNoCdiBETuqi4e/7zJB7ee4Cc/3Mj+g9BkiRHTfWMmHPQa0FfqFaleyfSPlIfUGDQT2mKfFTy7RhtX+YDbteeG1ED6M//OPDaN+4TYh+pD3Duy1il9AT9UqaNszcCDPQb3rx1Wp6a1xGJT3K8Wr8prJssQ+MY+xujBuNX8TLTzhtSSWLbPUplhHgepMYvyMkHCZ9JmpGkz/w+1feP99QgvgEX//Z5+wEMja/X7vw+MtyO1LgnfTjnU/4sI280n9F9Lo3bz+NE7cj5i6ZNvE4T7cdZXznDJVpBgcxEHlVk21ifrnhcp36/kd4/0l8ttZCOylwCN7XgmE5/f/kOgnmaanRmHgfOKr7VMUJ/znNDeH09TDDh0+vYbYfvZ5Txg0FbYcOD9TRIBXzfA/M5XM9zGJ4PzCTynSV6m/QKrAz5yDA6ryd8yoDvfPvm7CuQ9zPvlsH1CUOECyuc3gNR0pSQApEfz/foGwU9lE1giFvrXhKuDpJwtUhKfKfN1iehNq3lp+peFZC86l5yi0WHHcmr7iQ5tas8X4UlrtJcAt0wTRHkfr7P46HFoeuKvSqAVKelOaOwcmORkCSpcXJVZvD1/QZ8BLdVPw5SlzKx7JjYz9ssnUxkcj0ahctEciufpdcqqfHkqEzixUSQTrgpW7b3lQx72PQj8b4rXYDl6MjyV3/UxfdXWVaEhDAGGlunWfku6fOPpN/8IkmXLt1BjlTCJq/jjr9xjmzu8WS06WtZIxV2OguzeDXRssV9ADpIclKm/479yRYtg0jVDQGmOAayKZ2AFt/rpWl9hLX9pcCO2ccn8c1ri7+yQYqlPzQmdJzOdtzDebwQjfqnoxZbebyc6uny2Gl9LMBO5fivzNIDmKExp0pDActOX90bMIA0g3/rph4kmhVHwCtBNDBsksCA5XEeXlEyLGpllzq0xOQ0tNqnVnfxORWmeO90gvLIBZ436VnSJjlb187ztPCK0oV/i8nglu514LESvYB5yEUIBE6BjQLPobx+3znPDfY0OIXU0b3hQT1Se100B7ViC/ZG8WXxThgVG5wiHq12rrf5zegKwKTs1gN9rCBlv8cLcWiNtvpPaGR1MkeNk031atw4vB/BiwFaOGR/ZxUgdSLzQzhPd2nH5NnTrSBKiBJM5n4H/xSd3LeFa6D/9v+UH9Sj8wUA";
     }
     catch (err)
     {

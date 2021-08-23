@@ -41,7 +41,7 @@ window.addEventListener("load", async () =>
     canvas.removeEventListener("touchstart", loadGame);
 
     initializeInput(canvas);
-    initGameState(-1);
+    initGameState();
 
     setupAudio();
     registerScene(MainMenuScene, setupMainMenu, updateMainMenu);
@@ -53,7 +53,7 @@ window.addEventListener("load", async () =>
 
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
-  let touchToPlayId = createTextNode("TOUCH TO START", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
+  let touchToPlayId = createTextNode("touch to start", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
   moveNode(touchToPlayId, [SCREEN_CENTER_X, SCREEN_CENTER_Y - 10]);
 
   // x,y,z,timer

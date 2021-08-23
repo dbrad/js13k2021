@@ -49,7 +49,6 @@ export let updateMissionSelect = (now: number, delta: number): void =>
   if (inputContext._fire === smallSystemId)
   {
     gameState._adventureEncounters = generateEncounterDeck(RUN_MEDIUM, THREAT_LOW);
-    console.log(gameState._adventureEncounters);
     pushScene(AdventureScene);
   }
 };

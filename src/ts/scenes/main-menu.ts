@@ -19,11 +19,11 @@ export let setupMainMenu = (): number =>
   let rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  let textNodeId = createTextNode("1d 4x13k", SCREEN_WIDTH, { _scale: 4, _textAlign: Align.C });
+  let textNodeId = createTextNode("2d1d4x13k", SCREEN_WIDTH, { _scale: 4, _textAlign: Align.C });
   moveNode(textNodeId, [SCREEN_CENTER_X, 20]);
   addChildNode(rootId, textNodeId);
 
-  let textNodeId02 = createTextNode("the one dimensional 4x game", SCREEN_WIDTH, { _textAlign: Align.C });
+  let textNodeId02 = createTextNode("the 2d one dimensional 4x game", SCREEN_WIDTH, { _textAlign: Align.C });
   moveNode(textNodeId02, [SCREEN_CENTER_X, 54]);
   addChildNode(rootId, textNodeId02);
 

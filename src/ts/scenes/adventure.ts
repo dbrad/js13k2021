@@ -175,7 +175,7 @@ export let setupAdventure = (): number =>
   moveNode(researchData, [SCREEN_WIDTH - 70 - 115 - 2, 0]);
   addChildNode(rootId, researchData);
 
-  menuButton = createButtonNode("Menu", [70, 28]);
+  menuButton = createButtonNode("menu", [70, 28]);
   moveNode(menuButton, [SCREEN_WIDTH - 70, 0]);
   addChildNode(rootId, menuButton);
 

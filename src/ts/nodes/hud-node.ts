@@ -63,19 +63,19 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   let descriptionText: string[] = [];
   if (encounter._hazardRange)
   {
-    descriptionText.push("HAZARD");
+    descriptionText.push("hazard");
     if (encounter._bounty)
     {
-      descriptionText.push(`BOUNTY: ${ encounter._bounty }`);
+      descriptionText.push(`bounty: ${ encounter._bounty }`);
     }
   }
   if (encounter._minable)
   {
-    descriptionText.push("MINABLE");
+    descriptionText.push("minable");
   }
   if (encounter._researchable)
   {
-    descriptionText.push("RESEARCHABLE");
+    descriptionText.push("researchable");
   }
 
   updateTextNode(description, descriptionText.join(" "));
