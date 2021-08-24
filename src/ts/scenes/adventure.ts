@@ -7,6 +7,7 @@ import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, calculateNodeSize, crea
 import { addToCurrencyNode, createCurrencyNode } from "../nodes/currency-node";
 import { beastDieSound, powerSound, scanSound, shipDieSound, shootSound, zzfxP } from "../zzfx";
 import { createHUDNode, updateHUDNode } from "../nodes/hud-node";
+import { createProgressBarNode, updateProgressBarNode } from "../nodes/progress-bar-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
 
 import { assert } from "../debug";
@@ -21,8 +22,8 @@ let systemNames = ["engines", "shields", "scanners", "mining lasers", "weapons"]
 
 let MINUS_BUTTON = 0;
 let PLUS_BUTTON = 1;
-let BAR = 2;
-
+let POWER_BAR = 2;
+let PROGRESS_BAR = 3;
 
 let playerShip: number;
 
@@ -35,7 +36,7 @@ let SHIELD_COOLDOWN = 1000;
 
 let systems: number[][] = [];
 let systemCoooldowns = [-1, 1500, 1250, 1000, 750];
-let system_progress = [0, 0, 0, 0, 0];
+let systemProgress = [0, 0, 0, 0, 0];
 
 let generatorBar: number;
 
@@ -115,18 +116,26 @@ export let setupAdventure = (): number =>
     addChildNode(systemContainer, plusButton);
     systems[i][PLUS_BUTTON] = plusButton;
 
-    let shadow = createTextNode(systemNames[i], 640, { _colour: GREY_111 });
-    moveNode(shadow, [58, 1]);
-    addChildNode(systemContainer, shadow);
+    let textShadow = createTextNode(systemNames[i], 640, { _colour: GREY_111 });
+    moveNode(textShadow, [58, 1]);
+    addChildNode(systemContainer, textShadow);
 
     let systemText = createTextNode(systemNames[i], 640, { _colour: WHITE });
     moveNode(systemText, [58, 0]);
     addChildNode(systemContainer, systemText);
 
-    let systemBar = createSegmentedBarNode(POWER_GREEN, 8, 1, 0);
-    moveNode(systemBar, [58, 10]);
-    addChildNode(systemContainer, systemBar);
-    systems[i][BAR] = systemBar;
+    let powerBar = createSegmentedBarNode(POWER_GREEN, 8, 1, 0);
+    moveNode(powerBar, [58, 10]);
+    addChildNode(systemContainer, powerBar);
+    systems[i][POWER_BAR] = powerBar;
+
+    if (i !== ENGINES)
+    {
+      let progressBar = createProgressBarNode();
+      moveNode(progressBar, [2, 27]);
+      addChildNode(systemContainer, progressBar);
+      systems[i][PROGRESS_BAR] = progressBar;
+    }
 
     node_size[systemContainer] = calculateNodeSize(systemContainer);
   }
@@ -264,16 +273,19 @@ export let updateAdventure = (now: number, delta: number): void =>
 
   for (let i = 0; i < 5; i++)
   {
-    updateSegmentedBarNode(systems[i][BAR], gameState._systemLevels[i][1], gameState._systemLevels[i][0]);
-    if ((i === WEAPONS || i === SCANNERS || i === MINING_LASERS) && gameState._systemLevels[i][0] > 0)
+    updateSegmentedBarNode(systems[i][POWER_BAR], gameState._systemLevels[i][1], gameState._systemLevels[i][0]);
+    if ((i === WEAPONS || i === SCANNERS || i === MINING_LASERS))
     {
-      system_progress[i] = Math.min(100, system_progress[i] + (delta / systemCoooldowns[gameState._systemLevels[i][0]]) * 100);
+      if (gameState._systemLevels[i][0] > 0)
+      {
+        systemProgress[i] = Math.min(100, systemProgress[i] + (delta / systemCoooldowns[gameState._systemLevels[i][0]]) * 100);
+      }
+      else
+      {
+        systemProgress[i] = 0;
+      }
+      updateProgressBarNode(systems[i][PROGRESS_BAR], systemProgress[i]);
     }
-    else
-    {
-      system_progress[i] = 0;
-    }
-    // TODO(dbrad): Update Progress bars
   }
   //#endregion Systems
 
@@ -313,9 +325,9 @@ export let updateAdventure = (now: number, delta: number): void =>
       updateHUDNode(hudWindows[hudIndex], encounter);
       hudIndex++;
 
-      if (encounter._minable && system_progress[MINING_LASERS] >= 100)
+      if (encounter._minable && systemProgress[MINING_LASERS] >= 100)
       {
-        system_progress[MINING_LASERS] = 0;
+        systemProgress[MINING_LASERS] = 0;
         let amount = 13 * threatMultiplier;
         gameState._materials += amount;
         addToCurrencyNode(rawMaterials, amount);
@@ -323,9 +335,9 @@ export let updateAdventure = (now: number, delta: number): void =>
         // TODO(dbrad): add mining effects
       }
 
-      if (encounter._researchable && system_progress[SCANNERS] >= 100 && (encounter._maxHp === undefined || (encounter._maxHp && encounter._hp)))
+      if (encounter._researchable && systemProgress[SCANNERS] >= 100 && (encounter._maxHp === undefined || (encounter._maxHp && encounter._hp)))
       {
-        system_progress[SCANNERS] = 0;
+        systemProgress[SCANNERS] = 0;
         let amount = 8 * threatMultiplier;
         gameState._research += amount;
         addToCurrencyNode(researchData, amount);
@@ -333,9 +345,9 @@ export let updateAdventure = (now: number, delta: number): void =>
         // TODO(dbrad): add research effects
       }
 
-      if (encounter._hp && encounter._hp > 0 && system_progress[WEAPONS] >= 100)
+      if (encounter._hp && encounter._hp > 0 && systemProgress[WEAPONS] >= 100)
       {
-        system_progress[WEAPONS] = 0;
+        systemProgress[WEAPONS] = 0;
         encounter._hp = Math.max(0, encounter._hp - 1);
         if (encounter._hp === 0)
         {
@@ -384,5 +396,6 @@ export let updateAdventure = (now: number, delta: number): void =>
       gameState._currentShield += 1;
     }
   }
+  updateProgressBarNode(systems[SHIELDS][PROGRESS_BAR], shieldTimer / SHIELD_COOLDOWN * 100);
   //#endregion SHIELDS GUI
 };

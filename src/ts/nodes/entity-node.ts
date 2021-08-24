@@ -86,7 +86,7 @@ export let setEntityNode = (nodeId: number, tag: number, entityId: number = -1, 
   node_visible[sprite] = true;
   moveNode(sprite, [0, 0]);
 
-  if (tag > 0)
+  if (tag >= 0)
   {
     textureName = textureMap[tag];
   }

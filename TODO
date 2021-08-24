@@ -47,11 +47,12 @@
   ✔ Make ship node usable for pirates and space beasts (and more!) @done(21-08-18 20:27)
   ✔ HUD @done(21-08-21 14:28)
   ✔ Currency Display @done(21-08-22 11:20)
-  ☐ Progress Bar Node
+  ✔ Progress Bar Node @done(21-08-23 20:12)
   ☐ QDrive
     - What ratio of distance to qdrive should I use? (7500-8000 is short run, how many short runs would I want to be 1 level of qdrive?)
       - 1,2,3,6,9 * 6000; 6000, 12000, 18000, 36000, 54000
   ☐ Shop Button
+  ☐ Add Hazard / Player Damage
 ☐ Store / Upgrades Scene
 ☐ End Game / Scoring / Metadata / Score History??
 
