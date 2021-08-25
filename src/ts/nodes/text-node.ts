@@ -60,7 +60,7 @@ export let updateTextNode = (nodeId: number, text: string, parameters: TextParam
   node_size[nodeId][1] = textHeight;
 };
 
-let parseText = (text: string, width: number, scale: number = 1): number =>
+export let parseText = (text: string, width: number, scale: number = 1): number =>
 {
   let letterSize: number = fontSize * scale;
   let allWords: string[] = text.split(" ");

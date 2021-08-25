@@ -1,10 +1,10 @@
+import { GREY_6333, HULL_RED } from "../colour";
 import { TAG_ENTITY_NONE, createEntityNode, setEntityNode } from "./entity-node";
 import { addChildNode, createNode, moveNode, node_render_function, node_visible } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "./segmented-bar-node";
 import { createTextNode, updateTextNode } from "./text-node";
 
 import { Encounter } from "../gameplay/encounters";
-import { HULL_RED } from "../colour";
 import { assert } from "../debug";
 import { pushQuad } from "../draw";
 
@@ -85,5 +85,5 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
 
 let renderHUD = (nodeId: number, now: number, delta: number) =>
 {
-  pushQuad(0, 0, 256, 42, 0x99333333); // TODO(dbrad): Colour collapse with currency?
+  pushQuad(0, 0, 256, 42, GREY_6333);
 };

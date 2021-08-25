@@ -1,6 +1,7 @@
 import { Align, createTextNode, updateTextNode } from "./text-node";
 import { addChildNode, createNode, moveNode, node_render_function } from "../scene-node";
 
+import { GREY_6333 } from "../colour";
 import { pushQuad } from "../draw";
 
 let node_currency_label: number[] = [];
@@ -43,8 +44,8 @@ export let addToCurrencyNode = (nodeId: number, value: number): void =>
 
 let renderCurrency = (nodeId: number, now: number, delta: number): void =>
 {
-  pushQuad(0, 0, 115, 28, 0x66333333);
-  pushQuad(0, 14, 115, 14, 0x66333333);
+  pushQuad(0, 0, 115, 28, GREY_6333);
+  pushQuad(0, 14, 115, 14, GREY_6333);
   if (node_currency_pool[nodeId] > 10)
   {
     let amount = Math.floor(node_currency_pool[nodeId] * 0.25);

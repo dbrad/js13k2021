@@ -1,4 +1,4 @@
-import { SHIELD_BLUE, SPACE_BEAST_PURPLE, WHITE, colourToHex } from "../colour";
+import { SHIELD_BLUE, WHITE, colourToHex } from "../colour";
 import { addChildNode, createNode, moveNode, node_position, node_render_function, node_visible } from "../scene-node";
 import { createSpriteNode, setSpriteNode } from "./sprite-node";
 
@@ -17,9 +17,8 @@ let node_entity_enable_animations: boolean[] = [];
 // current value, direction value (1 vs -1)
 let node_entity_yOffset: [number, number][] = [];
 
-// curent timer value, timerduration value
+// curent timer value, timer duration value
 let node_entity_offsetTimer: [number, number][] = [];
-
 
 export let TAG_ENTITY_NONE = -1;
 export let TAG_ENTITY_STATION = 0;

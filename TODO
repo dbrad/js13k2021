@@ -53,7 +53,7 @@
       - 1,2,3,6,9 * 6000; 6000, 12000, 18000, 36000, 54000
   ☐ Shop Button
   ☐ Add Hazard / Player Damage
-☐ Store / Upgrades Scene
+☐ Store / Upgrades Scene !!!
 ☐ End Game / Scoring / Metadata / Score History??
 
 Bonus Ideas
@@ -63,8 +63,8 @@ Space Saving Ideas
 ✔ Convert all functions to export let = => @done(21-08-19 06:48)
 ✔ Convert all switch to if @done(21-08-19 06:52)
 ☐ Remove Interpolation code?
-  ☐ Remove node movement code related to Interpolation
-  ☐ Add smaller solution for scene transition fade
-☐ Remove calcuate node size code
+  ✔ Remove node movement code related to Interpolation @done(21-08-24 07:22)
+  ✘ Add smaller solution for scene transition fade @cancelled(21-08-24 07:22)
+✔ Remove calcuate node size code @done(21-08-24 07:22)
 ☐ Move all text to a text.ts module
 ☐ Collapse some constants that are the same across domains?
