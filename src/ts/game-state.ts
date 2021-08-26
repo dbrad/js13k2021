@@ -9,9 +9,7 @@ type GameState = {
   _currentShield: number,
   _availablePower: number,
   _systemLevels: [number, number][],
-  _materials: number,
-  _credits: number,
-  _research: number,
+  _currency: [number, number, number, number, number, number];
   _shipPosition: number,
   _threatLevel: THREAT_LEVEL,
   _adventureReward: number,
@@ -25,6 +23,12 @@ export let SCANNERS = 2 as const;
 export let MINING_LASERS = 3 as const;
 export let WEAPONS = 4 as const;
 
+export let CURRENCY_CREDITS_INCOMING = 0;
+export let CURRENCY_CREDITS = 1;
+export let CURRENCY_MATERIALS_INCOMING = 2;
+export let CURRENCY_MATERIALS = 3;
+export let CURRENCY_RESEARCH_INCOMING = 4;
+export let CURRENCY_RESEARCH = 5;
 
 export let gameState: GameState;
 
@@ -66,9 +70,7 @@ export let initGameState = (): void =>
       [0, 1],
       [0, 1],
     ],
-    _materials: 0,
-    _credits: 0,
-    _research: 0,
+    _currency: [0, 0, 0, 0, 0, 0],
     _shipPosition: 0,
     _threatLevel: THREAT_LOW,
     _adventureReward: 0,

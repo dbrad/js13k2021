@@ -44,7 +44,7 @@ export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: 
   node_entity_spriteId[nodeId] = sprite;
 
   let shieldSprite = createSpriteNode("shld", { _scale: 4, _colour: SHIELD_BLUE });
-  moveNode(shieldSprite, [-16, -16]);
+  moveNode(shieldSprite, -16, -16);
   addChildNode(sprite, shieldSprite);
   node_entity_shield_sprite[nodeId] = shieldSprite;
 
@@ -83,7 +83,7 @@ export let setEntityNode = (nodeId: number, tag: number, entityId: number = -1, 
   node_entity_enable_animations[nodeId] = extraParams._enableAnimations || node_entity_enable_animations[nodeId];
 
   node_visible[sprite] = true;
-  moveNode(sprite, [0, 0]);
+  moveNode(sprite, 0, 0);
 
   if (tag >= 0)
   {

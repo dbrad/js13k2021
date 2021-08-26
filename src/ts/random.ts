@@ -1,6 +1,8 @@
+import { math } from "./math";
+
 export let rand = (min: number, max: number): number =>
 {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return math.floor(math.random() * (max - min + 1)) + min;
 };
 
 export let shuffle = <T>(array: T[]): T[] =>

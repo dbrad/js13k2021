@@ -5,6 +5,7 @@ import { Interpolators, interpolate } from "./interpolate";
 import { MainMenuScene, setupMainMenu, updateMainMenu } from "./scenes/main-menu";
 import { MissionSelectScene, setupMissionSelect, updateMissionSelect } from "./scenes/mission-select";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
+import { StationScene, setupStation, updateStation } from "./scenes/station";
 import { gl_clear, gl_flush, gl_getContext, gl_init, gl_setClear } from "./gl";
 import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
@@ -14,6 +15,7 @@ import { registerScene, renderScene, updateScene } from "./scene";
 import { assert } from "./debug";
 import { colourToHex } from "./colour";
 import { loadSpriteSheet } from "./texture";
+import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
 import { setupAudio } from "./zzfx";
@@ -47,6 +49,7 @@ window.addEventListener("load", async () =>
     registerScene(MainMenuScene, setupMainMenu, updateMainMenu);
     registerScene(MissionSelectScene, setupMissionSelect, updateMissionSelect);
     registerScene(AdventureScene, setupAdventure, updateAdventure);
+    registerScene(StationScene, setupStation, updateStation);
 
     makeStars();
   };
@@ -54,13 +57,13 @@ window.addEventListener("load", async () =>
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
   let touchToPlayId = createTextNode("touch to start", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
-  moveNode(touchToPlayId, [SCREEN_CENTER_X, SCREEN_CENTER_Y - 10]);
+  moveNode(touchToPlayId, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
 
   // x,y,z,timer
   let stars: [number, number, number, number][] = [];
   let makeStars = () =>
   {
-    let totalStars = (Math.floor(SCREEN_WIDTH / 72)) * (Math.floor(SCREEN_HEIGHT / 72)) * 1;
+    let totalStars = (math.floor(SCREEN_WIDTH / 72)) * (math.floor(SCREEN_HEIGHT / 72)) * 1;
 
     let randomX, randomY, randomZ;
     let sortable = [];
@@ -68,7 +71,7 @@ window.addEventListener("load", async () =>
     {
       randomX = rand(1, SCREEN_WIDTH - 1);
       randomY = rand(1, SCREEN_HEIGHT - 1);
-      randomZ = Math.ceil(rand(1, 4));
+      randomZ = math.ceil(rand(1, 4));
       stars[i] = [randomX, randomY, randomZ, 0];
       sortable.push(randomZ);
     }
@@ -114,9 +117,9 @@ window.addEventListener("load", async () =>
 
       for (let i in stars)
       {
-        let value = Math.ceil(255 - 185 * (1 - stars[i][2] / 4));
+        let value = math.ceil(255 - 185 * (1 - stars[i][2] / 4));
         let colour = colourToHex(value, value, value, value);
-        let size = Math.ceil(stars[i][2] / 2);
+        let size = math.ceil(stars[i][2] / 2);
         pushQuad(stars[i][0], stars[i][1], size, size, colour);
       }
 

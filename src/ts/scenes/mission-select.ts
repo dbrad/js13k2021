@@ -1,5 +1,5 @@
 import { Align, createTextNode } from "../nodes/text-node";
-import { RUN_MEDIUM, RUN_SHORT, THREAT_LOW, generateEncounterDeck } from "../gameplay/encounters";
+import { RUN_SHORT, THREAT_LOW, generateEncounterDeck } from "../gameplay/encounters";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
 
@@ -22,23 +22,23 @@ export let setupMissionSelect = (): number =>
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
   let textNodeId = createTextNode("select system size", SCREEN_WIDTH, { _textAlign: Align.C });
-  moveNode(textNodeId, [SCREEN_CENTER_X, 20]);
+  moveNode(textNodeId, SCREEN_CENTER_X, 20);
   addChildNode(rootId, textNodeId);
 
   smallSystemId = createButtonNode("small", [180, 40]);
-  moveNode(smallSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 100]);
+  moveNode(smallSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 100);
   addChildNode(rootId, smallSystemId);
 
   mediumSystemId = createButtonNode("medium", [180, 40]);
-  moveNode(mediumSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 50]);
+  moveNode(mediumSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 50);
   addChildNode(rootId, mediumSystemId);
 
   largeSystemId = createButtonNode("large", [180, 40]);
-  moveNode(largeSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y]);
+  moveNode(largeSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y);
   addChildNode(rootId, largeSystemId);
 
   unchartedSystemId = createButtonNode("uncharted", [180, 40]);
-  moveNode(unchartedSystemId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 50]);
+  moveNode(unchartedSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 50);
   addChildNode(rootId, unchartedSystemId);
 
   return rootId;

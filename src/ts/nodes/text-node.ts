@@ -4,6 +4,7 @@ import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from 
 import { WHITE } from "../colour";
 import { assert } from "../debug";
 import { getTexture } from "../texture";
+import { math } from "../math";
 
 export enum Align
 {
@@ -110,11 +111,11 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
     let alignmentOffset: number = 0;
     if (align === Align.C)
     {
-      alignmentOffset = Math.floor(-lineLength / 2);
+      alignmentOffset = math.floor(-lineLength / 2);
     }
     else if (align === Align.R)
     {
-      alignmentOffset = Math.floor(-(lineLength));
+      alignmentOffset = math.floor(-(lineLength));
     }
 
     for (let word of words)

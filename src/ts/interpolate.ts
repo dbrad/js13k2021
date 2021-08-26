@@ -1,3 +1,5 @@
+import { math } from "./math";
+
 export type InterpolationData =
   {
     _startTime: number,
@@ -47,7 +49,7 @@ export let interpolate = (now: number, interpolationData: InterpolationData): vo
   let values: number[] = [];
   for (let i = 0, len = interpolationData._origin.length; i < len; i++)
   {
-    values[i] = interpolationData._origin[i] + Math.round(interpolationData._target[i] - interpolationData._origin[i]) * (elapsed / interpolationData._duration);
+    values[i] = interpolationData._origin[i] + math.round(interpolationData._target[i] - interpolationData._origin[i]) * (elapsed / interpolationData._duration);
   }
   interpolationData._lastResult = { _values: values, _done: false };
 };

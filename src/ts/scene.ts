@@ -17,6 +17,7 @@ let transitionColour = 0;
 
 let Scenes: Map<number, Scene> = new Map();
 let CurrentScene: Scene;
+let PreviousScene: Scene;
 export let registerScene = (sceneId: number, setupFn: () => number, updateFn: (now: number, delta: number) => void): void =>
 {
   let rootId = setupFn();
@@ -32,10 +33,18 @@ export let registerScene = (sceneId: number, setupFn: () => number, updateFn: (n
 export let pushScene = (sceneId: number): void =>
 {
   let scene = Scenes.get(sceneId);
+  assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
+  transitionToScene(scene);
+};
 
+let transitionToScene = (scene: Scene): void =>
+{
+  if (CurrentScene)
+  {
+    PreviousScene = CurrentScene;
+  }
   let transition = createInterpolationData(250, [0], [255], () =>
   {
-    assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
     CurrentScene = scene;
     clearInput();
 
@@ -44,6 +53,14 @@ export let pushScene = (sceneId: number): void =>
   });
   Interpolators.set(TRANSITION_KEY, transition);
   clearInput();
+};
+
+export let popScene = (): void =>
+{
+  if (PreviousScene)
+  {
+    transitionToScene(PreviousScene);
+  }
 };
 
 export let updateScene = (now: number, delta: number): void =>

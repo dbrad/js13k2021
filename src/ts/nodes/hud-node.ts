@@ -19,22 +19,22 @@ export let createHUDNode = (): number =>
   node_render_function[nodeId] = renderHUD;
 
   let title = createTextNode("", 320, { _scale: 2 });
-  moveNode(title, [2, 2]);
+  moveNode(title, 2, 2);
   addChildNode(nodeId, title);
   node_hud_title[nodeId] = title;
 
   let description = createTextNode("", 96);
-  moveNode(description, [2, 22]);
+  moveNode(description, 2, 22);
   addChildNode(nodeId, description);
   node_hud_description[nodeId] = description;
 
   let hpBar = createSegmentedBarNode(HULL_RED, 8, 5, 5);
-  moveNode(hpBar, [198, 24]);
+  moveNode(hpBar, 198, 24);
   addChildNode(nodeId, hpBar);
   node_hud_hp_bar[nodeId] = hpBar;
 
   let entity = createEntityNode(TAG_ENTITY_NONE, false);
-  moveNode(entity, [238, 2]);
+  moveNode(entity, 238, 2);
   addChildNode(nodeId, entity);
   node_hud_entity[nodeId] = entity;
 
@@ -57,7 +57,7 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
     assert(encounter._hp !== undefined, "Entity has max hp, but no set hp.");
     updateSegmentedBarNode(hpBar, encounter._maxHp, encounter._hp);
     let x = 256 - 2 - 6 - (encounter._maxHp * 10);
-    moveNode(hpBar, [x, 24]);
+    moveNode(hpBar, x, 24);
   }
 
   let descriptionText: string[] = [];

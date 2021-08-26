@@ -1,6 +1,7 @@
 import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
 import { rand, shuffle } from "../random";
 
+import { math } from "../math";
 import { v2 } from "../v2";
 
 export type ENCOUNTER_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -124,7 +125,7 @@ export let generateEncounterDeck = (selectedRunLength: RUN_LENGTH, threatLevel: 
   encounterDeck = shuffle(encounterDeck);
 
   let numberOfStations = runEncounters[0];
-  let interval = Math.ceil(encounterDeck.length / (numberOfStations + 1));
+  let interval = math.ceil(encounterDeck.length / (numberOfStations + 1));
   for (let i = 0; i < numberOfStations; i++)
   {
     encounterDeck.splice(interval * (i + 1), 0, createStation());

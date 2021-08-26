@@ -68,10 +68,9 @@ export let addChildNode = (nodeId: number, childNodeId: number, zIndex: number =
   });
 };
 
-export let moveNode = (nodeId: number, pos: v2): void =>
+export let moveNode = (nodeId: number, x: number, y: number): void =>
 {
-  node_position[nodeId][0] = pos[0];
-  node_position[nodeId][1] = pos[1];
+  node_position[nodeId] = [x, y];
 };
 
 export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext._cursor): void =>

@@ -1,5 +1,7 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
 
+import { math } from "./math";
+
 export let inputContext = {
   _cursor: [0, 0],
   _mouseDown: false,
@@ -29,13 +31,13 @@ let pointerMove = (e: PointerEvent | TouchEvent) =>
   {
     e.preventDefault();
     let touch: Touch = e.touches[0];
-    inputContext._cursor[0] = Math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
-    inputContext._cursor[1] = Math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
+    inputContext._cursor[0] = math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
+    inputContext._cursor[1] = math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
     return;
   }
   e = e as PointerEvent;
-  inputContext._cursor[0] = Math.floor((e.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
-  inputContext._cursor[1] = Math.floor((e.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
+  inputContext._cursor[0] = math.floor((e.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
+  inputContext._cursor[1] = math.floor((e.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
 };
 
 let pointerDown = (e: PointerEvent | TouchEvent) =>
@@ -46,8 +48,8 @@ let pointerDown = (e: PointerEvent | TouchEvent) =>
     let touchEvent = e as TouchEvent;
     touchEvent.preventDefault();
     let touch: Touch = touchEvent.touches[0];
-    inputContext._cursor[0] = Math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
-    inputContext._cursor[1] = Math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
+    inputContext._cursor[0] = math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
+    inputContext._cursor[1] = math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
   }
 
   inputContext._mouseDown = true;
