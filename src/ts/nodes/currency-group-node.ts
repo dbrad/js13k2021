@@ -39,7 +39,7 @@ let updateAndRenderCurrencyGroup = (nodeId: number, now: number, delta: number) 
       let amount = 1;
       if (incoming > 10)
       {
-        return math.floor(incoming * 0.25);
+        amount = math.floor(incoming * 0.25);
       }
       gameState._currency[c] -= amount;
       gameState._currency[c + 1] += amount;

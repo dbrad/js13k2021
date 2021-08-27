@@ -1,4 +1,4 @@
-import { CURRENCY_CREDITS, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, gameState, maxAvailablePower, maxHull } from "../game-state";
+import { CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, gameState, maxAvailablePower, maxHull } from "../game-state";
 import { ENC_SPACE_BEAST, ENC_STATION, THREAT_HIGH, THREAT_MEDIUM } from "../gameplay/encounters";
 import { GREY_111, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
@@ -34,7 +34,7 @@ let hullBar: number;
 let shieldContainer: number;
 let shieldBar: number;
 let shieldTimer: number = 0;
-let SHIELD_COOLDOWN = 1000;
+let SHIELD_COOLDOWN = 2500;
 
 let systems: number[][] = [];
 let systemCoooldowns = [-1, 1500, 1250, 1000, 750];
@@ -188,7 +188,7 @@ export let setupAdventure = (): number =>
   for (let h = 0; h < 2; h++)
   {
     let hudWindow = createHUDNode();
-    moveNode(hudWindow, 192, SCREEN_HEIGHT - 44 * (h + 1));
+    moveNode(hudWindow, 192, SCREEN_CENTER_Y + 44 * (h + 1));
     addChildNode(rootId, hudWindow);
     hudWindows.push(hudWindow);
   }
@@ -210,7 +210,7 @@ let shipTimings = [32, 16, 16, 16, 16];
 let shipDistance = [1, 1, 2, 3, 4];
 export let updateAdventure = (now: number, delta: number): void =>
 {
-  node_enabled[stationButton] = true;
+  node_enabled[stationButton] = false;
 
   if (inputContext._fire === stationButton)
   {
@@ -288,7 +288,11 @@ export let updateAdventure = (now: number, delta: number): void =>
     updateSegmentedBarNode(systems[i][POWER_BAR], gameState._systemLevels[i][1], gameState._systemLevels[i][0]);
     if ((i === WEAPONS || i === SCANNERS || i === MINING_LASERS))
     {
-      if (gameState._systemLevels[i][0] > 0)
+      if (systemProgress[i] > 100)
+      {
+        systemProgress[i] = 0;
+      }
+      else if (gameState._systemLevels[i][0] > 0)
       {
         systemProgress[i] = math.min(100, systemProgress[i] + (delta / systemCoooldowns[gameState._systemLevels[i][0]]) * 100);
       }
@@ -345,7 +349,7 @@ export let updateAdventure = (now: number, delta: number): void =>
 
       if (encounter._minable && systemProgress[MINING_LASERS] >= 100)
       {
-        systemProgress[MINING_LASERS] = 0;
+        systemProgress[MINING_LASERS]++;
         let amount = 13 * threatMultiplier;
         gameState._currency[CURRENCY_MATERIALS_INCOMING] += amount;
         zzfxP(shootSound);
@@ -354,16 +358,16 @@ export let updateAdventure = (now: number, delta: number): void =>
 
       if (encounter._researchable && systemProgress[SCANNERS] >= 100 && (encounter._maxHp === undefined || (encounter._maxHp && encounter._hp)))
       {
-        systemProgress[SCANNERS] = 0;
+        systemProgress[SCANNERS]++;;
         let amount = 8 * threatMultiplier;
-        gameState._currency[CURRENCY_RESEARCH] += amount;
+        gameState._currency[CURRENCY_RESEARCH_INCOMING] += amount;
         zzfxP(scanSound);
         // TODO(dbrad): add research effects
       }
 
       if (encounter._hp && encounter._hp > 0 && systemProgress[WEAPONS] >= 100)
       {
-        systemProgress[WEAPONS] = 0;
+        systemProgress[WEAPONS]++;
         encounter._hp = math.max(0, encounter._hp - 1);
         if (encounter._hp === 0)
         {
@@ -378,7 +382,7 @@ export let updateAdventure = (now: number, delta: number): void =>
 
           if (encounter._bounty)
           {
-            gameState._currency[CURRENCY_CREDITS] += encounter._bounty;
+            gameState._currency[CURRENCY_CREDITS_INCOMING] += encounter._bounty;
           }
         }
         zzfxP(shootSound);

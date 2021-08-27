@@ -32,6 +32,7 @@
   ✔ Generator Node @done(21-08-15 14:54)
   ☐ In-Game Menu
     ☐ Save and Quit
+    ☐ Fullscreen
     ☐ Mute Music
   ✔ Hull + Shield UI @done(21-08-15 14:55)
   ✔ Systems @done(21-08-22 16:22)
@@ -51,10 +52,11 @@
   ☐ QDrive
     - What ratio of distance to qdrive should I use? (7500-8000 is short run, how many short runs would I want to be 1 level of qdrive?)
       - 1,2,3,6,9 * 6000; 6000, 12000, 18000, 36000, 54000
-  ☐ Shop Button
+  ✔ Shop Button @done(21-08-27 07:04)
   ☐ Add Hazard / Player Damage
 ☐ Store / Upgrades Scene !!!
 ☐ End Game / Scoring / Metadata / Score History??
+☐ Add Fullscreen support
 
 Bonus Ideas
 ☐ Add explosion particle effects?
@@ -62,9 +64,9 @@ Bonus Ideas
 Space Saving Ideas
 ✔ Convert all functions to export let = => @done(21-08-19 06:48)
 ✔ Convert all switch to if @done(21-08-19 06:52)
-☐ Remove Interpolation code?
+✘ Remove Interpolation code? @cancelled(21-08-26 07:40)
   ✔ Remove node movement code related to Interpolation @done(21-08-24 07:22)
   ✘ Add smaller solution for scene transition fade @cancelled(21-08-24 07:22)
 ✔ Remove calcuate node size code @done(21-08-24 07:22)
-☐ Move all text to a text.ts module
+☐ Move all text to a text.ts module / reduce repeats
 ☐ Collapse some constants that are the same across domains?

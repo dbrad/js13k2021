@@ -22,7 +22,19 @@ import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
 {
-  let canvas = document.querySelector(`canvas`);
+  document.title = "2D1D4X13K";
+  let css = "margin:0;padding:0;background-color:#060606;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;";
+  document.documentElement.style.cssText = css;
+  document.body.style.cssText = css;
+
+  let stage = document.createElement("div");
+  stage.style.cssText = "display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vw*(9/16));max-height:100vh;width:100vw;";
+  document.body.appendChild(stage);
+
+  let canvas = document.createElement("canvas");
+  canvas.style.cssText = "height:100%;image-rendering:optimizeSpeed;image-rendering:pixelated;";
+  stage.appendChild(canvas);
+
   assert(canvas !== null, `Unable to find canvas element on index.html`);
   canvas.width = SCREEN_WIDTH;
   canvas.height = SCREEN_HEIGHT;

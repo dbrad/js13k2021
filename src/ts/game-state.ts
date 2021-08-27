@@ -39,11 +39,6 @@ export let maxHull = (): number =>
   return 4 + (gameState._hullLevel);
 };
 
-export let maxShield = (): number =>
-{
-  return gameState._systemLevels[SHIELDS][1];
-};
-
 export let maxAvailablePower = (): number =>
 {
   return 3 + gameState._generatorLevel * 2;
@@ -56,19 +51,19 @@ export let reset = (): void =>
 export let initGameState = (): void =>
 {
   gameState = {
-    _generatorLevel: 0,
+    _generatorLevel: 5,
     _fieldLevel: 0,
-    _hullLevel: 0,
+    _hullLevel: 4,
     _qLevel: 0,
     _currentHull: 4,
     _currentShield: 0,
     _availablePower: 3,
     _systemLevels: [
-      [0, 1],
-      [0, 1],
-      [0, 1],
-      [0, 1],
-      [0, 1],
+      [0, 4],
+      [0, 4],
+      [0, 4],
+      [0, 4],
+      [0, 4],
     ],
     _currency: [0, 0, 0, 0, 0, 0],
     _shipPosition: 0,
