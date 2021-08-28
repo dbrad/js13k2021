@@ -1,42 +1,39 @@
 import { Align, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
-import { TAG_ENTITY_PLAYER_SHIP, createEntityNode } from "../nodes/entity-node";
-import { addChildNode, createNode, moveNode, node_size } from "../scene-node";
+import { addChildNode, createNode, moveNode, node_enabled, node_size } from "../scene-node";
+import { hasSaveFile, initGameState, loadGame } from "../game-state";
 
 import { MissionSelectScene } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
-import { initGameState } from "../game-state";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
 
 export let MainMenuScene = 0;
 
 let startButtonId: number;
+let loadButtonId: number;
 
 export let setupMainMenu = (): number =>
 {
   let rootId = createNode();
   node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-  let textNodeId = createTextNode("Js13kGames Jam 2021", SCREEN_WIDTH, { _textAlign: Align.C });
-  moveNode(textNodeId, [SCREEN_CENTER_X, 20]);
+  let textNodeId = createTextNode("2d1d4x13k", SCREEN_WIDTH, { _scale: 4, _textAlign: Align.C });
+  moveNode(textNodeId, SCREEN_CENTER_X, 20);
   addChildNode(rootId, textNodeId);
 
-  let textNodeId02 = createTextNode("Entry by David Brad", SCREEN_WIDTH, { _textAlign: Align.C });
-  moveNode(textNodeId02, [SCREEN_CENTER_X, 30]);
+  let textNodeId02 = createTextNode("the 2d one dimensional 4x game", SCREEN_WIDTH, { _textAlign: Align.C });
+  moveNode(textNodeId02, SCREEN_CENTER_X, 54);
   addChildNode(rootId, textNodeId02);
 
-  startButtonId = createButtonNode("New Game", [180, 40]);
-  moveNode(startButtonId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 90]);
+  startButtonId = createButtonNode("new game", [180, 40]);
+  moveNode(startButtonId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 90);
   addChildNode(rootId, startButtonId);
 
-  let loadButtonId = createButtonNode("Load Game", [180, 40]);
-  moveNode(loadButtonId, [SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 30]);
+  loadButtonId = createButtonNode("load game", [180, 40]);
+  moveNode(loadButtonId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 30);
   addChildNode(rootId, loadButtonId);
-
-  let ship = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
-  moveNode(ship, [SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40]);
-  addChildNode(rootId, ship);
+  node_enabled[loadButtonId] = hasSaveFile();
 
   return rootId;
 };
@@ -45,7 +42,23 @@ export let updateMainMenu = (now: number, delta: number): void =>
 {
   if (inputContext._fire === startButtonId)
   {
+    if (hasSaveFile())
+    {
+      if (confirm("?"))
+      {
+        initGameState();
+        pushScene(MissionSelectScene);
+      }
+    }
+    else
+    {
+      initGameState();
+      pushScene(MissionSelectScene);
+    }
+  }
+  else if (inputContext._fire === loadButtonId)
+  {
+    loadGame();
     pushScene(MissionSelectScene);
-    initGameState(0);
   }
 };

@@ -1,4 +1,3 @@
-import { Interpolators, None, createInterpolationData } from "./interpolate";
 import { gl_restore, gl_save, gl_translate } from "./gl";
 
 import { inputContext } from "./input";
@@ -17,8 +16,8 @@ export let node_children: number[][] = [];
 export let node_tag: number[] = [];
 
 //#region TAGS
-export let TAG_LOWER_POWER = 1 << 0;
-export let TAG_RAISE_POWER = 1 << 1;
+export let TAG_LOWER_POWER = 0;
+export let TAG_RAISE_POWER = 1;
 //#endregion TAGS
 
 export let createNode = (): number =>
@@ -69,63 +68,9 @@ export let addChildNode = (nodeId: number, childNodeId: number, zIndex: number =
   });
 };
 
-export let calculateNodeSize = (nodeId: number): v2 =>
+export let moveNode = (nodeId: number, x: number, y: number): void =>
 {
-  let maxX = 0;
-  let maxY = 0;
-  for (let child of node_children[nodeId])
-  {
-    let size = node_size[child];
-    let position = node_position[child];
-    if (position[0] + size[0] > maxX) maxX = position[0] + size[0];
-    if (position[1] + size[1] > maxY) maxY = position[1] + size[1];
-  }
-  return [maxX, maxY];
-};
-
-export let moveNode = (nodeId: number, pos: v2, ease: number = None, duration: number = 0): Promise<void> =>
-{
-  // We haven't moved? Just return.
-  if (node_position[nodeId][0] === pos[0] && node_position[nodeId][1] === pos[1])
-  {
-    return Promise.resolve();
-  }
-
-  let interpKey = `node-mv-${ nodeId }`;
-  // Check if we've been given an easing let, =  a duration, and we don't currently have an interpolation ongoing. =>
-  if (ease !== None && duration > 0)
-  {
-    if (Interpolators.has(interpKey)) return Promise.resolve();
-    return new Promise((resolve, _) =>
-    {
-      // Setup a new interpolator, it will begin iterating on the next frame.
-      Interpolators.set(interpKey, createInterpolationData(duration, node_position[nodeId], pos, ease, resolve));
-    });
-  }
-
-  // No easing or duration? Let's just move right now!
-  node_position[nodeId][0] = pos[0];
-  node_position[nodeId][1] = pos[1];
-  return Promise.resolve();
-};
-
-export let iterateNodeMovement = (nodeId: number): void =>
-{
-  let interpKey = `node-mv-${ nodeId }`;
-  if (Interpolators.has(interpKey))
-  {
-    let interp = Interpolators.get(interpKey);
-    if (interp?._lastResult)
-    {
-      moveNode(nodeId, [interp._lastResult._values[0], interp._lastResult._values[1]]);
-    }
-  }
-
-  let children = node_children[nodeId];
-  for (let childId of children)
-  {
-    iterateNodeMovement(childId);
-  }
+  node_position[nodeId] = [x, y];
 };
 
 export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext._cursor): void =>

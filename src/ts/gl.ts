@@ -1,5 +1,6 @@
 import { WHITE } from "./colour";
 import { assert } from "./debug";
+import { math } from "./math";
 
 let ctx: WebGLRenderingContext;
 let width: number;
@@ -75,8 +76,8 @@ export let gl_init = (context: WebGLRenderingContext): void =>
   };
 
   let shader: WebGLShader = createShaderProgram(
-    `precision lowp float;attribute vec2 v,t;attribute vec4 c;varying vec2 uv;varying vec4 col;uniform mat4 m;void main() {gl_Position = m * vec4(v, 1.0, 1.0);uv = t;col = c;}`,
-    `precision lowp float;varying vec2 uv;varying vec4 col;uniform sampler2D s;void main() {gl_FragColor = texture2D(s, uv) * col;}`
+    `precision lowp float;attribute vec2 v,t;attribute vec4 c;varying vec2 uv;varying vec4 cl;uniform mat4 m;void main(){gl_Position=m*vec4(v,1.0,1.0);uv=t;cl=c;}`,
+    `precision lowp float;varying vec2 uv;varying vec4 cl;uniform sampler2D s;void main(){gl_FragColor=texture2D(s,uv)*cl;}`
   );
 
   indexBuffer = createBuffer(34963, vIndexData.byteLength, 35044);
@@ -160,8 +161,8 @@ export let gl_scale = (x: number, y: number): void =>
 
 export let gl_rotate = (r: number): void =>
 {
-  let sr: number = Math.sin(r);
-  let cr: number = Math.cos(r);
+  let sr: number = math.sin(r);
+  let cr: number = math.cos(r);
 
   mat[0] = mat[0] * cr + mat[2] * sr;
   mat[1] = mat[1] * cr + mat[3] * sr;

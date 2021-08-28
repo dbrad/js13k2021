@@ -1,6 +1,6 @@
-import { EaseOutQuad, Interpolators, createInterpolationData } from "./interpolate";
+import { Interpolators, createInterpolationData } from "./interpolate";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
-import { iterateNodeMovement, nodeInput, renderNode } from "./scene-node";
+import { nodeInput, renderNode } from "./scene-node";
 
 import { assert } from "./debug";
 import { clearInput } from "./input";
@@ -16,8 +16,8 @@ let TRANSITION_KEY = 'xsit';
 let transitionColour = 0;
 
 let Scenes: Map<number, Scene> = new Map();
-//let SceneStack: Scene[] = [];
 let CurrentScene: Scene;
+let PreviousScene: Scene;
 export let registerScene = (sceneId: number, setupFn: () => number, updateFn: (now: number, delta: number) => void): void =>
 {
   let rootId = setupFn();
@@ -27,22 +27,28 @@ export let registerScene = (sceneId: number, setupFn: () => number, updateFn: (n
   if (!CurrentScene)
   {
     CurrentScene = scene;
-    // SceneStack.push(scene);
   }
 };
 
 export let pushScene = (sceneId: number): void =>
 {
   let scene = Scenes.get(sceneId);
+  assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
+  transitionToScene(scene);
+};
 
-  let transition = createInterpolationData(250, [0], [255], EaseOutQuad, () =>
+let transitionToScene = (scene: Scene): void =>
+{
+  if (CurrentScene)
   {
-    assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
+    PreviousScene = CurrentScene;
+  }
+  let transition = createInterpolationData(250, [0], [255], () =>
+  {
     CurrentScene = scene;
-    // SceneStack.push(scene);
     clearInput();
 
-    let transition = createInterpolationData(250, [255], [0], EaseOutQuad);
+    let transition = createInterpolationData(250, [255], [0]);
     Interpolators.set(TRANSITION_KEY, transition);
   });
   Interpolators.set(TRANSITION_KEY, transition);
@@ -51,15 +57,10 @@ export let pushScene = (sceneId: number): void =>
 
 export let popScene = (): void =>
 {
-  let transition = createInterpolationData(250, [0], [255], EaseOutQuad, () =>
+  if (PreviousScene)
   {
-    // SceneStack.pop();
-    // CurrentScene = SceneStack[SceneStack.length - 1];
-
-    let transition = createInterpolationData(250, [255], [0], EaseOutQuad);
-    Interpolators.set(TRANSITION_KEY, transition);
-  });
-  Interpolators.set(TRANSITION_KEY, transition);
+    transitionToScene(PreviousScene);
+  }
 };
 
 export let updateScene = (now: number, delta: number): void =>
@@ -69,7 +70,6 @@ export let updateScene = (now: number, delta: number): void =>
   {
     nodeInput(rootId);
   }
-  iterateNodeMovement(rootId);
   CurrentScene._updateFn(now, delta);
 };
 

@@ -24,6 +24,7 @@ export let GREY_111 = 0xFF111111;
 export let GREY_333 = 0xFF333333;
 export let GREY_666 = 0xFF555555;
 export let GREY_999 = 0xFF999999;
+export let GREY_6333 = 0x66333333;
 export let SHIELD_BLUE = 0xBBFFAAAA;
 export let HULL_RED = 0xFF0000FF;
 export let POWER_GREEN = 0xFF00FF00;

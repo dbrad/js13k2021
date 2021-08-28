@@ -4,6 +4,7 @@ import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from 
 import { WHITE } from "../colour";
 import { assert } from "../debug";
 import { getTexture } from "../texture";
+import { math } from "../math";
 
 export enum Align
 {
@@ -34,7 +35,6 @@ export let createTextNode = (text: string, width: number, parameters: TextParame
   node_interactive[nodeId] = false;
   node_render_function[nodeId] = renderTextNode;
 
-  text = text.toUpperCase();
   node_text[nodeId] = text;
   node_text_align[nodeId] = parameters._textAlign || Align.L;
   node_text_scale[nodeId] = parameters._scale || 1;
@@ -50,7 +50,6 @@ export let createTextNode = (text: string, width: number, parameters: TextParame
 
 export let updateTextNode = (nodeId: number, text: string, parameters: TextParameters = {}): void =>
 {
-  text = text.toUpperCase();
   node_text[nodeId] = text;
   node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
@@ -62,7 +61,7 @@ export let updateTextNode = (nodeId: number, text: string, parameters: TextParam
   node_size[nodeId][1] = textHeight;
 };
 
-let parseText = (text: string, width: number, scale: number = 1): number =>
+export let parseText = (text: string, width: number, scale: number = 1): number =>
 {
   let letterSize: number = fontSize * scale;
   let allWords: string[] = text.split(" ");
@@ -112,13 +111,12 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
     let alignmentOffset: number = 0;
     if (align === Align.C)
     {
-      alignmentOffset = Math.floor(-lineLength / 2);
+      alignmentOffset = math.floor(-lineLength / 2);
     }
     else if (align === Align.R)
     {
-      alignmentOffset = Math.floor(-(lineLength - scale));
+      alignmentOffset = math.floor(-(lineLength));
     }
-
 
     for (let word of words)
     {

@@ -1,6 +1,7 @@
-import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, STAR_COLOURS } from "../colour";
+import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
 import { rand, shuffle } from "../random";
 
+import { math } from "../math";
 import { v2 } from "../v2";
 
 export type ENCOUNTER_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -14,7 +15,9 @@ export let ENC_ASTEROID: ENCOUNTER_TYPE = 6;
 export let ENC_ANOMALY: ENCOUNTER_TYPE = 7;
 
 export type Encounter = {
+  _id: number,
   _type: ENCOUNTER_TYPE,
+  _title: string,
   _position?: number,
   _yOffset: number,
   _colour?: number,
@@ -25,6 +28,7 @@ export type Encounter = {
   _maxHp?: number,
   _hazardRange?: number,
   _bounty?: number,
+  _exit?: boolean,
 };
 
 export type RUN_LENGTH = 0 | 1 | 2 | 3 | 4;
@@ -53,10 +57,14 @@ let RunRanges: number[][] = [
   ],
 ];
 
-
-export let generateEncounterDeck = (runLength: RUN_LENGTH, threatLevel: THREAT_LEVEL): Encounter[] =>
+let entityId: number;
+export let generateEncounterDeck = (selectedRunLength: RUN_LENGTH, threatLevel: THREAT_LEVEL): Encounter[] =>
 {
-  if (runLength === RUN_UNCHARTED) runLength = rand(0, 2) as RUN_LENGTH;
+  entityId = 0;
+  let runLength: number = selectedRunLength;
+  if (selectedRunLength === RUN_UNCHARTED) runLength = rand(0, 2) as RUN_LENGTH;
+  else if (selectedRunLength === RUN_SPECIAL) runLength = 2;
+
   let encounterDeck: Encounter[] = [];
 
   let minMax = RunLengths[runLength];
@@ -117,33 +125,50 @@ export let generateEncounterDeck = (runLength: RUN_LENGTH, threatLevel: THREAT_L
   encounterDeck = shuffle(encounterDeck);
 
   let numberOfStations = runEncounters[0];
-  let interval = Math.ceil(encounterDeck.length / (numberOfStations + 1));
+  let interval = math.ceil(encounterDeck.length / (numberOfStations + 1));
   for (let i = 0; i < numberOfStations; i++)
   {
     encounterDeck.splice(interval * (i + 1), 0, createStation());
   }
 
-  encounterDeck.push(createStation());
+  if (selectedRunLength === RUN_SPECIAL)
+  {
+    encounterDeck.push(createAnomaly());
+  }
+  else
+  {
+    encounterDeck.push(createStation(true));
+  }
 
   let index = 0;
   for (let encounter of encounterDeck)
   {
-    encounter._position = rand(580 + index * 500, 920 + index * 500);
+    encounter._position = rand(400 + index * 500, 740 + index * 500);
     index++;
   }
 
   return encounterDeck;
 };
 
-let createStation = (): Encounter =>
+//#region Encounter Factories
+let createStation = (exit: boolean = false): Encounter =>
 {
-  return { _type: ENC_STATION, _yOffset: rand(-30, 30) };
+  return {
+    _id: entityId++,
+    _type: ENC_STATION,
+    _title: "station",
+    _yOffset: rand(-30, 30),
+    _scale: 3,
+    _exit: exit
+  };
 };
 function createStar(): Encounter
 {
   return {
+    _id: entityId++,
     _type: ENC_STAR,
-    _yOffset: rand(-30, 30),
+    _title: "star",
+    _yOffset: rand(-50, 20),
     _colour: STAR_COLOURS[rand(0, 2)],
     _scale: rand(8, 10),
     _researchable: true,
@@ -153,8 +178,10 @@ function createStar(): Encounter
 let createGasPlanet = (): Encounter =>
 {
   return {
+    _id: entityId++,
     _type: ENC_PLANET_GAS,
-    _yOffset: rand(-30, 30),
+    _title: "gas planet",
+    _yOffset: rand(-40, 30),
     _colour: GAS_PLANET_COLOURS[rand(0, 2)],
     _scale: rand(4, 7),
     _researchable: true,
@@ -164,7 +191,9 @@ let createGasPlanet = (): Encounter =>
 let createRockPlanet = (): Encounter =>
 {
   return {
+    _id: entityId++,
     _type: ENC_PLANET_ROCK,
+    _title: "rocky planet",
     _yOffset: rand(-30, 30),
     _colour: ROCK_PLANET_COLOURS[rand(0, 2)],
     _scale: rand(3, 5),
@@ -175,39 +204,52 @@ let createRockPlanet = (): Encounter =>
 let createAsteroid = (): Encounter =>
 {
   return {
+    _id: entityId++,
     _type: ENC_ASTEROID,
-    _yOffset: rand(-30, 30),
+    _title: "asteroid",
+    _yOffset: rand(-50, 50),
     _minable: true,
     _scale: rand(1, 2)
   };
 };
+let hpLevel = [3, 4, 5];
 let createPirate = (threatLevel: THREAT_LEVEL): Encounter =>
 {
-  // TODO(dbrad): scale based on threat level
   return {
+    _id: entityId++,
     _type: ENC_PIRATE,
+    _title: "pirate ship",
     _yOffset: rand(-30, 30),
-    _hp: 3,
-    _bounty: 100,
+    _maxHp: hpLevel[threatLevel],
+    _hp: hpLevel[threatLevel],
+    _bounty: rand(100, 200) * (threatLevel + 1),
     _hazardRange: 100
   };
 };
 let createSpaceBeast = (threatLevel: THREAT_LEVEL): Encounter =>
 {
-  // TODO(dbrad): scale based on threat level
   return {
+    _id: entityId++,
     _type: ENC_SPACE_BEAST,
+    _title: "???",
     _yOffset: rand(-30, 30),
+    _colour: SPACE_BEAST_PURPLE,
     _researchable: true,
-    _hp: 3,
-    _bounty: 100,
-    _hazardRange: 100
+    _maxHp: hpLevel[threatLevel],
+    _hp: hpLevel[threatLevel],
+    _hazardRange: 100,
+    _scale: 3
   };
 };
 let createAnomaly = (): Encounter =>
 {
   return {
+    _id: entityId++,
     _type: ENC_ANOMALY,
+    _title: "quantum anomaly",
     _yOffset: rand(-30, 30),
+    _scale: 3,
+    _exit: true
   };
 };
+//#endregion Encounter Factories

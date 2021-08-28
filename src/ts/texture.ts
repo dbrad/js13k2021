@@ -21,12 +21,10 @@ type TextureJson = {
 };
 
 type TextureAssetJson = {
-  _url: string;
   _textures: TextureJson[];
 };
 
 let sheet: TextureAssetJson = {
-  _url: "sheet.png",
   _textures: [
     {
       _type: "s",
@@ -38,7 +36,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+      _name: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
       _x: 0,
       _y: 0,
       _w: 8,
@@ -46,7 +44,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "(", ")", "!", "?", ".", ",", ";", ":", "'", "\"", "_", "-", "+", "/", "\\"],
+      _name: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "(", ")", "!", "?", ".", ",", ";", ":", "'", "\"", "=", "-", "+", "/", "\\"],
       _x: 0,
       _y: 8,
       _w: 8,
@@ -54,7 +52,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["p_ship", "star", "gas", "rock", "shld", "brk", "ast", "stn", "prt", "bst", "ano"],
+      _name: ["ps", "star", "gas", "rock", "shld", "brk", "ast", "stn", "prt", "bst", "ano"],
       _x: 0,
       _y: 16,
       _w: 16,
@@ -121,7 +119,7 @@ export let loadSpriteSheet = (): Promise<void> =>
         }
         resolve();
       });
-      image.src = sheet._url;
+      image.src = "data:image/webp;base64,UklGRvIDAABXRUJQVlA4TOUDAAAvz8AHEO+gKJLkJApYQir+TeXPzCSCbSRbbfCmCFJyGqJcWnAFeKSXKpOaSLaaq+miBvCGZyz81BLIpG1ivNeELwHB+v8BIQXZGNnICGFTEL4fzQYFkQayEQpiXFguFMQnYgddQmyA/mDfxN2A0yLbYZBl23bbNqCdiBETuqi4e/7zBB7ee4Cc/3Mj+g/BbRtJkpzspM9yVVcf+4XFqnRnIu0j1UCBQT+lKfKxkO/HaP8yDdyuPzdiCaBf/+PA69+4T4h9pBpw9stYpfQE41KmXWfvCjAwbnjz1ul5al5HJFrqvPZ+Ulg3WYauY+xvDMcstmNeZvp5QxaS2H6PsjAF/P77EOTkhYTPJM1I0mdIgcAn3lGD+AZc/EPnPQ9gbH56XU4/F4b7kbruSR/O+pS/eD6HlBtBGtK44zxO1I+cv2jahOOXGRec+ytnuER3UCDja1SRbWN9uvrrGkL2+o83EJ0vHNZCOhbyTPC5FBzT6feX7yAg6HTSl7sf8aMBxgj9Occ5EzSDN9bDBBM+fR+7/fD95MlktpmRiRs34BpdGKBP3//AfA7v5znk58OMGzIm8j3EAiM9NQz5yDA6r2e0kl/I92/OcwVm+1mYNl59AzegH7yBKGlKSIHIT+g739GomUT+B7qXhKuDJFytkhLvtNn6JNSu7QdXCyB51b3kFqsOFcmr7iQ5tas8X4U1rtJcAt0wTRFkXd/n8dDi0A1FrQpQi2lp1iis3FglJElqnFyVGXx9vwEfwW6LHwepS5lYKybqepu9YxOZ3I5G4W0iuZXP2muT1HhyVCbxYiJIJ9yULdt5JUMNm34kzrvRBViOjix/9UddfH+VdUNICGOgsXeale+SPv9I+s0vknTp0i3kSCXs8gbu+BtnyWaNJ6NdX+sWqVDpLMzi1UTLFvcB6CDJSZnxO/YrW7QMIlU3BJjiGMimdAJafG+Xpu0RtvaXAhXzHJ/EN68t/soGKdZ+0ZjQcTr7sYZzeCG66p+OWuzl8XJaTpfHTttjASoLx39llh7AXBqzqjQUsFb66t6AAaQZ/Nt29SDRrDgCXgmigWGXBAYsj/PwipJhVSu71KElJqdRA3B2MGacClO8dzpBeeQCz7v0LGmXnEdX5XlaeEXpwt/FZLBL9ztwWIl+wBzkIgQCp8BGgedQ3rhXznODmgankDq6Ex7UI7XfVXNQK/bg2Si+LN4Ko2KDU8SjVeV6m29GVwAmZR890McGUvY9XohDW/So/4RGViez1DjZVK/GjcP7CF4N0MIh+51VgNSKzIdwnm5TxeTZ060gSogSTOa+g3+KTu5p4Rrov/0/5QeN6HwBAA==";
     }
     catch (err)
     {
