@@ -210,7 +210,7 @@ let shipTimings = [32, 16, 16, 16, 16];
 let shipDistance = [1, 1, 2, 3, 4];
 export let updateAdventure = (now: number, delta: number): void =>
 {
-  node_enabled[stationButton] = false;
+  node_enabled[stationButton] = true;
 
   if (inputContext._fire === stationButton)
   {

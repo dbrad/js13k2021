@@ -1,14 +1,14 @@
 import { Align, createTextNode, updateTextNode } from "../nodes/text-node";
+import { CURRENCY_CREDITS, CURRENCY_MATERIALS, gameState } from "../game-state";
+import { GREY_999, HULL_RED, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_enabled, node_size } from "../scene-node";
+import { createButtonNode, node_button_text_id } from "../nodes/button-node";
 import { powerSound, zzfxP } from "../zzfx";
 import { systemNames, systemUpgradeCosts } from "../gameplay/systems";
 
-import { GREY_999 } from "../colour";
-import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
 import { createWindowNode } from "../nodes/window-node";
-import { gameState } from "../game-state";
 import { inputContext } from "../input";
 import { math } from "../math";
 import { popScene } from "../scene";
@@ -48,21 +48,18 @@ export let setupStation = (): number =>
   moveNode(upgradeHeader, divWidth / 2, 0);
   addChildNode(systemUpdatesDiv, upgradeHeader);
 
-  let shipUpgradesDiv = createWindowNode(divWidth, divHeight, divWidth + 8, 4);
-  addChildNode(stationWindow, shipUpgradesDiv);
-
-  let shipHeader = createTextNode("ship", 128, { _textAlign: Align.C, _scale: 2 });
-  moveNode(shipHeader, divWidth / 2, 0);
-  addChildNode(shipUpgradesDiv, shipHeader);
+  let otherShopDiv = createWindowNode(divWidth, divHeight, divWidth + 8, 4);
+  addChildNode(stationWindow, otherShopDiv);
 
   leaveStationButton = createButtonNode('leave', [divWidth, 50]);
-  addChildNode(shipUpgradesDiv, leaveStationButton);
+  moveNode(leaveStationButton, 0, divHeight - 50);
+  addChildNode(otherShopDiv, leaveStationButton);
 
   let upgradeHeight = 40;
   for (let i = 0; i < 5; i++)
   {
     systems[i] = [];
-    let h = i * upgradeHeight;
+    let h = 2 + i * upgradeHeight;
     let opt = { _textAlign: Align.R };
 
     let label = createTextNode(systemNames[i], 64, opt);
@@ -88,13 +85,35 @@ export let setupStation = (): number =>
     moveNode(soldOutLabel, divWidth - 76, 35 + h);
     addChildNode(systemUpdatesDiv, soldOutLabel);
 
-    let button = createButtonNode("upgrade", [148, 30]);
+    let button = createButtonNode("upgrade", [142, 30]);
     moveNode(button, divWidth - 150, 30 + h);
     addChildNode(systemUpdatesDiv, button);
     systems[i][PURCHASE_BUTTON] = button;
   }
-  // repair button
-  // hull upgrade button
+
+  let buyMaterialsLabel = createTextNode("buy raw materials 100cr = 25kg", 136);
+  moveNode(buyMaterialsLabel, 0, 8);
+  addChildNode(otherShopDiv, buyMaterialsLabel);
+
+  let buyMaterialsButton = createButtonNode("buy", [100, 32]);
+  moveNode(buyMaterialsButton, divWidth - 100, 0);
+  addChildNode(otherShopDiv, buyMaterialsButton);
+
+  let sellMaterialsLabel = createTextNode("sell raw materials 25kg = 75cr", 144);
+  moveNode(sellMaterialsLabel, 0, 48);
+  addChildNode(otherShopDiv, sellMaterialsLabel);
+
+  let sellMaterialsButton = createButtonNode("sell", [100, 32]);
+  moveNode(sellMaterialsButton, divWidth - 100, 40);
+  addChildNode(otherShopDiv, sellMaterialsButton);
+
+  let sellResearchLabel = createTextNode("sell research 64kb = 100cr", 104);
+  moveNode(sellResearchLabel, 0, 88);
+  addChildNode(otherShopDiv, sellResearchLabel);
+
+  let sellResearchButton = createButtonNode("sell", [100, 32]);
+  moveNode(sellResearchButton, divWidth - 100, 80);
+  addChildNode(otherShopDiv, sellResearchButton);
 
   return rootId;
 };
@@ -109,11 +128,19 @@ export let updateStation = (now: number, delta: number) =>
   for (let i = 0; i < 5; i++)
   {
     let level = gameState._systemLevels[i][1];
+    let creditCost = systemUpgradeCosts[level][0];
+    let materialCost = systemUpgradeCosts[level][1];
+    let hasEnoughCredits = gameState._currency[CURRENCY_CREDITS] >= creditCost;
+    let hasEnoughMaterials = gameState._currency[CURRENCY_MATERIALS] >= materialCost;
     updateTextNode(systems[i][LEVEL_LABEL], `lvl${ level }`);
     if (level < 4)
     {
-      updateTextNode(systems[i][COST_1_LABEL], `${ systemUpgradeCosts[level][0] }cr`);
-      updateTextNode(systems[i][COST_2_LABEL], `${ systemUpgradeCosts[level][1] }kg`);
+      updateTextNode(systems[i][COST_1_LABEL], `${ creditCost }cr`, { _colour: hasEnoughCredits ? WHITE : HULL_RED });
+      updateTextNode(systems[i][COST_2_LABEL], `${ materialCost }kg`, { _colour: hasEnoughCredits ? WHITE : HULL_RED });
+      if (level === 0)
+      {
+        updateTextNode(node_button_text_id[systems[i][PURCHASE_BUTTON]], "install");
+      }
     }
     else
     {
@@ -123,7 +150,13 @@ export let updateStation = (now: number, delta: number) =>
     }
     if (inputContext._fire === systems[i][PURCHASE_BUTTON])
     {
-      gameState._systemLevels[i][1] = math.min(4, gameState._systemLevels[i][1] + 1);
+      if (hasEnoughCredits && hasEnoughMaterials)
+      {
+        gameState._currency[CURRENCY_CREDITS] -= creditCost;
+        gameState._currency[CURRENCY_MATERIALS] -= materialCost;
+        gameState._systemLevels[i][1] = math.min(4, gameState._systemLevels[i][1] + 1);
+        updateTextNode(node_button_text_id[systems[i][PURCHASE_BUTTON]], "install");
+      }
     }
   }
 };

@@ -51,19 +51,19 @@ export let reset = (): void =>
 export let initGameState = (): void =>
 {
   gameState = {
-    _generatorLevel: 5,
+    _generatorLevel: 0,
     _fieldLevel: 0,
-    _hullLevel: 4,
+    _hullLevel: 0,
     _qLevel: 0,
     _currentHull: 4,
     _currentShield: 0,
     _availablePower: 3,
     _systemLevels: [
-      [0, 4],
-      [0, 4],
-      [0, 4],
-      [0, 4],
-      [0, 4],
+      [0, 1],
+      [0, 1],
+      [0, 1],
+      [0, 0],
+      [0, 0],
     ],
     _currency: [0, 0, 0, 0, 0, 0],
     _shipPosition: 0,

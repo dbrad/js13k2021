@@ -954,10 +954,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@netlify/build@^18.5.0":
-  version "18.5.0"
-  resolved "https://registry.yarnpkg.com/@netlify/build/-/build-18.5.0.tgz#429bd8e5cd60b7d6a407589e5d88f14f0bbdcdaa"
-  integrity sha512-csdnX7uYBTRR+dbLGzKMIRsRHhhAEtkVCBz+NmdlopaYyW7hHMhMayx7C1qxdB6rXqt7u8gP0Gq2tU9zVlgBnQ==
+"@netlify/build@^18.7.1":
+  version "18.7.2"
+  resolved "https://registry.yarnpkg.com/@netlify/build/-/build-18.7.2.tgz#cc20e1499e472d544be15a6e35feb55a89800f46"
+  integrity sha512-y3NxhI9AZB+6O0Oe6ubQMj4M+7IxKGPzZImuinrHucdI8gvUm7uBanRK3Pui8DPOcr1/g7h1l/nnndBCUc6L+g==
   dependencies:
     "@bugsnag/js" "^7.0.0"
     "@netlify/cache-utils" "^2.0.0"
@@ -1030,10 +1030,10 @@
     path-exists "^4.0.0"
     readdirp "^3.4.0"
 
-"@netlify/config@^15.0.0", "@netlify/config@^15.4.1":
-  version "15.4.1"
-  resolved "https://registry.yarnpkg.com/@netlify/config/-/config-15.4.1.tgz#ec2a1d0188d1d5644b7d7916914e6ec239e6250e"
-  integrity sha512-YGyA3EO/aiH9PNmhnzBO9qDPu297Q31ej1PQ1ed3Ecr35jmXCwSDaDr65G+6JPSjhOMjh3cuqRmzU3chctutMQ==
+"@netlify/config@^15.0.0", "@netlify/config@^15.5.0":
+  version "15.5.0"
+  resolved "https://registry.yarnpkg.com/@netlify/config/-/config-15.5.0.tgz#3e123057eb4170561a26284ff6ff693cf0f654d5"
+  integrity sha512-c+ICajSGQ7gD6O1V0wsl9SFxSC+owzg5JQyW9SBKV68nDxQBMwn31QHOHijopWeDPMQnp+gIHc2/wgwwtQ2YMQ==
   dependencies:
     "@ungap/from-entries" "^0.2.1"
     array-flat-polyfill "^1.0.1"
@@ -1454,9 +1454,9 @@
     universal-user-agent "^6.0.0"
 
 "@octokit/graphql@^4.5.8":
-  version "4.6.4"
-  resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-4.6.4.tgz#0c3f5bed440822182e972317122acb65d311a5ed"
-  integrity sha512-SWTdXsVheRmlotWNjKzPOb6Js6tjSqA2a8z9+glDJng0Aqjzti8MEWOtuT8ZSu6wHnci7LZNuarE87+WJBG4vg==
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-4.7.0.tgz#cbe12edc2bc61e9eaa5f9e5d092644c92b6fcb74"
+  integrity sha512-diY0qMPyQjfu4rDu3kDhJ9qIZadIm4IISO3RJSv9ajYUWJUCO0AykbgzLcg1xclxtXgzY583u3gAv66M6zz5SA==
   dependencies:
     "@octokit/request" "^5.6.0"
     "@octokit/types" "^6.0.3"
@@ -1746,9 +1746,9 @@
     form-data "^3.0.0"
 
 "@types/node@*":
-  version "16.7.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.7.2.tgz#0465a39b5456b61a04d98bd5545f8b34be340cb7"
-  integrity sha512-TbG4TOx9hng8FKxaVrCisdaxKxqEwJ3zwHoCWXZ0Jw6mnvTInpaB99/2Cy4+XxpXtjNv9/TgfGSvZFyfV/t8Fw==
+  version "16.7.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.7.4.tgz#68a9384694af63ceab8848e95d76d9a3519e84b6"
+  integrity sha512-25QXpDsTiDnl2rZGUenagVMwO46way8dOUdvoC3R3p+6TrbpxeJBo/v87BEG1IHI31Jhaa8lPeSHcqwxsVBeYQ==
 
 "@types/node@^14.0.27":
   version "14.17.12"
@@ -3775,9 +3775,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.811:
-  version "1.3.818"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.818.tgz#32ed024fa8316e5d469c96eecbea7d2463d80085"
-  integrity sha512-c/Z9gIr+jDZAR9q+mn40hEc1NharBT+8ejkarjbCDnBNFviI6hvcC5j2ezkAXru//bTnQp5n6iPi0JA83Tla1Q==
+  version "1.3.821"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.821.tgz#fe2ba857345b0c51f5226af5f96d6a309f00435b"
+  integrity sha512-IadPc2Ep1RGFYfLYdp0FTOgdPUDg3lvH7vqwGGdAuHtbnVc8M2qldS+SGESzmUaXpaSqpzROozQcBKFiRSKpOg==
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -3931,9 +3931,9 @@ es6-weak-map@~0.1.4:
     es6-symbol "~2.0.1"
 
 esbuild@^0.12.9:
-  version "0.12.23"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.12.23.tgz#fd40d70d3ec5e7893d8c5be655e3e38d096dd882"
-  integrity sha512-qvS4aKnmKikoWGscd5lVAzgobMovlH/JhaWitRiQ8xJx0x1Fym0pqVjMFs43Nvff8WpibeWm+fWoLK88T1U0Xw==
+  version "0.12.24"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.12.24.tgz#21966fad25a80f368ed308101e88102bce0dc68f"
+  integrity sha512-C0ibY+HsXzYB6L/pLWEiWjMpghKsIc58Q5yumARwBQsHl9DXPakW+5NI/Y9w4YXiz0PEP6XTGTT/OV4Nnsmb4A==
 
 escalade@^3.1.1:
   version "3.1.1"
@@ -6829,12 +6829,12 @@ nested-error-stacks@^2.0.0, nested-error-stacks@^2.1.0:
   integrity sha512-AO81vsIO1k1sM4Zrd6Hu7regmJN1NSiAja10gc4bX3F0wd+9rQmcuHQaHVQCYIEC8iFXnE+mavh23GOt7wBgug==
 
 netlify-cli@^6.7.1:
-  version "6.7.5"
-  resolved "https://registry.yarnpkg.com/netlify-cli/-/netlify-cli-6.7.5.tgz#713f67ef6e35b5089f4386590167a062d8a0759d"
-  integrity sha512-fkAG1T/B5n6b8qetcNpVTZotSBDL/2mR8iFwst8TYaS47NF+gDMq9mbG5HkBdP6pX320oina1fwrxvyUlWRsnw==
+  version "6.7.7"
+  resolved "https://registry.yarnpkg.com/netlify-cli/-/netlify-cli-6.7.7.tgz#ee50cc40f403b165b26f1ca3044706beab8749dd"
+  integrity sha512-3cmfjdil7AFhBE2zxhX2QI4S+TEc4jWTaBHECHfgSfoaQnLYV2RCfVBU8KrJqW1uyuBMi4Eo+n0JEkqyds+KUg==
   dependencies:
-    "@netlify/build" "^18.5.0"
-    "@netlify/config" "^15.4.1"
+    "@netlify/build" "^18.7.1"
+    "@netlify/config" "^15.5.0"
     "@netlify/framework-info" "^5.9.1"
     "@netlify/local-functions-proxy" "^1.1.1"
     "@netlify/plugin-edge-handlers" "^1.11.22"
@@ -8336,10 +8336,10 @@ rimraf@^3.0.0, rimraf@^3.0.2:
   dependencies:
     glob "^7.1.3"
 
-roadroller@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/roadroller/-/roadroller-1.2.1.tgz#ed6e0a1a5faedc959582627a67c21bfb63828770"
-  integrity sha512-BxEgXAU95hMEGGA3DCADkwMLCJSDB57o8wSpGUSIev2xvmeL4Ex6s640ogYC2rgdoom+RuJosxZQyuEYlahX3Q==
+roadroller@2:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/roadroller/-/roadroller-2.0.0.tgz#2d37bd8a1780ebfa8a649657db6c0d2fe55c1a25"
+  integrity sha512-soMdMCcA6na9QyvufEmjujV6+RXZm2WTbMlG1WbVsev7xMHBUglYSTEKdRIbQwnpyCzaL0QOQ/jyT6V+kKtVVQ==
   dependencies:
     esm "^3.2.25"
 
@@ -9399,9 +9399,9 @@ typescript@^3.9.7:
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
 
 typescript@^4.1.5, typescript@^4.2.4:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
-  integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.2.tgz#6d618640d430e3569a1dfb44f7d7e600ced3ee86"
+  integrity sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==
 
 uid-safe@2.1.5:
   version "2.1.5"
