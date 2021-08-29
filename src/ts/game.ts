@@ -160,6 +160,11 @@ window.addEventListener("load", async () =>
     gl_flush();
     tickStats(now, delta);
 
+    if (inputContext._fire >= -1 && inputContext._isTouch)
+    {
+      inputContext._cursor[0] = 0;
+      inputContext._cursor[1] = 0;
+    }
     inputContext._fire = -1;
 
     requestAnimationFrame(loop);

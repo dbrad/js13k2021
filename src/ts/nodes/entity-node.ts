@@ -1,14 +1,18 @@
 import { SHIELD_BLUE, WHITE, colourToHex } from "../colour";
-import { addChildNode, createNode, moveNode, node_position, node_render_function, node_visible } from "../scene-node";
+import { addChildNode, createNode, moveNode, node_enabled, node_position, node_render_function, node_visible } from "../scene-node";
+import { createRangeIndicator, updateRangeIndicator } from "./range-indicator";
 import { createSpriteNode, setSpriteNode } from "./sprite-node";
 
 import { gameState } from "../game-state";
+import { math } from "../math";
 import { pushQuad } from "../draw";
 import { rand } from "../random";
 
 let node_entity_tag: number[] = [];
 let node_entity_id: number[] = [];
-let node_entity_spriteId: number[] = [];
+let node_entity_sprite: number[] = [];
+
+let node_entity_range: number[] = [];
 
 let node_entity_shield_sprite: number[] = [];
 let node_entity_particles: [number, number, number][][] = [];
@@ -41,7 +45,11 @@ export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: 
 
   let sprite = createSpriteNode('#');
   addChildNode(nodeId, sprite);
-  node_entity_spriteId[nodeId] = sprite;
+  node_entity_sprite[nodeId] = sprite;
+
+  let range = createRangeIndicator(0x990000FF, 0);
+  addChildNode(nodeId, range);
+  node_entity_range[nodeId] = range;
 
   let shieldSprite = createSpriteNode("shld", { _scale: 4, _colour: SHIELD_BLUE });
   moveNode(shieldSprite, -16, -16);
@@ -51,7 +59,7 @@ export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: 
   node_entity_particles[nodeId] = [];
   for (let i = 0; i < 50; i++)
   {
-    node_entity_particles[nodeId].push([0, 10, rand(1, 5)]);
+    node_entity_particles[nodeId].push([rand(0, 20), 10, rand(1, 3)]);
   }
 
   node_entity_enable_animations[nodeId] = enableAnimations;
@@ -59,7 +67,7 @@ export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: 
   node_entity_yOffset[nodeId] = [0, 1];
   node_entity_offsetTimer[nodeId] = [0, 250];
 
-  setEntityNode(nodeId, tag);
+  updateEntityNode(nodeId, tag);
 
   return nodeId;
 };
@@ -67,10 +75,11 @@ export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: 
 export type EncounterParams = {
   _scale?: number,
   _colour?: number,
-  _enableAnimations?: boolean;
+  _enableAnimations?: boolean,
+  _range?: number;
 };
 let textureMap = ["stn", "star", "gas", "rock", "prt", "bst", "ast", "ano", "ps"];
-export let setEntityNode = (nodeId: number, tag: number, entityId: number = -1, extraParams: EncounterParams = {}): void =>
+export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -1, extraParams: EncounterParams = {}): void =>
 {
   if (entityId === node_entity_id[nodeId]) return;
   node_entity_id[nodeId] = entityId;
@@ -78,8 +87,10 @@ export let setEntityNode = (nodeId: number, tag: number, entityId: number = -1, 
   let textureName: string = "#";
   let colour = extraParams._colour || WHITE;
   let scale = extraParams._scale || 2;
-  let sprite = node_entity_spriteId[nodeId];
+  let sprite = node_entity_sprite[nodeId];
+  let range = extraParams._range || 0;
 
+  node_enabled[node_entity_range[nodeId]] = range > 0;
   node_entity_enable_animations[nodeId] = extraParams._enableAnimations || node_entity_enable_animations[nodeId];
 
   node_visible[sprite] = true;
@@ -95,6 +106,12 @@ export let setEntityNode = (nodeId: number, tag: number, entityId: number = -1, 
   }
 
   setSpriteNode(sprite, textureName, { _scale: scale, _colour: colour });
+
+  if (range > 0)
+  {
+    updateRangeIndicator(node_entity_range[nodeId], range);
+    moveNode(node_entity_range[nodeId], scale * 8, -60 + scale * 8);
+  }
   node_entity_tag[nodeId] = tag;
 };
 
@@ -117,7 +134,7 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
         offset[1] *= -1;
       }
       offset[0] += offset[1];
-      node_position[node_entity_spriteId[nodeId]][1] = offset[0];
+      node_position[node_entity_sprite[nodeId]][1] = offset[0];
     }
   }
 
@@ -129,11 +146,11 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
   {
     let particles = node_entity_particles[nodeId];
     let colour = 0;
-    let size = 0;
+    let offsetX = particleDirection === -1 ? 32 : 0;
     for (let particle of particles)
     {
-      particle[0] += particle[2] * 2;
-      if (particle[0] > 20)
+      particle[0] += particle[2];
+      if (particle[0] > 21)
       {
         particle[0] = 0;
         particle[1] = 10;
@@ -143,10 +160,8 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
       {
         particle[1] = 8;
       }
-      colour = colourToHex(255 - 225 * (particle[0] / 20), rand(175, 255), 100, 100);
-      size = 2;
-      let offsetX = particleDirection === -1 ? 32 : 0;
-      pushQuad(offsetX + particleDirection * -particle[0], offset[0] + particle[1] - size / 2, size, size, colour);
+      colour = colourToHex(math.max(0, 255 - math.ceil(255 * (particle[0] / 20))), rand(125, 255), 100, 100);
+      pushQuad(offsetX + particleDirection * -particle[0], offset[0] + particle[1] - 1, 2, 2, colour);
     }
   }
 };

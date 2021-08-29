@@ -48,9 +48,9 @@ export let createTextNode = (text: string, width: number, parameters: TextParame
   return nodeId;
 };
 
-export let updateTextNode = (nodeId: number, text: string, parameters: TextParameters = {}): void =>
+export let updateTextNode = (nodeId: number, text: string | null, parameters: TextParameters = {}): void =>
 {
-  node_text[nodeId] = text;
+  node_text[nodeId] = text || node_text[nodeId];
   node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
   node_text_colour[nodeId] = parameters._colour || node_text_colour[nodeId];
@@ -63,27 +63,36 @@ export let updateTextNode = (nodeId: number, text: string, parameters: TextParam
 
 export let parseText = (text: string, width: number, scale: number = 1): number =>
 {
+  if (textCache.has(`${ text }_${ scale }_${ width }`)) return textCache.get(`${ text }_${ scale }_${ width }`)?.length || 0;
+
   let letterSize: number = fontSize * scale;
-  let allWords: string[] = text.split(" ");
-  let lines: string[] = [];
-  let line: string[] = [];
-  for (let word of allWords)
+  let resultLines: string[] = [];
+  let resultLine: string[] = [];
+
+  let sourceLines = text.split("\n");
+  for (let sourceLine of sourceLines)
   {
-    line.push(word);
-    if ((line.join(" ").length) * letterSize > width)
+    let words: string[] = sourceLine.split(" ");
+    for (let word of words)
     {
-      let lastWord = line.pop();
-      assert(lastWord !== undefined, `No last word to pop found.`);
-      lines.push(line.join(" "));
-      line = [lastWord];
+      resultLine.push(word);
+      if ((resultLine.join(" ").length) * letterSize > width)
+      {
+        let lastWord = resultLine.pop();
+        assert(lastWord !== undefined, `No last word to pop found.`);
+        resultLines.push(resultLine.join(" "));
+        resultLine = [lastWord];
+      }
     }
+    if (resultLine.length > 0)
+    {
+      resultLines.push(resultLine.join(" "));
+    }
+    resultLine = [];
   }
-  if (line.length > 0)
-  {
-    lines.push(line.join(" "));
-  }
-  textCache.set(`${ text }_${ scale }_${ width }`, lines);
-  return lines.length;
+
+  textCache.set(`${ text }_${ scale }_${ width }`, resultLines);
+  return resultLines.length;
 };
 
 let renderTextNode = (nodeId: number, now: number, delta: number): void =>

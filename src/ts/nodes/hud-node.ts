@@ -1,10 +1,11 @@
+import { ENC_STATION, Encounter } from "../gameplay/encounters";
 import { GREY_6333, HULL_RED } from "../colour";
-import { TAG_ENTITY_NONE, createEntityNode, setEntityNode } from "./entity-node";
+import { TAG_ENTITY_NONE, createEntityNode, updateEntityNode } from "./entity-node";
 import { addChildNode, createNode, moveNode, node_render_function, node_visible } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "./segmented-bar-node";
 import { createTextNode, updateTextNode } from "./text-node";
 
-import { Encounter } from "../gameplay/encounters";
+import { CURRENCY_CREDITS_INCOMING } from "../game-state";
 import { assert } from "../debug";
 import { pushQuad } from "../draw";
 
@@ -23,7 +24,7 @@ export let createHUDNode = (): number =>
   addChildNode(nodeId, title);
   node_hud_title[nodeId] = title;
 
-  let description = createTextNode("", 96);
+  let description = createTextNode("", 320);
   moveNode(description, 2, 22);
   addChildNode(nodeId, description);
   node_hud_description[nodeId] = description;
@@ -48,7 +49,7 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   let description = node_hud_description[nodeId];
 
   node_visible[nodeId] = true;
-  setEntityNode(node_hud_entity[nodeId], encounter._type, encounter._id, { _scale: 1, _colour: encounter._colour });
+  updateEntityNode(node_hud_entity[nodeId], encounter._type, encounter._id, { _scale: 1, _colour: encounter._colour });
 
   node_visible[hpBar] = false;
   if (encounter._maxHp)
@@ -66,19 +67,35 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
     descriptionText.push("hazard");
     if (encounter._bounty)
     {
-      descriptionText.push(`bounty: ${ encounter._bounty }`);
+      let currency = encounter._bounty[1] === CURRENCY_CREDITS_INCOMING ? "cr" : "kb";
+      descriptionText.push(` (bounty: ${ encounter._bounty[0] }${ currency })\n`);
+    }
+    else
+    {
+      descriptionText.push("\n");
     }
   }
   if (encounter._minable)
   {
-    descriptionText.push("minable");
+    descriptionText.push("minable\n");
   }
   if (encounter._researchable)
   {
     descriptionText.push("researchable");
   }
+  if (encounter._type === ENC_STATION)
+  {
+    if (encounter._exit)
+    {
+      descriptionText.push("system exit");
+    }
+    else
+    {
+      descriptionText.push("ship upgrades");
+    }
+  }
 
-  updateTextNode(description, descriptionText.join(" "));
+  updateTextNode(description, descriptionText.join(""));
 
   updateTextNode(title, encounter._title);
 };

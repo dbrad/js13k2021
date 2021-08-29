@@ -1,6 +1,6 @@
-import { Align, createTextNode, parseText } from "./text-node";
-import { GREY_333, GREY_666, GREY_999 } from "../colour";
-import { addChildNode, createNode, moveNode, node_render_function, node_size } from "../scene-node";
+import { Align, createTextNode, parseText, updateTextNode } from "./text-node";
+import { GREY_222, GREY_333, GREY_666, GREY_999, WHITE } from "../colour";
+import { addChildNode, createNode, moveNode, node_interactive, node_render_function, node_size } from "../scene-node";
 import { powerSound, zzfxP } from "../zzfx";
 
 import { inputContext } from "../input";
@@ -26,7 +26,13 @@ let renderButtonNode = (nodeId: number, now: number, delta: number): void =>
 {
   let size = node_size[nodeId];
   let colour = GREY_666;
-  if (inputContext._fire === nodeId)
+  updateTextNode(node_button_text_id[nodeId], null, { _colour: WHITE });
+  if (!node_interactive[nodeId])
+  {
+    colour = GREY_222;
+    updateTextNode(node_button_text_id[nodeId], null, { _colour: GREY_666 });
+  }
+  else if (inputContext._fire === nodeId)
   {
     zzfxP(powerSound);
   }

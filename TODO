@@ -30,7 +30,8 @@
     ✔ Change the code so the speed can be controlled via time instead of per frame speed @done(21-08-19 20:34)
   ✔ System Node @done(21-08-15 14:54)
   ✔ Generator Node @done(21-08-15 14:54)
-  ☐ In-Game Menu
+☐ Add Fullscreen support
+☐ In-Game Menu
     ☐ Save and Quit
     ☐ Fullscreen
     ☐ Mute Music
@@ -38,6 +39,7 @@
   ✔ Systems @done(21-08-22 16:22)
     ✔ Hook up to data @done(21-08-15 19:15)
     ✔ Program in the effects of the systems per level @done(21-08-22 16:22)
+    ✔ Add disabled / not installed state @done(21-08-28 07:58)
   ✔ Spawn and scroll the deck @done(21-08-19 20:38)
   ✔ Window of Opertunity @done(21-08-16 19:12)
     ✔ Add VFlip @done(21-08-16 19:12)
@@ -50,13 +52,16 @@
   ✔ Currency Display @done(21-08-22 11:20)
   ✔ Progress Bar Node @done(21-08-23 20:12)
   ☐ QDrive
-    - What ratio of distance to qdrive should I use? (7500-8000 is short run, how many short runs would I want to be 1 level of qdrive?)
-      - 1,2,3,6,9 * 6000; 6000, 12000, 18000, 36000, 54000
   ✔ Shop Button @done(21-08-27 07:04)
-  ☐ Add Hazard / Player Damage
-☐ Store / Upgrades Scene !!!
+  ☐ Timed saves (10s?)
+  ✔ Add Hazard / Player Damage @done(21-08-28 20:10)
+  ✔ Exit mechanic @done(21-08-28 19:10)
+  ☐ Add Keyboard controls (1-5 + shift + 1-5)
+✔ Store / Upgrades Scene !!! @done(21-08-28 11:03)
+  ✔ Repair Hull @done(21-08-28 11:03)
+  ✔ Upgrade Hull @done(21-08-28 11:03)
+  ✔ Logic for Buy and Sell @done(21-08-28 11:03)
 ☐ End Game / Scoring / Metadata / Score History??
-☐ Add Fullscreen support
 
 Bonus Ideas
 ☐ Add explosion particle effects?
@@ -68,5 +73,5 @@ Space Saving Ideas
   ✔ Remove node movement code related to Interpolation @done(21-08-24 07:22)
   ✘ Add smaller solution for scene transition fade @cancelled(21-08-24 07:22)
 ✔ Remove calcuate node size code @done(21-08-24 07:22)
-☐ Move all text to a text.ts module / reduce repeats
+☐ Move all text to a text.ts module / reduce repeats?
 ☐ Collapse some constants that are the same across domains?

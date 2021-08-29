@@ -21,7 +21,7 @@
     "release:gulp": "gulp build",
     "release:server": "node scripts/server.js",
     "release:build": "esbuild build/release/ts/game.ts --bundle --format=iife | terser --config-file scripts/terser.config.json -o build/release/www/game.js",
-    "release:roadroll": "yarn roadroller .\\build\\release\\www\\game.js -Zab0 -Zlr750 -Zmc4 -Zmd10 -S0,1,2,3,6,7,13,21,42,50,57,371 -o .\\build\\release\\www\\game.js",
+    "release:roadroll": "yarn roadroller .\\build\\release\\www\\game.js -O1 -Zab0 -Zlr750 -Zmc4 -Zmd10 -S0,1,2,3,6,7,13,42,57,371,400,425 -o .\\build\\release\\www\\game.js",
     "inline-files": "html-inline -i ./build/release/www/index.html -o ./dist/src/index.html",
     "zip": ".\\tools\\7z\\7za a -tzip dist\\game.zip \".\\dist\\src\\*\" && ./tools/ect-0.8.3.exe -9 -zip ./dist/game.zip  && yarn size -s",
     "size": "yarn node ./scripts/check-file-size.js",

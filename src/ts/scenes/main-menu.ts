@@ -1,8 +1,9 @@
 import { Align, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_enabled, node_size } from "../scene-node";
-import { hasSaveFile, initGameState, loadGame } from "../game-state";
+import { gameState, hasSaveFile, initGameState, loadGame, saveGame } from "../game-state";
 
+import { AdventureScene } from "./adventure";
 import { MissionSelectScene } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
 import { inputContext } from "../input";
@@ -47,18 +48,27 @@ export let updateMainMenu = (now: number, delta: number): void =>
       if (confirm("?"))
       {
         initGameState();
+        saveGame();
         pushScene(MissionSelectScene);
       }
     }
     else
     {
       initGameState();
+      saveGame();
       pushScene(MissionSelectScene);
     }
   }
   else if (inputContext._fire === loadButtonId)
   {
     loadGame();
-    pushScene(MissionSelectScene);
+    if (gameState._adventureReward > 0)
+    {
+      pushScene(AdventureScene);
+    }
+    else
+    {
+      pushScene(MissionSelectScene);
+    }
   }
 };

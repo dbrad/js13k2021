@@ -1,3 +1,4 @@
+import { CURRENCY_CREDITS_INCOMING, CURRENCY_RESEARCH_INCOMING } from "../game-state";
 import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
 import { rand, shuffle } from "../random";
 
@@ -27,7 +28,8 @@ export type Encounter = {
   _hp?: number,
   _maxHp?: number,
   _hazardRange?: number,
-  _bounty?: number,
+  _attack?: [number, number],
+  _bounty?: [number, number],
   _exit?: boolean,
 };
 
@@ -77,7 +79,7 @@ export let generateEncounterDeck = (selectedRunLength: RUN_LENGTH, threatLevel: 
     {
       if (i === ENC_STAR)
       {
-        encounterDeck.push(createStar());
+        encounterDeck.push(createStar(threatLevel));
       }
       else if (i === ENC_PLANET_GAS)
       {
@@ -143,6 +145,10 @@ export let generateEncounterDeck = (selectedRunLength: RUN_LENGTH, threatLevel: 
   let index = 0;
   for (let encounter of encounterDeck)
   {
+    if (encounter._exit)
+    {
+      index++;
+    }
     encounter._position = rand(400 + index * 500, 740 + index * 500);
     index++;
   }
@@ -162,17 +168,20 @@ let createStation = (exit: boolean = false): Encounter =>
     _exit: exit
   };
 };
-function createStar(): Encounter
+function createStar(threatLevel: THREAT_LEVEL): Encounter
 {
+  let _scale = rand(8, 10);
+  let cd = 1500 - (250 * threatLevel);
   return {
     _id: entityId++,
     _type: ENC_STAR,
     _title: "star",
     _yOffset: rand(-50, 20),
     _colour: STAR_COLOURS[rand(0, 2)],
-    _scale: rand(8, 10),
     _researchable: true,
-    _hazardRange: 100
+    _scale,
+    _hazardRange: _scale * 8 + 16,
+    _attack: [0, cd]
   };
 }
 let createGasPlanet = (): Encounter =>
@@ -215,6 +224,7 @@ let createAsteroid = (): Encounter =>
 let hpLevel = [3, 4, 5];
 let createPirate = (threatLevel: THREAT_LEVEL): Encounter =>
 {
+  let cd = 1500 - (250 * threatLevel);
   return {
     _id: entityId++,
     _type: ENC_PIRATE,
@@ -222,12 +232,14 @@ let createPirate = (threatLevel: THREAT_LEVEL): Encounter =>
     _yOffset: rand(-30, 30),
     _maxHp: hpLevel[threatLevel],
     _hp: hpLevel[threatLevel],
-    _bounty: rand(100, 200) * (threatLevel + 1),
-    _hazardRange: 100
+    _bounty: [rand(100, 200) * (threatLevel + 1), CURRENCY_CREDITS_INCOMING],
+    _hazardRange: 96,
+    _attack: [0, cd]
   };
 };
 let createSpaceBeast = (threatLevel: THREAT_LEVEL): Encounter =>
 {
+  let cd = 1250 - (250 * threatLevel);
   return {
     _id: entityId++,
     _type: ENC_SPACE_BEAST,
@@ -237,7 +249,9 @@ let createSpaceBeast = (threatLevel: THREAT_LEVEL): Encounter =>
     _researchable: true,
     _maxHp: hpLevel[threatLevel],
     _hp: hpLevel[threatLevel],
-    _hazardRange: 100,
+    _hazardRange: 48,
+    _attack: [0, cd],
+    _bounty: [rand(100, 200) * (threatLevel + 1), CURRENCY_RESEARCH_INCOMING],
     _scale: 3
   };
 };

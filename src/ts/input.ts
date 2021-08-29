@@ -7,7 +7,8 @@ export let inputContext = {
   _mouseDown: false,
   _hot: -1,
   _active: -1,
-  _fire: -1
+  _fire: -1,
+  _isTouch: false
 };
 
 export let clearInput = (): void =>
@@ -27,6 +28,7 @@ let isTouch = (e: Event | PointerEvent | TouchEvent): e is TouchEvent =>
 let pointerMove = (e: PointerEvent | TouchEvent) =>
 {
   let canvasBounds = canvasRef.getBoundingClientRect();
+  inputContext._isTouch = isTouch(e);
   if (isTouch(e))
   {
     e.preventDefault();
@@ -42,6 +44,7 @@ let pointerMove = (e: PointerEvent | TouchEvent) =>
 
 let pointerDown = (e: PointerEvent | TouchEvent) =>
 {
+  inputContext._isTouch = isTouch(e);
   if (isTouch(e))
   {
     let canvasBounds = canvasRef.getBoundingClientRect();
@@ -55,7 +58,7 @@ let pointerDown = (e: PointerEvent | TouchEvent) =>
   inputContext._mouseDown = true;
 };
 
-let pointerUp = (_: PointerEvent | TouchEvent) =>
+let pointerUp = (e: PointerEvent | TouchEvent) =>
 {
   inputContext._mouseDown = false;
 };
