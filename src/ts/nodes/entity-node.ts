@@ -7,6 +7,7 @@ import { gameState } from "../game-state";
 import { math } from "../math";
 import { pushQuad } from "../draw";
 import { rand } from "../random";
+import { txt_star } from "../text";
 
 let node_entity_tag: number[] = [];
 let node_entity_id: number[] = [];
@@ -24,16 +25,16 @@ let node_entity_yOffset: [number, number][] = [];
 // curent timer value, timer duration value
 let node_entity_offsetTimer: [number, number][] = [];
 
-export let TAG_ENTITY_NONE = -1;
-export let TAG_ENTITY_STATION = 0;
-export let TAG_ENTITY_STAR = 1;
-export let TAG_ENTITY_GAS_PLANET = 2;
-export let TAG_ENTITY_ROCK_PLANET = 3;
-export let TAG_ENTITY_PIRATE_SHIP = 4;
-export let TAG_ENTITY_SPACE_BEAST = 5;
-export let TAG_ENTITY_ASTEROID = 6;
-export let TAG_ENTITY_ANOMALY = 7;
-export let TAG_ENTITY_PLAYER_SHIP = 8;
+export const TAG_ENTITY_NONE = -1;
+export const TAG_ENTITY_STATION = 0;
+export const TAG_ENTITY_STAR = 1;
+export const TAG_ENTITY_GAS_PLANET = 2;
+export const TAG_ENTITY_ROCK_PLANET = 3;
+export const TAG_ENTITY_PIRATE_SHIP = 4;
+export const TAG_ENTITY_SPACE_BEAST = 5;
+export const TAG_ENTITY_ASTEROID = 6;
+export const TAG_ENTITY_ANOMALY = 7;
+export const TAG_ENTITY_PLAYER_SHIP = 8;
 
 
 export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: boolean = true): number =>
@@ -78,7 +79,7 @@ export type EncounterParams = {
   _enableAnimations?: boolean,
   _range?: number;
 };
-let textureMap = ["stn", "star", "gas", "rock", "prt", "bst", "ast", "ano", "ps"];
+let textureMap = ["stn", txt_star, "gas", "rock", "prt", "bst", "ast", "ano", "ps"];
 export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -1, extraParams: EncounterParams = {}): void =>
 {
   if (entityId === node_entity_id[nodeId]) return;

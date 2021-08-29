@@ -12,7 +12,7 @@ type Scene =
     _rootId: number,
     _updateFn: (now: number, delta: number) => void;
   };
-let TRANSITION_KEY = 'xsit';
+let TRANSITION_KEY = `xsit`;
 let transitionColour = 0;
 
 let Scenes: Map<number, Scene> = new Map();

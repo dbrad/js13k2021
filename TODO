@@ -14,15 +14,21 @@
     ✔ Progress @done(21-08-13 13:25)
 
 ✘ Save file system (3 Saves) @cancelled(21-08-22 20:21)
-☐ Main Menu
+✔ Main Menu @done(21-08-29 13:15)
   ✔ New Game @done(21-08-22 19:47)
   ✔ Load Game @done(21-08-22 19:47)
-  ☐ Import/Export Data?
+  ✘ Import/Export Data? @cancelled(21-08-29 13:15)
 ☐ Mission Select / Contract Select
   ✔ Deck generation @done(21-08-19 20:34)
   ☐ Add ship select if new game
     ☐ Coil ship goes here!
   ☐ Add contract generation?
+  ✔ Add Fullscreen support @done(21-08-29 10:14)
+✔ In-Game Menu @done(21-08-29 15:41)
+  ✔ Save and Quit @done(21-08-29 10:14)
+  ✔ Fullscreen @done(21-08-29 10:14)
+  ✔ Mute Music @done(21-08-29 15:41)
+✔ Muuuusic @done(21-08-29 15:41)
 ☐ Game Screen
   ✔ Player Sprite @done(21-08-13 20:15)
   ✔ Engine Particles @done(21-08-13 20:15)
@@ -30,11 +36,6 @@
     ✔ Change the code so the speed can be controlled via time instead of per frame speed @done(21-08-19 20:34)
   ✔ System Node @done(21-08-15 14:54)
   ✔ Generator Node @done(21-08-15 14:54)
-☐ Add Fullscreen support
-☐ In-Game Menu
-    ☐ Save and Quit
-    ☐ Fullscreen
-    ☐ Mute Music
   ✔ Hull + Shield UI @done(21-08-15 14:55)
   ✔ Systems @done(21-08-22 16:22)
     ✔ Hook up to data @done(21-08-15 19:15)
@@ -51,20 +52,22 @@
   ✔ HUD @done(21-08-21 14:28)
   ✔ Currency Display @done(21-08-22 11:20)
   ✔ Progress Bar Node @done(21-08-23 20:12)
-  ☐ QDrive
+  ✔ QDrive @done(21-08-29 14:58)
   ✔ Shop Button @done(21-08-27 07:04)
   ☐ Timed saves (10s?)
   ✔ Add Hazard / Player Damage @done(21-08-28 20:10)
   ✔ Exit mechanic @done(21-08-28 19:10)
-  ☐ Add Keyboard controls (1-5 + shift + 1-5)
 ✔ Store / Upgrades Scene !!! @done(21-08-28 11:03)
   ✔ Repair Hull @done(21-08-28 11:03)
   ✔ Upgrade Hull @done(21-08-28 11:03)
   ✔ Logic for Buy and Sell @done(21-08-28 11:03)
+☐ Prestige Effect (white out)
 ☐ End Game / Scoring / Metadata / Score History??
+☐ Tutorial
 
 Bonus Ideas
 ☐ Add explosion particle effects?
+☐ Add Keyboard controls (1-5 + shift + 1-5)
 
 Space Saving Ideas
 ✔ Convert all functions to export let = => @done(21-08-19 06:48)
@@ -73,5 +76,5 @@ Space Saving Ideas
   ✔ Remove node movement code related to Interpolation @done(21-08-24 07:22)
   ✘ Add smaller solution for scene transition fade @cancelled(21-08-24 07:22)
 ✔ Remove calcuate node size code @done(21-08-24 07:22)
-☐ Move all text to a text.ts module / reduce repeats?
-☐ Collapse some constants that are the same across domains?
+✘ Move all text to a text.ts module / reduce repeats? @cancelled(21-08-29 13:16)
+✘ Replace all constants with numbers? (esbuild wont do const enums :[) @cancelled(21-08-29 13:16)

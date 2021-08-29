@@ -1,19 +1,20 @@
 import { CURRENCY_CREDITS_INCOMING, CURRENCY_RESEARCH_INCOMING } from "../game-state";
 import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
 import { rand, shuffle } from "../random";
+import { txt_planet_gas, txt_planet_rock, txt_star, txt_station } from "../text";
 
 import { math } from "../math";
 import { v2 } from "../v2";
 
 export type ENCOUNTER_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-export let ENC_STATION: ENCOUNTER_TYPE = 0;
-export let ENC_STAR: ENCOUNTER_TYPE = 1;
-export let ENC_PLANET_GAS: ENCOUNTER_TYPE = 2;
-export let ENC_PLANET_ROCK: ENCOUNTER_TYPE = 3;
-export let ENC_PIRATE: ENCOUNTER_TYPE = 4;
-export let ENC_SPACE_BEAST: ENCOUNTER_TYPE = 5;
-export let ENC_ASTEROID: ENCOUNTER_TYPE = 6;
-export let ENC_ANOMALY: ENCOUNTER_TYPE = 7;
+export const ENC_STATION: ENCOUNTER_TYPE = 0;
+export const ENC_STAR: ENCOUNTER_TYPE = 1;
+export const ENC_PLANET_GAS: ENCOUNTER_TYPE = 2;
+export const ENC_PLANET_ROCK: ENCOUNTER_TYPE = 3;
+export const ENC_PIRATE: ENCOUNTER_TYPE = 4;
+export const ENC_SPACE_BEAST: ENCOUNTER_TYPE = 5;
+export const ENC_ASTEROID: ENCOUNTER_TYPE = 6;
+export const ENC_ANOMALY: ENCOUNTER_TYPE = 7;
 
 export type Encounter = {
   _id: number,
@@ -33,18 +34,24 @@ export type Encounter = {
   _exit?: boolean,
 };
 
+export type Contract = {
+  _length: RUN_LENGTH,
+  _threat: THREAT_LEVEL,
+  _runReward: number;
+};
+
 export type RUN_LENGTH = 0 | 1 | 2 | 3 | 4;
 
-export let RUN_SHORT: RUN_LENGTH = 0;
-export let RUN_MEDIUM: RUN_LENGTH = 1;
-export let RUN_LONG: RUN_LENGTH = 2;
-export let RUN_UNCHARTED: RUN_LENGTH = 3;
-export let RUN_SPECIAL: RUN_LENGTH = 4;
+export const RUN_SHORT: RUN_LENGTH = 0;
+export const RUN_MEDIUM: RUN_LENGTH = 1;
+export const RUN_LONG: RUN_LENGTH = 2;
+export const RUN_UNCHARTED: RUN_LENGTH = 3;
+export const RUN_SPECIAL: RUN_LENGTH = 4;
 
 export type THREAT_LEVEL = 0 | 1 | 2;
-export let THREAT_LOW: THREAT_LEVEL = 0;
-export let THREAT_MEDIUM: THREAT_LEVEL = 1;
-export let THREAT_HIGH: THREAT_LEVEL = 2;
+export const THREAT_LOW: THREAT_LEVEL = 0;
+export const THREAT_MEDIUM: THREAT_LEVEL = 1;
+export const THREAT_HIGH: THREAT_LEVEL = 2;
 
 let RunLengths: v2[] = [[13, 15], [26, 30], [39, 45], [15, 45], [50, 50]];
 let RunRanges: number[][] = [
@@ -162,7 +169,7 @@ let createStation = (exit: boolean = false): Encounter =>
   return {
     _id: entityId++,
     _type: ENC_STATION,
-    _title: "station",
+    _title: txt_station,
     _yOffset: rand(-30, 30),
     _scale: 3,
     _exit: exit
@@ -175,7 +182,7 @@ function createStar(threatLevel: THREAT_LEVEL): Encounter
   return {
     _id: entityId++,
     _type: ENC_STAR,
-    _title: "star",
+    _title: txt_star,
     _yOffset: rand(-50, 20),
     _colour: STAR_COLOURS[rand(0, 2)],
     _researchable: true,
@@ -189,7 +196,7 @@ let createGasPlanet = (): Encounter =>
   return {
     _id: entityId++,
     _type: ENC_PLANET_GAS,
-    _title: "gas planet",
+    _title: txt_planet_gas,
     _yOffset: rand(-40, 30),
     _colour: GAS_PLANET_COLOURS[rand(0, 2)],
     _scale: rand(4, 7),
@@ -202,7 +209,7 @@ let createRockPlanet = (): Encounter =>
   return {
     _id: entityId++,
     _type: ENC_PLANET_ROCK,
-    _title: "rocky planet",
+    _title: txt_planet_rock,
     _yOffset: rand(-30, 30),
     _colour: ROCK_PLANET_COLOURS[rand(0, 2)],
     _scale: rand(3, 5),

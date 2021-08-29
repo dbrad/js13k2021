@@ -1,4 +1,4 @@
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
+import { SCREEN_HEIGHT, SCREEN_WIDTH, doc } from "./screen";
 
 import { math } from "./math";
 
@@ -22,7 +22,7 @@ let canvasRef: HTMLCanvasElement;
 
 let isTouch = (e: Event | PointerEvent | TouchEvent): e is TouchEvent =>
 {
-  return (e.type[0] === "t");
+  return (e.type[0] === `t`);
 };
 
 let pointerMove = (e: PointerEvent | TouchEvent) =>
@@ -67,12 +67,12 @@ export let initializeInput = (canvas: HTMLCanvasElement) =>
 {
   canvasRef = canvas;
 
-  document.addEventListener("pointermove", pointerMove);
-  document.addEventListener("touchmove", pointerMove);
+  doc.addEventListener(`pointermove`, pointerMove);
+  doc.addEventListener(`touchmove`, pointerMove);
 
-  canvas.addEventListener("pointerdown", pointerDown);
-  canvas.addEventListener("touchstart", pointerDown);
+  canvas.addEventListener(`pointerdown`, pointerDown);
+  canvas.addEventListener(`touchstart`, pointerDown);
 
-  canvas.addEventListener("pointerup", pointerUp);
-  canvas.addEventListener("touchend", pointerUp);
+  canvas.addEventListener(`pointerup`, pointerUp);
+  canvas.addEventListener(`touchend`, pointerUp);
 };

@@ -1,43 +1,29 @@
-import { AdventureScene, setupAdventure, updateAdventure } from "./scenes/adventure";
-import { Align, createTextNode } from "./nodes/text-node";
+import { Align_Center, createTextNode } from "./nodes/text-node";
 import { ENGINES, gameState, initGameState } from "./game-state";
 import { Interpolators, interpolate } from "./interpolate";
-import { MainMenuScene, setupMainMenu, updateMainMenu } from "./scenes/main-menu";
-import { MissionSelectScene, setupMissionSelect, updateMissionSelect } from "./scenes/mission-select";
-import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
-import { StationScene, setupStation, updateStation } from "./scenes/station";
+import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, setupScreen } from "./screen";
 import { gl_clear, gl_flush, gl_getContext, gl_init, gl_setClear } from "./gl";
 import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
 import { moveNode, renderNode } from "./scene-node";
 import { registerScene, renderScene, updateScene } from "./scene";
+import { setupAudio, startMusic } from "./zzfx";
 
+import { Adventure } from "./scenes/adventure";
+import { GameMenu } from "./scenes/game-menu";
+import { MainMenu } from "./scenes/main-menu";
+import { MissionSelect } from "./scenes/mission-select";
+import { Station } from "./scenes/station";
 import { assert } from "./debug";
 import { colourToHex } from "./colour";
 import { loadSpriteSheet } from "./texture";
 import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
-import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
 {
-  document.title = "2D1D4X13K";
-  let css = "margin:0;padding:0;background-color:#060606;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;";
-  document.documentElement.style.cssText = css;
-  document.body.style.cssText = css;
-
-  let stage = document.createElement("div");
-  stage.style.cssText = "display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vw*(9/16));max-height:100vh;width:100vw;";
-  document.body.appendChild(stage);
-
-  let canvas = document.createElement("canvas");
-  canvas.style.cssText = "height:100%;image-rendering:optimizeSpeed;image-rendering:pixelated;";
-  stage.appendChild(canvas);
-
-  assert(canvas !== null, `Unable to find canvas element on index.html`);
-  canvas.width = SCREEN_WIDTH;
-  canvas.height = SCREEN_HEIGHT;
+  let canvas = setupScreen();
   let context = gl_getContext(canvas);
   gl_init(context);
   await loadSpriteSheet();
@@ -51,24 +37,26 @@ window.addEventListener("load", async () =>
   {
     playing = true;
     assert(canvas !== null, `Unable to find canvas element on index.html`);
-    canvas.removeEventListener("pointerdown", loadGame);
-    canvas.removeEventListener("touchstart", loadGame);
+    canvas.removeEventListener(`pointerdown`, loadGame);
+    canvas.removeEventListener(`touchstart`, loadGame);
 
     initializeInput(canvas);
     initGameState();
 
     setupAudio();
-    registerScene(MainMenuScene, setupMainMenu, updateMainMenu);
-    registerScene(MissionSelectScene, setupMissionSelect, updateMissionSelect);
-    registerScene(AdventureScene, setupAdventure, updateAdventure);
-    registerScene(StationScene, setupStation, updateStation);
+    registerScene(MainMenu._sceneId, MainMenu._setup, MainMenu._update);
+    registerScene(MissionSelect._sceneId, MissionSelect._setup, MissionSelect._update);
+    registerScene(Adventure._sceneId, Adventure._setup, Adventure._update);
+    registerScene(Station._sceneId, Station._setup, Station._update);
+    registerScene(GameMenu._sceneId, GameMenu._setup, GameMenu._update);
 
     makeStars();
+    startMusic();
   };
 
-  canvas.addEventListener("pointerdown", loadGame);
-  canvas.addEventListener("touchstart", loadGame);
-  let touchToPlayId = createTextNode("touch to start", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
+  canvas.addEventListener(`pointerdown`, loadGame);
+  canvas.addEventListener(`touchstart`, loadGame);
+  let touchToPlayId = createTextNode(`touch to start`, SCREEN_WIDTH, { _scale: 1, _textAlign: Align_Center });
   moveNode(touchToPlayId, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
 
   // x,y,z,timer

@@ -36,7 +36,7 @@ export let gl_getContext = (canvas: HTMLCanvasElement): WebGLRenderingContext =>
 {
   width = canvas.width;
   height = canvas.height;
-  let context = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance", preserveDrawingBuffer: true });
+  let context = canvas.getContext(`webgl`, { alpha: false, antialias: false, depth: false, powerPreference: `high-performance`, preserveDrawingBuffer: true });
   assert(context !== null, `Unable to get GL context.`);
   return context;
 };
@@ -100,9 +100,9 @@ export let gl_init = (context: WebGLRenderingContext): void =>
   ctx.bufferSubData(34963, 0, vIndexData);
   ctx.bindBuffer(34962, vertexBuffer);
 
-  vertexAttr = ctx.getAttribLocation(shader, "v");
-  textureAttr = ctx.getAttribLocation(shader, "t");
-  colourAttr = ctx.getAttribLocation(shader, "c");
+  vertexAttr = ctx.getAttribLocation(shader, `v`);
+  textureAttr = ctx.getAttribLocation(shader, `t`);
+  colourAttr = ctx.getAttribLocation(shader, `c`);
 
   ctx.enableVertexAttribArray(vertexAttr);
   ctx.vertexAttribPointer(vertexAttr, 2, 5126, false, VERTEX_SIZE, 0);

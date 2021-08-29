@@ -1,4 +1,5 @@
 import { assert } from "./debug";
+import { doc } from "./screen";
 import { gl_createTexture } from "./gl";
 
 export type Texture = {
@@ -79,9 +80,9 @@ export let loadSpriteSheet = (): Promise<void> =>
     {
       image.addEventListener("load", () =>
       {
-        let canvas = document.createElement("canvas");
-        canvas.width = image.width;
-        canvas.height = image.height;
+        let canvas = doc.createElement("canvas");
+        let width = canvas.width = image.width;
+        let height = canvas.height = image.height;
         canvas.getContext("2d")?.drawImage(image, 0, 0);
 
         let glTexture: WebGLTexture = gl_createTexture(canvas);
@@ -94,24 +95,24 @@ export let loadSpriteSheet = (): Promise<void> =>
               _atlas: glTexture,
               _w: texture._w,
               _h: texture._h,
-              _u0: texture._x / canvas.width,
-              _v0: texture._y / canvas.height,
-              _u1: (texture._x + texture._w) / canvas.width,
-              _v1: (texture._y + texture._h) / canvas.height
+              _u0: texture._x / width,
+              _v0: texture._y / height,
+              _u1: (texture._x + texture._w) / width,
+              _v1: (texture._y + texture._h) / height
             });
           }
           else
           {
-            for (let ox: number = texture._x, i: number = 0; ox < canvas.width; ox += texture._w)
+            for (let ox: number = texture._x, i: number = 0; ox < width; ox += texture._w)
             {
               TEXTURE_CACHE.set(texture._name[i], {
                 _atlas: glTexture,
                 _w: texture._w,
                 _h: texture._h,
-                _u0: ox / canvas.width,
-                _v0: texture._y / canvas.height,
-                _u1: (ox + texture._w) / canvas.width,
-                _v1: (texture._y + texture._h) / canvas.height
+                _u0: ox / width,
+                _v0: texture._y / height,
+                _u1: (ox + texture._w) / width,
+                _v1: (texture._y + texture._h) / height
               });
               i++;
             }

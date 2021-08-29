@@ -5,18 +5,16 @@ import { WHITE } from "../colour";
 import { assert } from "../debug";
 import { getTexture } from "../texture";
 import { math } from "../math";
+import { txt_empty_string } from "../text";
 
-export enum Align
-{
-  L,
-  C,
-  R
-}
+export const Align_Left = 0;
+export const Align_Center = 1;
+export const Align_Right = 2;
 
 export type TextParameters =
   {
     _colour?: number,
-    _textAlign?: Align,
+    _textAlign?: number,
     _scale?: number;
   };
 
@@ -24,10 +22,11 @@ let textCache: Map<string, string[]> = new Map();
 let fontSize = 8;
 
 let node_text: string[] = [];
-let node_text_align: Align[] = [];
+let node_text_align: number[] = [];
 let node_text_scale: number[] = [];
 let node_text_colour: number[] = [];
 
+// TODO(dbrad): refactor the mandatory width out??
 export let createTextNode = (text: string, width: number, parameters: TextParameters = {}): number =>
 {
   let nodeId = createNode();
@@ -36,7 +35,7 @@ export let createTextNode = (text: string, width: number, parameters: TextParame
   node_render_function[nodeId] = renderTextNode;
 
   node_text[nodeId] = text;
-  node_text_align[nodeId] = parameters._textAlign || Align.L;
+  node_text_align[nodeId] = parameters._textAlign || Align_Left;
   node_text_scale[nodeId] = parameters._scale || 1;
   node_text_colour[nodeId] = parameters._colour || WHITE;
 
@@ -118,18 +117,18 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
     let lineLength: number = line.length * letterSize;
 
     let alignmentOffset: number = 0;
-    if (align === Align.C)
+    if (align === Align_Center)
     {
       alignmentOffset = math.floor(-lineLength / 2);
     }
-    else if (align === Align.R)
+    else if (align === Align_Right)
     {
       alignmentOffset = math.floor(-(lineLength));
     }
 
     for (let word of words)
     {
-      for (let letter of word.split(""))
+      for (let letter of word.split(txt_empty_string))
       {
         let t = getTexture(letter);
         x = xOffset + alignmentOffset;

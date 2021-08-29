@@ -1,6 +1,8 @@
 'use strict';
 
 import { math } from "./math";
+import { musicEnabled } from "./game-state";
+import { rand } from "./random";
 
 // zzfx() - the universal entry point -- returns a AudioBufferSourceNode
 //@ts-ignore
@@ -28,16 +30,28 @@ let zzfxX: AudioContext;
 //@ts-ignore
 let zzfxM = (n, f, t, e = 125) => { let l, o, z, r, g, h, x, a, u, c, d, i, m, p, G, M = 0, R = [], b = [], j = [], k = 0, q = 0, s = 1, v = {}, w = zzfxR / e * 60 >> 2; for (; s; k++)R = [s = a = d = m = 0], t.map((e, d) => { for (x = f[e][k] || [0, 0, 0], s |= !!f[e][k], G = m + (f[e][0].length - 2 - !a) * w, p = d === t.length - 1, o = 2, r = m; o < x.length + p; a = ++o) { for (g = x[o], u = o === x.length + p - 1 && p || c != (x[0] || 0) | g | 0, z = 0; z < w && a; z++ > w - 99 && u ? i += (i < 1) / 99 : 0)h = (1 - i) * R[M++] / 2 || 0, b[r] = (b[r] || 0) - h * q + h, j[r] = (j[r++] || 0) + h * q + h; g && (i = g % 1, q = x[1] || 0, (g |= 0) && (R = v[[c = x[M = 0] || 0, g]] = v[[c, g]] || (l = [...n[c]], l[2] *= 2 ** ((g - 12) / 12), g > 0 ? zzfxG(...l) : []))); } m = G; }); return [b, j]; };
 
+let song = [[[.3, 0, 260, , 1, 1.5, , , , , , , , , , , , , .2], [.4, 0, 4e3, , , .03, 2, 1.25, , , , , .02, 6.8, -.3, , .5]], [[[, , 1, , , , , , , , , , , , , , , , 1, , , , , , , , , , , , , , , , 1, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , ,], [, , 8, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , , 15, , , , , , , , , , , , , , , ,], [, , 17, , , , , , , , , , , , , , , , 15, , , , , , , , , , , , , , , , 25, , , , , , , , , , , , , , , , 20, , , , , , , , , , , , , , , ,], [1, 1, .25, , , , 13, , , , 13, , , , , , , , , , , , 1, , , , 1, , , , , , , , , , , , 1, , , , 1, , , , , , , , , , , , 1, , , , 1, , , , , , , ,]], [[, , 1, , , , , , , , , , , , , , , , 1, , , , , , , , , , , , , , , , 1, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , ,], [, , 8, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , , 15, , , , , , , , , , , , , , , ,], [, , 17, , , , , , , , , , , , , , , , 15, , , , , , , , , , , , , , , , 25, , , , , , , , , , , , , , , , 20, , , , , , , , , , , , , , , ,]], [[, , 1, , , , , , , , , , , , , , , , 1, , , , , , , , , , , , , , , , 1, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , ,], [, , 8, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , , 8, , , , , , , , , , , , , , , , 15, , , , , , , , , , , , , , , ,], [, , 17, , , , , , , , , , , , , , , , 15, , , , , , , , , , , , , , , , 25, , , , , , , , , , , , , , , , 20, , , , , , , , , , , , , , , ,], [, , , , , , 1, , 32, , , , , , , , , , , , , , 1, , 27, , , , , , , , , , , , , , 1, , 20, , , , , , , , , , , , , , 1, , 17, , , , , , , , , ,]]], [1, 2, 2, 0], 80, { "title": "", "instruments": ["P", "H"], "patterns": ["0", "1", "3"] }];
 
-//@ts-ignore
-/*
-export let musicData = zzfxM(...song);
+export let musicData: any[][];
 export let music: AudioBufferSourceNode;
-export function startMusic(): void
+export let startMusic = (): void =>
 {
   music = zzfxP(...musicData);
-}
-*/
+  music.onended = repeat;
+};
+
+let repeat = (): void =>
+{
+  if (musicEnabled)
+  {
+    setTimeout(() =>
+    {
+      startMusic();
+      music.playbackRate.value = rand(3, 5) / 4;
+    }, 250);
+  }
+};
+
 export let powerSound: number[];
 export let shootSound: number[];
 export let scanSound: number[];
@@ -45,9 +59,11 @@ export let hullHitSound: number[];
 export let shipDieSound: number[];
 export let beastDieSound: number[];
 export let qDriveSound: number[];
-export function setupAudio(): void
+export let setupAudio = (): void =>
 {
   zzfxX = new AudioContext();
+  //@ts-ignore
+  musicData = zzfxM(...song);
   powerSound = zzfxG(...[, .01, 261.6256, .02, .03, .01, , .94, , , , , , , , , , .75, .04]);
   shootSound = zzfxG(...[1.68, .1, 500, , .1, , 1, 1.7, -6, .7, , , , , , , .1, .8, , .1]);
   scanSound = zzfxG(...[1.22, , 42, .05, .08, .48, , .57, , -4, -65, .06, .13, , , , , .8, .01, .49]);
@@ -55,4 +71,4 @@ export function setupAudio(): void
   beastDieSound = zzfxG(...[1.2, .1, 500, , .29, .34, 3, 2.43, .8, .4, , , .14, .3, , .3, .29, .79, .08, .25]);
   qDriveSound = zzfxG(...[1.08, , 27, .1, 2, .95, 4, , -0.5, , -62, .05, .12, , 46, , , .53, .1, .07]);
   hullHitSound = zzfxG(...[1.69, .1, 400, , .05, .35, 4, 1.8, -7, -1, , , , , , .2, , .4]);
-}
+};
