@@ -1,5 +1,5 @@
 import { SHIELD_BLUE, WHITE, colourToHex } from "../colour";
-import { addChildNode, createNode, moveNode, node_enabled, node_position, node_render_function, node_visible } from "../scene-node";
+import { addChildNode, createNode, moveNode, node_enabled, node_position, node_render_function } from "../scene-node";
 import { createRangeIndicator, updateRangeIndicator } from "./range-indicator";
 import { createSpriteNode, setSpriteNode } from "./sprite-node";
 
@@ -7,7 +7,6 @@ import { gameState } from "../game-state";
 import { math } from "../math";
 import { pushQuad } from "../draw";
 import { rand } from "../random";
-import { txt_star } from "../text";
 
 let node_entity_tag: number[] = [];
 let node_entity_id: number[] = [];
@@ -79,7 +78,7 @@ export type EncounterParams = {
   _enableAnimations?: boolean,
   _range?: number;
 };
-let textureMap = ["stn", txt_star, "gas", "rock", "prt", "bst", "ast", "ano", "ps"];
+let textureMap = ["stn", "star", "gas", "rock", "prt", "bst", "ast", "ano", "ps"];
 export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -1, extraParams: EncounterParams = {}): void =>
 {
   if (entityId === node_entity_id[nodeId]) return;
@@ -94,7 +93,7 @@ export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -
   node_enabled[node_entity_range[nodeId]] = range > 0;
   node_entity_enable_animations[nodeId] = extraParams._enableAnimations || node_entity_enable_animations[nodeId];
 
-  node_visible[sprite] = true;
+  node_enabled[sprite] = true;
   moveNode(sprite, 0, 0);
 
   if (tag >= 0)
@@ -103,7 +102,7 @@ export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -
   }
   else
   {
-    node_visible[sprite] = false;
+    node_enabled[sprite] = false;
   }
 
   setSpriteNode(sprite, textureName, { _scale: scale, _colour: colour });
@@ -140,7 +139,7 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
   }
 
   // Hide shield for everything but player ship
-  node_visible[node_entity_shield_sprite[nodeId]] = tag === TAG_ENTITY_PLAYER_SHIP && gameState._currentShield > 0;
+  node_enabled[node_entity_shield_sprite[nodeId]] = tag === TAG_ENTITY_PLAYER_SHIP && gameState._currentShield > 0;
 
   // Only render particles for ships
   if (enableAnimations && (tag === TAG_ENTITY_PLAYER_SHIP || tag === TAG_ENTITY_PIRATE_SHIP))

@@ -23,11 +23,11 @@ export namespace MainMenu
     let rootId = createNode();
     node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-    let textNodeId = createTextNode("2d1d4x13k", SCREEN_WIDTH, { _scale: 4, _textAlign: Align_Center });
+    let textNodeId = createTextNode("2d1d4x13k", { _scale: 4, _textAlign: Align_Center });
     moveNode(textNodeId, SCREEN_CENTER_X, 20);
     addChildNode(rootId, textNodeId);
 
-    let textNodeId02 = createTextNode("the 2d one dimensional 4x game", SCREEN_WIDTH, { _textAlign: Align_Center });
+    let textNodeId02 = createTextNode("the 2d one dimensional 4x game", { _textAlign: Align_Center });
     moveNode(textNodeId02, SCREEN_CENTER_X, 54);
     addChildNode(rootId, textNodeId02);
 
@@ -72,7 +72,7 @@ export namespace MainMenu
     else if (inputContext._fire === loadButton)
     {
       loadGame();
-      if (gameState._adventureReward > 0)
+      if (0 > 0)// TODO(dbrad): need new flag to check for mid-transit
       {
         pushScene(Adventure._sceneId);
       }

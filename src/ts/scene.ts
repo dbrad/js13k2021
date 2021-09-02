@@ -1,10 +1,10 @@
 import { Interpolators, createInterpolationData } from "./interpolate";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
+import { colourToHex, hexToColour } from "./colour";
 import { nodeInput, renderNode } from "./scene-node";
 
 import { assert } from "./debug";
 import { clearInput } from "./input";
-import { colourToHex } from "./colour";
 import { pushQuad } from "./draw";
 
 type Scene =
@@ -14,6 +14,7 @@ type Scene =
   };
 let TRANSITION_KEY = `xsit`;
 let transitionColour = 0;
+let bgr: number[] = [0, 0, 0];
 
 let Scenes: Map<number, Scene> = new Map();
 let CurrentScene: Scene;
@@ -30,25 +31,27 @@ export let registerScene = (sceneId: number, setupFn: () => number, updateFn: (n
   }
 };
 
-export let pushScene = (sceneId: number): void =>
+export let pushScene = (sceneId: number, speed: number = 250, fadeColor: number = 0xFF000000): void =>
 {
+  let [_, b, g, r] = hexToColour(fadeColor);
+  bgr = [b, g, r];
   let scene = Scenes.get(sceneId);
   assert(scene !== undefined, `Unable to find scene #"${ sceneId }"`);
-  transitionToScene(scene);
+  transitionToScene(scene, speed);
 };
 
-let transitionToScene = (scene: Scene): void =>
+let transitionToScene = (scene: Scene, speed: number = 250): void =>
 {
   if (CurrentScene)
   {
     PreviousScene = CurrentScene;
   }
-  let transition = createInterpolationData(250, [0], [255], () =>
+  let transition = createInterpolationData(speed, [0], [255], () =>
   {
     CurrentScene = scene;
     clearInput();
 
-    let transition = createInterpolationData(250, [255], [0]);
+    let transition = createInterpolationData(speed, [255], [0]);
     Interpolators.set(TRANSITION_KEY, transition);
   });
   Interpolators.set(TRANSITION_KEY, transition);
@@ -84,7 +87,7 @@ export let renderScene = (now: number, delta: number): void =>
     if (transition?._lastResult)
     {
       let i = transition._lastResult;
-      let colour = colourToHex(i._values[0], 0, 0, 0);
+      let colour = colourToHex(i._values[0], bgr[0], bgr[1], bgr[2]);
       transitionColour = colour;
     }
     pushQuad(0, 0, SCREEN_WIDTH + 2, SCREEN_HEIGHT + 2, transitionColour);

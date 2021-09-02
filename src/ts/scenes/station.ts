@@ -6,7 +6,7 @@ import { addChildNode, createNode, moveNode, node_enabled, node_interactive, nod
 import { createButtonNode, node_button_text_id } from "../nodes/button-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
 import { systemNames, systemUpgradeCosts } from "../gameplay/systems";
-import { txt_buy, txt_buy_raw_materials, txt_cr, txt_empty_string, txt_hull, txt_hull_repair_cost, txt_install, txt_kg, txt_leave, txt_repair, txt_repair_hull, txt_sell, txt_sell_raw_materials, txt_systems, txt_upgrade, txt_upgrade_hull, txt_upgraded_fully } from "../text";
+import { txt_buy, txt_buy_raw_materials, txt_cr, txt_empty_string, txt_hull, txt_hull_repair_cost, txt_install, txt_kg, txt_leave, txt_repair, txt_repair_hull, txt_sell, txt_sell_raw_materials, txt_sell_research, txt_systems, txt_upgrade, txt_upgrade_hull, txt_upgraded_fully } from "../text";
 
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
 import { createWindowNode } from "../nodes/window-node";
@@ -14,6 +14,7 @@ import { inputContext } from "../input";
 import { math } from "../math";
 import { popScene } from "../scene";
 
+// TODO(dbrad): remove raw materials
 export namespace Station
 {
   export const _sceneId = 3;
@@ -54,12 +55,12 @@ export namespace Station
     let divHeight = shopHeight - 8;
 
     let stationWindow = createWindowNode(shopWidth, shopHeight, 20, 40);
-    addChildNode(rootId, stationWindow, 2);
+    addChildNode(rootId, stationWindow);
 
     let systemUpdatesDiv = createWindowNode(divWidth, divHeight, 4, 4);
     addChildNode(stationWindow, systemUpdatesDiv);
 
-    let upgradeHeader = createTextNode(txt_systems, 128, { _textAlign: Align_Center, _scale: 2 });
+    let upgradeHeader = createTextNode(txt_systems, { _textAlign: Align_Center, _scale: 2 });
     moveNode(upgradeHeader, divWidth / 2, 0);
     addChildNode(systemUpdatesDiv, upgradeHeader);
 
@@ -76,26 +77,26 @@ export namespace Station
       systems[i] = [];
       let h = 2 + i * upgradeHeight;
 
-      let label = createTextNode(systemNames[i], 64, alignR);
+      let label = createTextNode(systemNames[i], alignR);
       moveNode(label, 69, 37 + h);
       addChildNode(systemUpdatesDiv, label);
 
-      let levelLabel = createTextNode(txt_empty_string, 64, { ...alignR, _colour: GREY_999 });
+      let levelLabel = createTextNode(txt_empty_string, { ...alignR, _colour: GREY_999 });
       moveNode(levelLabel, 69, 47 + h);
       addChildNode(systemUpdatesDiv, levelLabel);
       systems[i][LEVEL_LABEL] = levelLabel;
 
-      let cost1Label = createTextNode(txt_empty_string, 64, alignR);
+      let cost1Label = createTextNode(txt_empty_string, alignR);
       moveNode(cost1Label, 136, 37 + h);
       addChildNode(systemUpdatesDiv, cost1Label);
       systems[i][COST_1_LABEL] = cost1Label;
 
-      let cost2Label = createTextNode(txt_empty_string, 64, alignR);
+      let cost2Label = createTextNode(txt_empty_string, alignR);
       moveNode(cost2Label, 136, 47 + h);
       addChildNode(systemUpdatesDiv, cost2Label);
       systems[i][COST_2_LABEL] = cost2Label;
 
-      let soldOutLabel = createTextNode(txt_upgraded_fully, 64, { _textAlign: Align_Center, _colour: GREY_999 });
+      let soldOutLabel = createTextNode(txt_upgraded_fully, { _textAlign: Align_Center, _colour: GREY_999 });
       moveNode(soldOutLabel, divWidth - 76, 37 + h);
       addChildNode(systemUpdatesDiv, soldOutLabel);
 
@@ -107,7 +108,7 @@ export namespace Station
 
     ////////////////////////////////////////
 
-    let buyMaterialsLabel = createTextNode(txt_buy_raw_materials, 136);
+    let buyMaterialsLabel = createTextNode(txt_buy_raw_materials);
     moveNode(buyMaterialsLabel, 6, 8);
     addChildNode(otherShopDiv, buyMaterialsLabel);
 
@@ -115,7 +116,7 @@ export namespace Station
     moveNode(buyMaterialsButton, divWidth - 80, 0);
     addChildNode(otherShopDiv, buyMaterialsButton);
 
-    let sellMaterialsLabel = createTextNode(txt_sell_raw_materials, 144);
+    let sellMaterialsLabel = createTextNode(txt_sell_raw_materials);
     moveNode(sellMaterialsLabel, 6, 48);
     addChildNode(otherShopDiv, sellMaterialsLabel);
 
@@ -123,7 +124,7 @@ export namespace Station
     moveNode(sellMaterialsButton, divWidth - 80, 40);
     addChildNode(otherShopDiv, sellMaterialsButton);
 
-    let sellResearchLabel = createTextNode(txt_buy_raw_materials, 104);
+    let sellResearchLabel = createTextNode(txt_sell_research);
     moveNode(sellResearchLabel, 6, 88);
     addChildNode(otherShopDiv, sellResearchLabel);
 
@@ -136,7 +137,7 @@ export namespace Station
     let hullContainer = createWindowNode(divWidth, 118, 0, 118);
     addChildNode(otherShopDiv, hullContainer);
 
-    let hullText = createTextNode(txt_hull, 32);
+    let hullText = createTextNode(txt_hull);
     moveNode(hullText, 6, 6);
     addChildNode(hullContainer, hullText);
 
@@ -146,11 +147,11 @@ export namespace Station
 
     ////////////////////////////////////////
 
-    let repairHullLabel = createTextNode(txt_repair_hull, 88, alignR);
+    let repairHullLabel = createTextNode(txt_repair_hull, alignR);
     moveNode(repairHullLabel, 102, 52);
     addChildNode(hullContainer, repairHullLabel);
 
-    repairHullCost = createTextNode(txt_hull_repair_cost, 32, alignR);
+    repairHullCost = createTextNode(txt_hull_repair_cost, alignR);
     moveNode(repairHullCost, divWidth - 136, 52);
     addChildNode(hullContainer, repairHullCost);
 
@@ -162,26 +163,26 @@ export namespace Station
 
     systems[5] = [];
 
-    let upgradeHullLabel = createTextNode(txt_upgrade_hull, 96, alignR);
+    let upgradeHullLabel = createTextNode(txt_upgrade_hull, alignR);
     moveNode(upgradeHullLabel, 102, 87);
     addChildNode(hullContainer, upgradeHullLabel);
 
-    let upgradeHullLevelLabel = createTextNode(txt_empty_string, 96, { ...alignR, _colour: GREY_999 });
+    let upgradeHullLevelLabel = createTextNode(txt_empty_string, { ...alignR, _colour: GREY_999 });
     moveNode(upgradeHullLevelLabel, 102, 97);
     addChildNode(hullContainer, upgradeHullLevelLabel);
     systems[5][LEVEL_LABEL] = upgradeHullLevelLabel;
 
-    let upgradeHullCost1 = createTextNode(txt_empty_string, 96, alignR);
+    let upgradeHullCost1 = createTextNode(txt_empty_string, alignR);
     moveNode(upgradeHullCost1, divWidth - 136, 87);
     addChildNode(hullContainer, upgradeHullCost1);
     systems[5][COST_1_LABEL] = upgradeHullCost1;
 
-    let upgradeHullCost2 = createTextNode(txt_empty_string, 96, alignR);
+    let upgradeHullCost2 = createTextNode(txt_empty_string, alignR);
     moveNode(upgradeHullCost2, divWidth - 136, 97);
     addChildNode(hullContainer, upgradeHullCost2);
     systems[5][COST_2_LABEL] = upgradeHullCost2;
 
-    let hullMaxedOut = createTextNode(txt_upgraded_fully, 64, { _textAlign: Align_Center, _colour: GREY_999 });
+    let hullMaxedOut = createTextNode(txt_upgraded_fully, { _textAlign: Align_Center, _colour: GREY_999 });
     moveNode(hullMaxedOut, divWidth - 62, 87);
     addChildNode(hullContainer, hullMaxedOut);
 

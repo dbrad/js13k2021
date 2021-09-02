@@ -14,7 +14,7 @@ export let createQDriveNode = (): number =>
   let nodeId = createNode();
   node_render_function[nodeId] = renderQDrive;
 
-  let label = createTextNode(txt_empty_string, 640);
+  let label = createTextNode(txt_empty_string);
   addChildNode(nodeId, label);
   node_q_drive_label[nodeId] = label;
 

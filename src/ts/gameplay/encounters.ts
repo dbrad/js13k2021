@@ -1,10 +1,8 @@
 import { CURRENCY_CREDITS_INCOMING, CURRENCY_RESEARCH_INCOMING } from "../game-state";
 import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
-import { rand, shuffle } from "../random";
-import { txt_planet_gas, txt_planet_rock, txt_star, txt_station } from "../text";
+import { txt_asteroid, txt_pirate_ship, txt_planet_gas, txt_planet_rock, txt_quantum_anomaly, txt_space_beast, txt_star, txt_station } from "../text";
 
-import { math } from "../math";
-import { v2 } from "../v2";
+import { rand } from "../random";
 
 export type ENCOUNTER_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export const ENC_STATION: ENCOUNTER_TYPE = 0;
@@ -34,25 +32,8 @@ export type Encounter = {
   _exit?: boolean,
 };
 
-export type Contract = {
-  _length: RUN_LENGTH,
-  _threat: THREAT_LEVEL,
-  _runReward: number;
-};
-
-export type RUN_LENGTH = 0 | 1 | 2 | 3 | 4;
-
-export const RUN_SHORT: RUN_LENGTH = 0;
-export const RUN_MEDIUM: RUN_LENGTH = 1;
-export const RUN_LONG: RUN_LENGTH = 2;
-export const RUN_UNCHARTED: RUN_LENGTH = 3;
-export const RUN_SPECIAL: RUN_LENGTH = 4;
-
-export type THREAT_LEVEL = 0 | 1 | 2;
-export const THREAT_LOW: THREAT_LEVEL = 0;
-export const THREAT_MEDIUM: THREAT_LEVEL = 1;
-export const THREAT_HIGH: THREAT_LEVEL = 2;
-
+// TODO(dbrad): New mission generation
+/*
 let RunLengths: v2[] = [[13, 15], [26, 30], [39, 45], [15, 45], [50, 50]];
 let RunRanges: number[][] = [
   [
@@ -66,7 +47,6 @@ let RunRanges: number[][] = [
   ],
 ];
 
-let entityId: number;
 export let generateEncounterDeck = (selectedRunLength: RUN_LENGTH, threatLevel: THREAT_LEVEL): Encounter[] =>
 {
   entityId = 0;
@@ -162,6 +142,8 @@ export let generateEncounterDeck = (selectedRunLength: RUN_LENGTH, threatLevel: 
 
   return encounterDeck;
 };
+*/
+let entityId: number;
 
 //#region Encounter Factories
 let createStation = (exit: boolean = false): Encounter =>
@@ -175,7 +157,7 @@ let createStation = (exit: boolean = false): Encounter =>
     _exit: exit
   };
 };
-function createStar(threatLevel: THREAT_LEVEL): Encounter
+let createStar = (threatLevel: number = 0): Encounter =>
 {
   let _scale = rand(8, 10);
   let cd = 1500 - (250 * threatLevel);
@@ -190,7 +172,7 @@ function createStar(threatLevel: THREAT_LEVEL): Encounter
     _hazardRange: _scale * 8 + 16,
     _attack: [0, cd]
   };
-}
+};
 let createGasPlanet = (): Encounter =>
 {
   return {
@@ -222,20 +204,20 @@ let createAsteroid = (): Encounter =>
   return {
     _id: entityId++,
     _type: ENC_ASTEROID,
-    _title: "asteroid",
+    _title: txt_asteroid,
     _yOffset: rand(-50, 50),
     _minable: true,
     _scale: rand(1, 2)
   };
 };
 let hpLevel = [3, 4, 5];
-let createPirate = (threatLevel: THREAT_LEVEL): Encounter =>
+let createPirate = (threatLevel: number = 0): Encounter =>
 {
   let cd = 1500 - (250 * threatLevel);
   return {
     _id: entityId++,
     _type: ENC_PIRATE,
-    _title: "pirate ship",
+    _title: txt_pirate_ship,
     _yOffset: rand(-30, 30),
     _maxHp: hpLevel[threatLevel],
     _hp: hpLevel[threatLevel],
@@ -244,13 +226,13 @@ let createPirate = (threatLevel: THREAT_LEVEL): Encounter =>
     _attack: [0, cd]
   };
 };
-let createSpaceBeast = (threatLevel: THREAT_LEVEL): Encounter =>
+let createSpaceBeast = (threatLevel: number = 0): Encounter =>
 {
   let cd = 1250 - (250 * threatLevel);
   return {
     _id: entityId++,
     _type: ENC_SPACE_BEAST,
-    _title: "???",
+    _title: txt_space_beast,
     _yOffset: rand(-30, 30),
     _colour: SPACE_BEAST_PURPLE,
     _researchable: true,
@@ -267,7 +249,7 @@ let createAnomaly = (): Encounter =>
   return {
     _id: entityId++,
     _type: ENC_ANOMALY,
-    _title: "quantum anomaly",
+    _title: txt_quantum_anomaly,
     _yOffset: rand(-30, 30),
     _scale: 3,
     _exit: true

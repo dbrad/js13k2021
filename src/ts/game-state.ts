@@ -1,7 +1,10 @@
-import { Contract, Encounter, RUN_LENGTH, THREAT_LEVEL, THREAT_LOW } from "./gameplay/encounters";
-import { music, startMusic } from "./zzfx";
+import { music, shipDieSound, startMusic, zzfxP } from "./zzfx";
 
+import { Encounter } from "./gameplay/encounters";
+import { MissionSelect } from "./scenes/mission-select";
+import { WHITE } from "./colour";
 import { math } from "./math";
+import { pushScene } from "./scene";
 
 type GameState = {
   _generatorLevel: number,
@@ -9,13 +12,9 @@ type GameState = {
   _currentShield: number,
   _availablePower: number,
   _systemLevels: [number, number][],
-  _currency: [number, number, number, number, number, number];
-  _threatDeck: THREAT_LEVEL[],
-  _lengthDeck: RUN_LENGTH[],
-  _contracts: Contract[],
+  _currency: [number, number, number, number, number, number],
+  _galaxySeed: number,
   _shipPosition: number,
-  _threatLevel: THREAT_LEVEL,
-  _adventureReward: number,
   _adventureEncounters: Encounter[],
 };
 
@@ -78,11 +77,20 @@ export let hurtPlayer = (): void =>
   {
     gameState._systemLevels[HULL][0] = math.max(0, gameState._systemLevels[HULL][0] - 1);
   }
+  if (gameState._systemLevels[HULL][0] === 0)
+  {
+    zzfxP(shipDieSound);
+    pushScene(MissionSelect._sceneId, WHITE);
+    qReset(true);
+  }
 };
 
-export let qReset = (): void =>
+export let qReset = (death: boolean = false): void =>
 {
-  gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
+  if (!death)
+  {
+    gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
+  }
   gameState._qLevel = 0;
   gameState._systemLevels[HULL][0] = 4;
   gameState._systemLevels[HULL][1] = 0;
@@ -97,6 +105,7 @@ export let qReset = (): void =>
   gameState._currency[CURRENCY_MATERIALS] = math.floor(gameState._currency[CURRENCY_MATERIALS] * 0.25);
 
   gameState._currency[CURRENCY_RESEARCH] += gameState._currency[CURRENCY_RESEARCH_INCOMING];
+
   softReset();
 };
 export let softReset = (): void =>
@@ -108,7 +117,6 @@ export let softReset = (): void =>
     gameState._systemLevels[i][0] = 0;
   }
   gameState._shipPosition = 0;
-  gameState._adventureReward = 0;
   gameState._adventureEncounters = [];
 };
 export let initGameState = (): void =>
@@ -127,12 +135,8 @@ export let initGameState = (): void =>
       [4, 0]
     ],
     _currency: [0, 0, 0, 0, 0, 0],
-    _threatDeck: [],
-    _lengthDeck: [],
-    _contracts: [],
+    _galaxySeed: performance.now(),
     _shipPosition: 0,
-    _threatLevel: THREAT_LOW,
-    _adventureReward: 0,
     _adventureEncounters: [],
   };
   softReset();

@@ -61,7 +61,7 @@
   ✔ Repair Hull @done(21-08-28 11:03)
   ✔ Upgrade Hull @done(21-08-28 11:03)
   ✔ Logic for Buy and Sell @done(21-08-28 11:03)
-☐ Prestige Effect (white out)
+✔ Prestige Effect (white out) @done(21-08-30 07:40)
 ☐ End Game / Scoring / Metadata / Score History??
 ☐ Tutorial
 
@@ -78,3 +78,7 @@ Space Saving Ideas
 ✔ Remove calcuate node size code @done(21-08-24 07:22)
 ✘ Move all text to a text.ts module / reduce repeats? @cancelled(21-08-29 13:16)
 ✘ Replace all constants with numbers? (esbuild wont do const enums :[) @cancelled(21-08-29 13:16)
+✔ Remove unneeded sprites / symbols @done(21-08-31 07:26)
+✔ Remove manditory width on text node @done(21-08-31 07:21)
+✔ Rip out zindex and manually sort @done(21-08-31 07:12)
+☐ Collapse visible and enabled

@@ -12,15 +12,15 @@ export let createCurrencyNode = (label: string, postfix: string): number =>
   let nodeId = createNode();
   node_render_function[nodeId] = renderCurrency;
 
-  let labelNode = createTextNode(label, label.length * 8);
+  let labelNode = createTextNode(label);
   moveNode(labelNode, 2, 3);
   addChildNode(nodeId, labelNode);
 
-  let postfixNode = createTextNode(postfix, postfix.length * 8, { _textAlign: Align_Right });
+  let postfixNode = createTextNode(postfix, { _textAlign: Align_Right });
   moveNode(postfixNode, 114, 17);
   addChildNode(nodeId, postfixNode);
 
-  let display = createTextNode(txt_empty_string, 11 * 8, { _textAlign: Align_Right });
+  let display = createTextNode(txt_empty_string, { _textAlign: Align_Right });
   moveNode(display, 90, 17);
   addChildNode(nodeId, display);
   node_currency_display[nodeId] = display;

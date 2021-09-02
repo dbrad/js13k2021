@@ -1,9 +1,9 @@
-import { CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, saveGame } from "../game-state";
-import { ENC_SPACE_BEAST, ENC_STATION, THREAT_HIGH, THREAT_MEDIUM } from "../gameplay/encounters";
+import { CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, saveGame } from "../game-state";
+import { ENC_SPACE_BEAST, ENC_STATION } from "../gameplay/encounters";
 import { GREY_111, GREY_666, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { TAG_ENTITY_NONE, TAG_ENTITY_PLAYER_SHIP, createEntityNode, updateEntityNode } from "../nodes/entity-node";
-import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, createNode, moveNode, node_enabled, node_interactive, node_size, node_tag, node_visible } from "../scene-node";
+import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, createNode, moveNode, node_enabled, node_interactive, node_size, node_tag } from "../scene-node";
 import { beastDieSound, hullHitSound, scanSound, shipDieSound, shootSound, zzfxP } from "../zzfx";
 import { createHUDNode, updateHUDNode } from "../nodes/hud-node";
 import { createProgressBarNode, updateProgressBarNode } from "../nodes/progress-bar-node";
@@ -67,10 +67,6 @@ export namespace Adventure
     let rootId = createNode();
     node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-    playerShip = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
-    moveNode(playerShip, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40);
-    addChildNode(rootId, playerShip, 10);
-
     ////////////////////////////////////////
 
     // Populate an entity pool, I think at most 3 are on screen, maybee a max of 5 active when you add in the gutters.
@@ -85,7 +81,7 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    let hullText = createTextNode(txt_hull, 32);
+    let hullText = createTextNode(txt_hull);
     moveNode(hullText, 2, 2);
     addChildNode(rootId, hullText);
 
@@ -99,7 +95,7 @@ export namespace Adventure
     moveNode(shieldContainer, 2, 30);
     addChildNode(rootId, shieldContainer);
 
-    let sheildText = createTextNode(txt_shields, 56);
+    let sheildText = createTextNode(txt_shields);
     addChildNode(shieldContainer, sheildText);
 
     shieldBar = createSegmentedBarNode(SHIELD_BLUE, 34, 1, 0);
@@ -127,15 +123,15 @@ export namespace Adventure
       addChildNode(systemContainer, plusButton);
       systems[i][PLUS_BUTTON] = plusButton;
 
-      let textShadow = createTextNode(systemNames[i], 640, { _colour: GREY_111 });
+      let textShadow = createTextNode(systemNames[i], { _colour: GREY_111 });
       moveNode(textShadow, 58, 1);
       addChildNode(systemContainer, textShadow);
 
-      let systemText = createTextNode(systemNames[i], 640, { _colour: WHITE });
+      let systemText = createTextNode(systemNames[i], { _colour: WHITE });
       moveNode(systemText, 58, 0);
       addChildNode(systemContainer, systemText);
 
-      let notInstalledText = createTextNode(txt_not_installed, 640, { _colour: GREY_666 });
+      let notInstalledText = createTextNode(txt_not_installed, { _colour: GREY_666 });
       moveNode(notInstalledText, 58, 14);
       addChildNode(systemContainer, notInstalledText);
       systems[i][DISABLED_TEXT] = notInstalledText;
@@ -158,7 +154,7 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    let generatorText = createTextNode(txt_available_power, 640, { _colour: WHITE });
+    let generatorText = createTextNode(txt_available_power, { _colour: WHITE });
     moveNode(generatorText, 2, 332);
     addChildNode(rootId, generatorText);
 
@@ -210,6 +206,12 @@ export namespace Adventure
     moveNode(qDrive, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 20);
     addChildNode(rootId, qDrive);
 
+    ////////////////////////////////////////
+
+    playerShip = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
+    moveNode(playerShip, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40);
+    addChildNode(rootId, playerShip);
+
     return rootId;
   };
 
@@ -224,7 +226,6 @@ export namespace Adventure
     node_enabled[leaveButton] = false;
     node_enabled[qDrive] = gameState._generatorLevel < 5;
 
-    if (gameState._adventureReward === 0) return;
 
     if (inputContext._fire === stationButton)
     {
@@ -232,8 +233,6 @@ export namespace Adventure
     }
     else if (inputContext._fire === leaveButton)
     {
-      gameState._currency[CURRENCY_CREDITS_INCOMING] += gameState._adventureReward;
-      gameState._adventureReward = 0;
       gameState._adventureEncounters = [];
       gameState._shipPosition = 0;
       saveGame();
@@ -245,9 +244,6 @@ export namespace Adventure
     }
     else
     {
-      let threatMultiplier = gameState._threatLevel === THREAT_HIGH ? 2 : gameState._threatLevel === THREAT_MEDIUM ? 1.5 : 1;
-
-      //#region SHIP MOVEMENET
       shipMovementTimer += delta;
       if (shipMovementTimer > shipTimings[gameState._systemLevels[ENGINES][0]] && !stopped)
       {
@@ -303,7 +299,7 @@ export namespace Adventure
 
       updateSegmentedBarNode(hullBar, maxHull(), currentHull());
       updateSegmentedBarNode(shieldBar, gameState._systemLevels[SHIELDS][0], gameState._currentShield);
-      node_visible[shieldContainer] = gameState._systemLevels[SHIELDS][0] > 0;
+      node_enabled[shieldContainer] = gameState._systemLevels[SHIELDS][0] > 0;
 
       updateSegmentedBarNode(generatorBar, maxAvailablePower(), gameState._availablePower);
 
@@ -344,8 +340,8 @@ export namespace Adventure
       //#region Entities / Encounters
       let entityIndex = 0;
       let hudIndex = 0;
-      node_visible[hudWindows[0]] = false;
-      node_visible[hudWindows[1]] = false;
+      node_enabled[hudWindows[0]] = false;
+      node_enabled[hudWindows[1]] = false;
 
       for (let encounter of gameState._adventureEncounters)
       {
@@ -391,7 +387,7 @@ export namespace Adventure
           if (encounter._minable && systemProgress[MINING_LASERS] >= 100)
           {
             systemProgress[MINING_LASERS]++;
-            let amount = 13 * threatMultiplier;
+            let amount = 13;
             gameState._currency[CURRENCY_MATERIALS_INCOMING] += amount;
             zzfxP(shootSound);
             // TODO(dbrad): add mining effects
@@ -401,7 +397,7 @@ export namespace Adventure
           if (encounter._researchable && systemProgress[SCANNERS] >= 100 && (encounter._maxHp === undefined || (encounter._maxHp && encounter._hp)))
           {
             systemProgress[SCANNERS]++;
-            let amount = 8 * threatMultiplier;
+            let amount = 8;
             gameState._currency[CURRENCY_RESEARCH_INCOMING] += amount;
             zzfxP(scanSound);
             // TODO(dbrad): add research effects

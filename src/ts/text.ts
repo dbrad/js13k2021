@@ -1,3 +1,7 @@
+export let txt_asteroid = `asteroid`;
+export let txt_pirate_ship = `pirate ship`;
+export let txt_space_beast = `???`;
+export let txt_quantum_anomaly = `quantum anomaly`;
 export let txt_available_power = `available power`;
 export let txt_back = `back`;
 export let txt_buy = `buy`;
@@ -29,14 +33,14 @@ export let txt_upgrade = `upgrade`;
 export let txt_weapons = "weapons";
 
 
-export let txt_buy_raw_materials = `${ txt_buy } ${ txt_raw_materials } 100${ txt_cr } = 25${ txt_kg }`;
+export let txt_buy_raw_materials = `${ txt_buy } ${ txt_raw_materials }\n100${ txt_cr } = 25${ txt_kg }`;
 export let txt_hull_repair_cost = `50${ txt_cr }`;
 export let txt_not_installed = `not ${ txt_install }ed`;
 export let txt_planet_gas = `gas ${ txt_planet }`;
 export let txt_planet_rock = `rocky ${ txt_planet }`;
 export let txt_repair_hull = `${ txt_repair } ${ txt_hull }`;
-export let txt_sell_raw_materials = `${ txt_sell } ${ txt_raw_materials } 25${ txt_kg } = 75${ txt_cr }`;
-export let txt_sell_research = `${ txt_sell } ${ txt_research_data } 32${ txt_kb } = 100${ txt_cr }`;
+export let txt_sell_raw_materials = `${ txt_sell } ${ txt_raw_materials }\n25${ txt_kg } = 75${ txt_cr }`;
+export let txt_sell_research = `${ txt_sell } ${ txt_research_data }\n32${ txt_kb } = 100${ txt_cr }`;
 export let txt_toggle_fullscreen = `${ txt_toggle } fullscreen`;
 export let txt_toggle_music = `${ txt_toggle } music`;
 export let txt_upgrade_hull = `${ txt_upgrade } ${ txt_hull }`;

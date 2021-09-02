@@ -1,7 +1,7 @@
 import { ENC_STATION, Encounter } from "../gameplay/encounters";
 import { GREY_6333, HULL_RED } from "../colour";
 import { TAG_ENTITY_NONE, createEntityNode, updateEntityNode } from "./entity-node";
-import { addChildNode, createNode, moveNode, node_render_function, node_visible } from "../scene-node";
+import { addChildNode, createNode, moveNode, node_enabled, node_render_function } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "./segmented-bar-node";
 import { createTextNode, updateTextNode } from "./text-node";
 import { txt_cr, txt_empty_string } from "../text";
@@ -20,12 +20,12 @@ export let createHUDNode = (): number =>
   let nodeId = createNode();
   node_render_function[nodeId] = renderHUD;
 
-  let title = createTextNode(txt_empty_string, 320, { _scale: 2 });
+  let title = createTextNode(txt_empty_string, { _scale: 2 });
   moveNode(title, 2, 2);
   addChildNode(nodeId, title);
   node_hud_title[nodeId] = title;
 
-  let description = createTextNode(txt_empty_string, 320);
+  let description = createTextNode(txt_empty_string);
   moveNode(description, 2, 22);
   addChildNode(nodeId, description);
   node_hud_description[nodeId] = description;
@@ -49,13 +49,13 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   let title = node_hud_title[nodeId];
   let description = node_hud_description[nodeId];
 
-  node_visible[nodeId] = true;
+  node_enabled[nodeId] = true;
   updateEntityNode(node_hud_entity[nodeId], encounter._type, encounter._id, { _scale: 1, _colour: encounter._colour });
 
-  node_visible[hpBar] = false;
+  node_enabled[hpBar] = false;
   if (encounter._maxHp)
   {
-    node_visible[hpBar] = true;
+    node_enabled[hpBar] = true;
     assert(encounter._hp !== undefined, `Entity has max hp, but no set hp.`);
     updateSegmentedBarNode(hpBar, encounter._maxHp, encounter._hp);
     let x = 256 - 2 - 6 - (encounter._maxHp * 10);

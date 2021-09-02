@@ -1,4 +1,4 @@
-import { Align_Center, createTextNode } from "./nodes/text-node";
+import { Align_Center, createTextNode, updateTextNode } from "./nodes/text-node";
 import { ENGINES, gameState, initGameState } from "./game-state";
 import { Interpolators, interpolate } from "./interpolate";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, setupScreen } from "./screen";
@@ -7,7 +7,6 @@ import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
 import { moveNode, renderNode } from "./scene-node";
 import { registerScene, renderScene, updateScene } from "./scene";
-import { setupAudio, startMusic } from "./zzfx";
 
 import { Adventure } from "./scenes/adventure";
 import { GameMenu } from "./scenes/game-menu";
@@ -20,6 +19,7 @@ import { loadSpriteSheet } from "./texture";
 import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
+import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
 {
@@ -35,29 +35,33 @@ window.addEventListener("load", async () =>
   let playing: boolean = false;
   let loadGame = () =>
   {
-    playing = true;
     assert(canvas !== null, `Unable to find canvas element on index.html`);
     canvas.removeEventListener(`pointerdown`, loadGame);
     canvas.removeEventListener(`touchstart`, loadGame);
+    updateTextNode(preGameMessage, `loading...`);
 
-    initializeInput(canvas);
-    initGameState();
+    setTimeout(() =>
+    {
+      playing = true;
+      initializeInput(canvas);
+      initGameState();
 
-    setupAudio();
-    registerScene(MainMenu._sceneId, MainMenu._setup, MainMenu._update);
-    registerScene(MissionSelect._sceneId, MissionSelect._setup, MissionSelect._update);
-    registerScene(Adventure._sceneId, Adventure._setup, Adventure._update);
-    registerScene(Station._sceneId, Station._setup, Station._update);
-    registerScene(GameMenu._sceneId, GameMenu._setup, GameMenu._update);
+      setupAudio();
+      registerScene(MainMenu._sceneId, MainMenu._setup, MainMenu._update);
+      registerScene(MissionSelect._sceneId, MissionSelect._setup, MissionSelect._update);
+      registerScene(Adventure._sceneId, Adventure._setup, Adventure._update);
+      registerScene(Station._sceneId, Station._setup, Station._update);
+      registerScene(GameMenu._sceneId, GameMenu._setup, GameMenu._update);
 
-    makeStars();
-    startMusic();
+      makeStars();
+      //startMusic();
+    }, 16);
   };
 
   canvas.addEventListener(`pointerdown`, loadGame);
   canvas.addEventListener(`touchstart`, loadGame);
-  let touchToPlayId = createTextNode(`touch to start`, SCREEN_WIDTH, { _scale: 1, _textAlign: Align_Center });
-  moveNode(touchToPlayId, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
+  let preGameMessage = createTextNode(`touch to start`, { _scale: 2, _textAlign: Align_Center });
+  moveNode(preGameMessage, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
 
   // x,y,z,timer
   let stars: [number, number, number, number][] = [];
@@ -91,6 +95,7 @@ window.addEventListener("load", async () =>
     [320, 256, 192, 128, 64],
     [160, 128, 96, 64, 32],
   ];
+
   let loop = (now: number): void =>
   {
     delta = now - then;
@@ -143,7 +148,7 @@ window.addEventListener("load", async () =>
     }
     else
     {
-      renderNode(touchToPlayId, now, delta);
+      renderNode(preGameMessage, now, delta);
     }
     gl_flush();
     tickStats(now, delta);

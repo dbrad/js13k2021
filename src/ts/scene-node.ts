@@ -6,13 +6,11 @@ import { v2 } from "./v2";
 let nextNodeId = 0;
 export let node_render_function: ((nodeId: number, now: number, delta: number) => void)[] = [];
 export let node_position: v2[] = [];
-export let node_z_index: number[] = [];
 export let node_size: v2[] = [];
 export let node_enabled: boolean[] = [];
-export let node_visible: boolean[] = [];
 export let node_interactive: boolean[] = [];
-export let node_parent: number[] = [];
-export let node_children: number[][] = [];
+let node_parent: number[] = [];
+let node_children: number[][] = [];
 export let node_tag: number[] = [];
 
 //#region TAGS
@@ -25,11 +23,9 @@ export let createNode = (): number =>
   let nodeId = ++nextNodeId;
 
   node_position[nodeId] = [0, 0];
-  node_z_index[nodeId] = 0;
   node_size[nodeId] = [1, 1];
 
   node_enabled[nodeId] = true;
-  node_visible[nodeId] = true;
   node_interactive[nodeId] = true;
 
   node_parent[nodeId] = 0;
@@ -40,7 +36,7 @@ export let createNode = (): number =>
   return nodeId;
 };
 
-export let addChildNode = (nodeId: number, childNodeId: number, zIndex: number = 0): void =>
+export let addChildNode = (nodeId: number, childNodeId: number): void =>
 {
   // If the child node already has a parent, we want to clean that data up.
   let oldParentId = node_parent[childNodeId];
@@ -59,13 +55,7 @@ export let addChildNode = (nodeId: number, childNodeId: number, zIndex: number =
   }
 
   node_parent[childNodeId] = nodeId;
-  node_z_index[childNodeId] = zIndex;
-
   node_children[nodeId].push(childNodeId);
-  node_children[nodeId].sort((nodeIdA: number, nodeIdB: number) =>
-  {
-    return node_z_index[nodeIdA] - node_z_index[nodeIdB];
-  });
 };
 
 export let moveNode = (nodeId: number, x: number, y: number): void =>
@@ -76,14 +66,14 @@ export let moveNode = (nodeId: number, x: number, y: number): void =>
 export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext._cursor): void =>
 {
   if (!node_enabled[nodeId] || !node_interactive[nodeId]) return;
-  let position = node_position[nodeId];
-  let size = node_size[nodeId];
-  let relativePosition = [cursorPosition[0] - position[0], cursorPosition[1] - position[1]];
+  let [px, py] = node_position[nodeId];
+  let [w, h] = node_size[nodeId];
+  let relativePosition: v2 = [cursorPosition[0] - px, cursorPosition[1] - py];
 
-  if (cursorPosition[0] >= position[0]
-    && cursorPosition[1] >= position[1]
-    && cursorPosition[0] < position[0] + size[0]
-    && cursorPosition[1] < position[1] + size[1])
+  if (cursorPosition[0] >= px
+    && cursorPosition[1] >= py
+    && cursorPosition[0] < px + w
+    && cursorPosition[1] < py + h)
   {
     inputContext._hot = nodeId;
     if (inputContext._active === nodeId)
@@ -115,11 +105,11 @@ export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext.
 
 export let renderNode = (nodeId: number, now: number, delta: number): void =>
 {
-  if (node_enabled[nodeId] && node_visible[nodeId])
+  if (node_enabled[nodeId])
   {
-    let position = node_position[nodeId];
+    let [x, y] = node_position[nodeId];
     gl_save();
-    gl_translate(position[0], position[1]);
+    gl_translate(x, y);
 
     if (node_render_function[nodeId])
     {

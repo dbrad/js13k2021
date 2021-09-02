@@ -1,13 +1,15 @@
-import { RUN_SHORT, THREAT_LOW, generateEncounterDeck } from "../gameplay/encounters";
-import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
+import { SCREEN_CENTER_X, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_enabled, node_size } from "../scene-node";
 import { gameState, qDriveCosts, qReset, softReset } from "../game-state";
+import { qDriveSound, zzfxP } from "../zzfx";
 
 import { Adventure } from "./adventure";
 import { GameMenu } from "./game-menu";
 import { Station } from "./station";
+import { WHITE } from "../colour";
 import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
+import { createGalaxyMapNode } from "../nodes/galaxy-map";
 import { createQDriveNode } from "../nodes/quantum-drive-node";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
@@ -18,9 +20,6 @@ export namespace MissionSelect
   export const _sceneId = 1;
 
   let smallSystemId: number;
-  let mediumSystemId: number;
-  let largeSystemId: number;
-  let unchartedSystemId: number;
 
   let menuButton: number;
   let stationButton: number;
@@ -40,21 +39,9 @@ export namespace MissionSelect
     moveNode(menuButton, SCREEN_WIDTH - 70, 0);
     addChildNode(rootId, menuButton);
 
-    smallSystemId = createButtonNode("small", [180, 40]);
-    moveNode(smallSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 100);
-    addChildNode(rootId, smallSystemId);
-
-    mediumSystemId = createButtonNode("medium", [180, 40]);
-    moveNode(mediumSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y - 50);
-    addChildNode(rootId, mediumSystemId);
-
-    largeSystemId = createButtonNode("large", [180, 40]);
-    moveNode(largeSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y);
-    addChildNode(rootId, largeSystemId);
-
-    unchartedSystemId = createButtonNode("uncharted", [180, 40]);
-    moveNode(unchartedSystemId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 50);
-    addChildNode(rootId, unchartedSystemId);
+    let map = createGalaxyMapNode();
+    moveNode(map, 0, 34);
+    addChildNode(rootId, map);
 
     qDrive = createQDriveNode();
     moveNode(qDrive, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 20);
@@ -64,8 +51,8 @@ export namespace MissionSelect
     moveNode(activateQDriveButton, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 40);
     addChildNode(rootId, activateQDriveButton);
 
-    stationButton = createButtonNode("upgrade ship", [160, 80]);
-    moveNode(stationButton, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
+    stationButton = createButtonNode("upgrade ship", [140, 80]);
+    moveNode(stationButton, SCREEN_WIDTH - 142, SCREEN_HEIGHT - 82);
     addChildNode(rootId, stationButton);
 
     return rootId;
@@ -86,14 +73,13 @@ export namespace MissionSelect
     else if (inputContext._fire === smallSystemId)
     {
       softReset();
-      gameState._adventureEncounters = generateEncounterDeck(RUN_SHORT, THREAT_LOW);
-      gameState._adventureReward = 1000;
-      gameState._threatLevel = THREAT_LOW;
       pushScene(Adventure._sceneId);
     }
     else if (inputContext._fire === activateQDriveButton)
     {
       qReset();
+      pushScene(MissionSelect._sceneId, 1000, WHITE);
+      zzfxP(qDriveSound);
     }
   };
 }

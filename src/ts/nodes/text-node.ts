@@ -15,7 +15,8 @@ export type TextParameters =
   {
     _colour?: number,
     _textAlign?: number,
-    _scale?: number;
+    _scale?: number,
+    _width?: number;
   };
 
 let textCache: Map<string, string[]> = new Map();
@@ -26,9 +27,9 @@ let node_text_align: number[] = [];
 let node_text_scale: number[] = [];
 let node_text_colour: number[] = [];
 
-// TODO(dbrad): refactor the mandatory width out??
-export let createTextNode = (text: string, width: number, parameters: TextParameters = {}): number =>
+export let createTextNode = (text: string, parameters: TextParameters = {}): number =>
 {
+  let width = parameters._width || 640;
   let nodeId = createNode();
 
   node_interactive[nodeId] = false;
@@ -60,7 +61,7 @@ export let updateTextNode = (nodeId: number, text: string | null, parameters: Te
   node_size[nodeId][1] = textHeight;
 };
 
-export let parseText = (text: string, width: number, scale: number = 1): number =>
+export let parseText = (text: string, width: number = 640, scale: number = 1): number =>
 {
   if (textCache.has(`${ text }_${ scale }_${ width }`)) return textCache.get(`${ text }_${ scale }_${ width }`)?.length || 0;
 
