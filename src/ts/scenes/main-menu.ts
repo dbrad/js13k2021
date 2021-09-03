@@ -23,13 +23,9 @@ export namespace MainMenu
     let rootId = createNode();
     node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-    let textNodeId = createTextNode("2d1d4x13k", { _scale: 4, _textAlign: Align_Center });
+    let textNodeId = createTextNode("2dq4x13k", { _scale: 4, _textAlign: Align_Center });
     moveNode(textNodeId, SCREEN_CENTER_X, 20);
-    addChildNode(rootId, textNodeId);
-
-    let textNodeId02 = createTextNode("the 2d one dimensional 4x game", { _textAlign: Align_Center });
-    moveNode(textNodeId02, SCREEN_CENTER_X, 54);
-    addChildNode(rootId, textNodeId02);
+    addChildNode(rootId, textNodeId);;
 
     startButton = createButtonNode("new game", [288, 40]);
     moveNode(startButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
@@ -55,6 +51,7 @@ export namespace MainMenu
     {
       if (hasSaveFile())
       {
+        // TODO(dbrad): Need an in engine confirm here
         if (confirm("?"))
         {
           initGameState();

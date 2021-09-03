@@ -9,7 +9,7 @@ import { Station } from "./station";
 import { WHITE } from "../colour";
 import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
-import { createGalaxyMapNode } from "../nodes/galaxy-map";
+import { createGalaxyMapNode } from "../nodes/galaxy-map-ui-node";
 import { createQDriveNode } from "../nodes/quantum-drive-node";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
@@ -32,11 +32,11 @@ export namespace MissionSelect
     node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
     let currency = createCurrencyGroupNode();
-    moveNode(currency, 219, 0);
+    moveNode(currency, 217, 0);
     addChildNode(rootId, currency);
 
     menuButton = createButtonNode(txt_menu, [70, 28]);
-    moveNode(menuButton, SCREEN_WIDTH - 70, 0);
+    moveNode(menuButton, SCREEN_WIDTH - 72, 0);
     addChildNode(rootId, menuButton);
 
     let map = createGalaxyMapNode();
@@ -51,8 +51,8 @@ export namespace MissionSelect
     moveNode(activateQDriveButton, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 40);
     addChildNode(rootId, activateQDriveButton);
 
-    stationButton = createButtonNode("upgrade ship", [140, 80]);
-    moveNode(stationButton, SCREEN_WIDTH - 142, SCREEN_HEIGHT - 82);
+    stationButton = createButtonNode("upgrade ship", [162, 78]);
+    moveNode(stationButton, 476, 260);
     addChildNode(rootId, stationButton);
 
     return rootId;

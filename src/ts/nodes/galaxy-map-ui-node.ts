@@ -2,6 +2,7 @@ import { addChildNode, createNode, moveNode, node_interactive, node_position, no
 import { createTextNode, updateTextNode } from "./text-node";
 
 import { STAR_COLOURS } from "../colour";
+import { createButtonNode } from "./button-node";
 import { createSpriteNode } from "./sprite-node";
 import { createWindowNode } from "./window-node";
 import { gameState } from "../game-state";
@@ -25,9 +26,9 @@ let mapWindow: number;
 let background_stars: v2[] = [];
 let stars: Star[] = [];
 
-let playerStar: number = 0;
+let selected_system_label: number;
+let current_system_label: number;
 
-let star_label: number;
 let selectedStarIndicator: number;
 let playerLocationIndicator: number;
 
@@ -35,8 +36,8 @@ let playerLocationIndicator: number;
 export let createGalaxyMapNode = (): number =>
 {
   let nodeId = createNode();
-  node_size[nodeId] = [470, 300];
-  node_render_function[nodeId] = updateAndRenderGalaxyMap;
+  node_size[nodeId] = [640, 300];
+  node_render_function[nodeId] = updateAndRenderGalaxyMapUI;
 
   mapWindow = createWindowNode(300, 300, 170, 0);
   addChildNode(nodeId, mapWindow);
@@ -54,11 +55,22 @@ export let createGalaxyMapNode = (): number =>
   addChildNode(mapWindow, selectedStarIndicator);
   node_interactive[selectedStarIndicator] = false;
 
-  let descriptionWindow = createWindowNode(154, 300, 6, 0);
-  addChildNode(nodeId, descriptionWindow);
+  let leftPanel = createWindowNode(154, 220, 6, 0);
+  addChildNode(nodeId, leftPanel);
 
-  star_label = createTextNode(txt_empty_string);
-  addChildNode(descriptionWindow, star_label);
+  selected_system_label = createTextNode(txt_empty_string);
+  addChildNode(leftPanel, selected_system_label);
+
+  let departButton = createButtonNode("depart", [162, 78]);
+  moveNode(departButton, 2, 226);
+  addChildNode(nodeId, departButton);
+
+  let rightPanel = createWindowNode(154, 220, 6, 0);
+  moveNode(rightPanel, 480, 0);
+  addChildNode(nodeId, rightPanel);
+
+  current_system_label = createTextNode(txt_empty_string);
+  addChildNode(rightPanel, current_system_label);
 
   return nodeId;
 };
@@ -72,10 +84,10 @@ let getValidatorForPoints = (x1: number, y1: number, x2: number, y2: number): (x
   return (x, y): boolean => (math.abs(y - ((m * x) + b)) <= 16 && x >= lx && x <= hx) || (math.abs(x - ((b - y) / (-m))) <= 16 && y >= ly && y <= hy);
 };
 
-let updateAndRenderGalaxyMap = (nodeId: number, now: number, delta: number): void =>
+let updateAndRenderGalaxyMapUI = (nodeId: number, now: number, delta: number): void =>
 {
   if (stars.length === 0) generateGalaxy();
-  let ps = stars[playerStar];
+  let ps = stars[gameState._currentPlayerSystem];
   moveNode(playerLocationIndicator, ps._x - 8, ps._y - 8);
 
   for (let star of stars)
@@ -93,9 +105,9 @@ let updateAndRenderGalaxyMap = (nodeId: number, now: number, delta: number): voi
           results.push(searchStar._name);
         }
       }
-      let description = `${ star._name }\ndistance ${ math.floor(math.hypot(star._x - ps._x, star._y - ps._y) * 150) }\n\non the way\n`;
+      let description = `${ star._name }\ndistance R${ math.floor(math.hypot(star._x - ps._x, star._y - ps._y) * 150) }\n\non the way\n`;
       description += results.join("\n");
-      updateTextNode(star_label, description);
+      updateTextNode(selected_system_label, description);
       moveNode(selectedStarIndicator, star._x - 8, star._y - 8);
     }
   }
@@ -122,10 +134,13 @@ let generateGalaxy = (): void =>
 
   for (var arm = 0; arm < 10; arm++)
   {
-    for (var p = 0; p < 48; p++)
+    for (var p = 0; p < 49; p++)
     {
-      var pX = math.floor(3 * p * math.cos(p + (math.PI * arm + rot)) + (srand(-8, 8))) + 150;
-      var pY = math.floor(3 * p * math.sin(p + (math.PI * arm + rot)) + (srand(-8, 8))) + 150;
+      let vary = math.ceil(p / 49 * 7);
+      let min = -10 + vary;
+      let max = 10 - vary;
+      var pX = math.floor(3 * p * math.cos(p + (math.PI * arm + rot)) + (srand(min, max))) + 150;
+      var pY = math.floor(3 * p * math.sin(p + (math.PI * arm + rot)) + (srand(min, max))) + 150;
 
       if (arm === 0 && p >= 10)
       {

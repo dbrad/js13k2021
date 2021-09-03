@@ -1,7 +1,7 @@
+import { HULL_RED, POWER_GREEN, WHITE } from "../colour";
 import { createNode, node_interactive, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
-import { WHITE } from "../colour";
 import { assert } from "../debug";
 import { getTexture } from "../texture";
 import { math } from "../math";
@@ -19,7 +19,7 @@ export type TextParameters =
     _width?: number;
   };
 
-let textCache: Map<string, string[]> = new Map();
+let textCache: Map<string, [string, number][]> = new Map();
 let fontSize = 8;
 
 let node_text: string[] = [];
@@ -66,7 +66,7 @@ export let parseText = (text: string, width: number = 640, scale: number = 1): n
   if (textCache.has(`${ text }_${ scale }_${ width }`)) return textCache.get(`${ text }_${ scale }_${ width }`)?.length || 0;
 
   let letterSize: number = fontSize * scale;
-  let resultLines: string[] = [];
+  let resultLines: [string, number][] = [];
   let resultLine: string[] = [];
 
   let sourceLines = text.split("\n");
@@ -80,18 +80,24 @@ export let parseText = (text: string, width: number = 640, scale: number = 1): n
       {
         let lastWord = resultLine.pop();
         assert(lastWord !== undefined, `No last word to pop found.`);
-        resultLines.push(resultLine.join(" "));
+        let line = resultLine.join(" ");
+        let lineLength = line.replace(/[A-Z]/g, txt_empty_string).length;
+        resultLines.push([line, lineLength]);
         resultLine = [lastWord];
       }
     }
     if (resultLine.length > 0)
     {
-      resultLines.push(resultLine.join(" "));
+      let line = resultLine.join(" ");
+      let lineLength = line.replace(/[A-Z]/g, txt_empty_string).length;
+      resultLines.push([line, lineLength]);
     }
     resultLine = [];
   }
 
   textCache.set(`${ text }_${ scale }_${ width }`, resultLines);
+
+  // return the number of lines this was parsed into
   return resultLines.length;
 };
 
@@ -112,12 +118,13 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
   let lines = textCache.get(`${ text }_${ scale }_${ size[0] }`);
   assert(lines !== undefined, `text lines not found`);
 
-  for (let line of lines)
+  let alignmentOffset: number = 0;
+
+  for (let [line, characterCount] of lines)
   {
     let words: string[] = line.split(" ");
-    let lineLength: number = line.length * letterSize;
+    let lineLength: number = characterCount * letterSize;
 
-    let alignmentOffset: number = 0;
     if (align === Align_Center)
     {
       alignmentOffset = math.floor(-lineLength / 2);
@@ -131,6 +138,15 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
     {
       for (let letter of word.split(txt_empty_string))
       {
+        if (letter === letter.toUpperCase() && /[a-z]+/i.test(letter))
+        {
+          if (letter === "R") colour = HULL_RED;
+          else if (letter === "G") colour = POWER_GREEN;
+          // @ifdef DEBUG
+          else assert(false, `Non-control capital letter used ${ letter }`);
+          // @endif
+          continue;
+        }
         let t = getTexture(letter);
         x = xOffset + alignmentOffset;
         gl_save();
@@ -140,6 +156,7 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
         gl_restore();
         xOffset += letterSize;
       }
+      colour = node_text_colour[nodeId];
       xOffset += letterSize;
     }
     y += letterSize + scale * 2;

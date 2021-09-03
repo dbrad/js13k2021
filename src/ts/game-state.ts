@@ -6,18 +6,6 @@ import { WHITE } from "./colour";
 import { math } from "./math";
 import { pushScene } from "./scene";
 
-type GameState = {
-  _generatorLevel: number,
-  _qLevel: number,
-  _currentShield: number,
-  _availablePower: number,
-  _systemLevels: [number, number][],
-  _currency: [number, number, number, number, number, number],
-  _galaxySeed: number,
-  _shipPosition: number,
-  _adventureEncounters: Encounter[],
-};
-
 // Ship System Indexes
 export let ENGINES = 0 as const;
 export let SHIELDS = 1 as const;
@@ -35,7 +23,6 @@ export let CURRENCY_RESEARCH = 5 as const;
 
 export let qDriveCosts = [6000, 12000, 18000, 36000, 54000];
 
-export let gameState: GameState;
 export let musicEnabled: boolean = true;
 
 export let toggleMusic = (): void =>
@@ -51,6 +38,20 @@ export let toggleMusic = (): void =>
     musicEnabled = true;
   }
 };
+
+type GameState = {
+  _generatorLevel: number,
+  _qLevel: number,
+  _currentShield: number,
+  _availablePower: number,
+  _systemLevels: [number, number][],
+  _currency: [number, number, number, number, number, number],
+  _galaxySeed: number,
+  _currentPlayerSystem: number,
+  _shipPosition: number,
+  _adventureEncounters: Encounter[],
+};
+export let gameState: GameState;
 
 export let maxHull = (): number =>
 {
@@ -136,6 +137,7 @@ export let initGameState = (): void =>
     ],
     _currency: [0, 0, 0, 0, 0, 0],
     _galaxySeed: performance.now(),
+    _currentPlayerSystem: 0,
     _shipPosition: 0,
     _adventureEncounters: [],
   };

@@ -14,14 +14,13 @@ import { inputContext } from "../input";
 import { math } from "../math";
 import { popScene } from "../scene";
 
-// TODO(dbrad): remove raw materials
+// TODO(dbrad): remove raw materials?
 export namespace Station
 {
   export const _sceneId = 3;
 
   let LEVEL_LABEL = 0;
-  let COST_1_LABEL = 1;
-  let COST_2_LABEL = 2;
+  let COST_LABEL = 1;
   let PURCHASE_BUTTON = 3;
 
   let systems: number[][] = [];
@@ -81,20 +80,16 @@ export namespace Station
       moveNode(label, 69, 37 + h);
       addChildNode(systemUpdatesDiv, label);
 
+      // TODO(dbrad): merge with above label
       let levelLabel = createTextNode(txt_empty_string, { ...alignR, _colour: GREY_999 });
       moveNode(levelLabel, 69, 47 + h);
       addChildNode(systemUpdatesDiv, levelLabel);
       systems[i][LEVEL_LABEL] = levelLabel;
 
-      let cost1Label = createTextNode(txt_empty_string, alignR);
-      moveNode(cost1Label, 136, 37 + h);
-      addChildNode(systemUpdatesDiv, cost1Label);
-      systems[i][COST_1_LABEL] = cost1Label;
-
-      let cost2Label = createTextNode(txt_empty_string, alignR);
-      moveNode(cost2Label, 136, 47 + h);
-      addChildNode(systemUpdatesDiv, cost2Label);
-      systems[i][COST_2_LABEL] = cost2Label;
+      let costLabel = createTextNode(txt_empty_string, alignR);
+      moveNode(costLabel, 136, 37 + h);
+      addChildNode(systemUpdatesDiv, costLabel);
+      systems[i][COST_LABEL] = costLabel;
 
       let soldOutLabel = createTextNode(txt_upgraded_fully, { _textAlign: Align_Center, _colour: GREY_999 });
       moveNode(soldOutLabel, divWidth - 76, 37 + h);
@@ -167,20 +162,16 @@ export namespace Station
     moveNode(upgradeHullLabel, 102, 87);
     addChildNode(hullContainer, upgradeHullLabel);
 
+    // TODO(dbrad): merge with above label
     let upgradeHullLevelLabel = createTextNode(txt_empty_string, { ...alignR, _colour: GREY_999 });
     moveNode(upgradeHullLevelLabel, 102, 97);
     addChildNode(hullContainer, upgradeHullLevelLabel);
     systems[5][LEVEL_LABEL] = upgradeHullLevelLabel;
 
-    let upgradeHullCost1 = createTextNode(txt_empty_string, alignR);
-    moveNode(upgradeHullCost1, divWidth - 136, 87);
-    addChildNode(hullContainer, upgradeHullCost1);
-    systems[5][COST_1_LABEL] = upgradeHullCost1;
-
-    let upgradeHullCost2 = createTextNode(txt_empty_string, alignR);
-    moveNode(upgradeHullCost2, divWidth - 136, 97);
-    addChildNode(hullContainer, upgradeHullCost2);
-    systems[5][COST_2_LABEL] = upgradeHullCost2;
+    let upgradeHullCost = createTextNode(txt_empty_string, alignR);
+    moveNode(upgradeHullCost, divWidth - 136, 87);
+    addChildNode(hullContainer, upgradeHullCost);
+    systems[5][COST_LABEL] = upgradeHullCost;
 
     let hullMaxedOut = createTextNode(txt_upgraded_fully, { _textAlign: Align_Center, _colour: GREY_999 });
     moveNode(hullMaxedOut, divWidth - 62, 87);
@@ -254,8 +245,7 @@ export namespace Station
       let canUpgrade = level < 4;
       updateTextNode(systems[i][LEVEL_LABEL], `lvl${ level }`);
 
-      node_enabled[systems[i][COST_1_LABEL]] = canUpgrade;
-      node_enabled[systems[i][COST_2_LABEL]] = canUpgrade;
+      node_enabled[systems[i][COST_LABEL]] = canUpgrade;
       node_enabled[systems[i][PURCHASE_BUTTON]] = canUpgrade;
 
       if (canUpgrade)
@@ -265,8 +255,7 @@ export namespace Station
         let hasEnoughCredits = credits >= creditCost;
         let hasEnoughMaterials = materials >= materialCost;
 
-        updateTextNode(systems[i][COST_1_LABEL], `${ creditCost + txt_cr }`, { _colour: hasEnoughCredits ? WHITE : HULL_RED });
-        updateTextNode(systems[i][COST_2_LABEL], `${ materialCost + txt_kg }`, { _colour: hasEnoughMaterials ? WHITE : HULL_RED });
+        updateTextNode(systems[i][COST_LABEL], `${ hasEnoughCredits ? txt_empty_string : "R" }${ creditCost + txt_cr }\n${ hasEnoughMaterials ? txt_empty_string : "R" }${ materialCost + txt_kg }`);
 
         node_interactive[systems[i][PURCHASE_BUTTON]] = hasEnoughCredits && hasEnoughMaterials;
 
