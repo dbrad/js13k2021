@@ -25,6 +25,18 @@ type TextureAssetJson = {
   _textures: TextureJson[];
 };
 
+export let SPRITE_PLAYER_SHIP = "ps";
+export let SPRITE_STAR = "st";
+export let SPRITE_GAS_PLANET = "gp";
+export let SPRITE_ROCK_PLANET = "rp";
+export let SPRITE_SHIELD = "sh";
+export let SPRITE_RANGE_BRACKET = "br";
+export let SPRITE_ASTEROID = "as";
+export let SPRITE_STATION = "sn";
+export let SPRITE_PIRATE_SHIP = "pr";
+export let SPRITE_SPACE_BEAST = "bs";
+export let SPRITE_ANOMALY = "an";
+
 let sheet: TextureAssetJson = {
   _textures: [
     {
@@ -53,7 +65,7 @@ let sheet: TextureAssetJson = {
     },
     {
       _type: "r",
-      _name: ["ps", "star", "gas", "rock", "shld", "brk", "ast", "stn", "prt", "bst", "ano"],
+      _name: [SPRITE_PLAYER_SHIP, SPRITE_STAR, SPRITE_GAS_PLANET, SPRITE_ROCK_PLANET, SPRITE_SHIELD, SPRITE_RANGE_BRACKET, SPRITE_ASTEROID, SPRITE_STATION, SPRITE_PIRATE_SHIP, SPRITE_SPACE_BEAST, SPRITE_ANOMALY],
       _x: 0,
       _y: 16,
       _w: 16,

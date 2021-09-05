@@ -36,8 +36,8 @@ export let gl_getContext = (canvas: HTMLCanvasElement): WebGLRenderingContext =>
 {
   width = canvas.width;
   height = canvas.height;
-  let context = canvas.getContext(`webgl`, { alpha: false, antialias: false, depth: false, powerPreference: `high-performance`, preserveDrawingBuffer: true });
-  assert(context !== null, `Unable to get GL context.`);
+  let context = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance", preserveDrawingBuffer: true });
+  assert(context !== null, "Unable to get GL context.");
   return context;
 };
 
@@ -48,7 +48,7 @@ export let gl_init = (context: WebGLRenderingContext): void =>
   let compileShader = (source: string, type: number): WebGLShader =>
   {
     let glShader = ctx.createShader(type);
-    assert(glShader !== null, `Unable to created shader`);
+    assert(glShader !== null, "Unable to created shader");
     ctx.shaderSource(glShader, source);
     ctx.compileShader(glShader);
     return glShader;
@@ -57,7 +57,7 @@ export let gl_init = (context: WebGLRenderingContext): void =>
   let createShaderProgram = (vsSource: string, fsSource: string): WebGLProgram =>
   {
     let program = ctx.createProgram();
-    assert(program !== null, `Unable to created program`);
+    assert(program !== null, "Unable to created program");
     let vShader: WebGLShader = compileShader(vsSource, 35633);
     let fShader: WebGLShader = compileShader(fsSource, 35632);
     ctx.attachShader(program, vShader);
@@ -69,15 +69,15 @@ export let gl_init = (context: WebGLRenderingContext): void =>
   let createBuffer = (bufferType: number, size: number, usage: number): WebGLBuffer =>
   {
     let buffer = ctx.createBuffer();
-    assert(buffer !== null, `Unable to created buffer`);
+    assert(buffer !== null, "Unable to created buffer");
     ctx.bindBuffer(bufferType, buffer);
     ctx.bufferData(bufferType, size, usage);
     return buffer;
   };
 
   let shader: WebGLShader = createShaderProgram(
-    `precision lowp float;attribute vec2 v,t;attribute vec4 c;varying vec2 uv;varying vec4 cl;uniform mat4 m;void main(){gl_Position=m*vec4(v,1.0,1.0);uv=t;cl=c;}`,
-    `precision lowp float;varying vec2 uv;varying vec4 cl;uniform sampler2D s;void main(){gl_FragColor=texture2D(s,uv)*cl;}`
+    "precision lowp float;attribute vec2 v,t;attribute vec4 c;varying vec2 uv;varying vec4 cl;uniform mat4 m;void main(){gl_Position=m*vec4(v,1.0,1.0);uv=t;cl=c;}",
+    "precision lowp float;varying vec2 uv;varying vec4 cl;uniform sampler2D s;void main(){gl_FragColor=texture2D(s,uv)*cl;}"
   );
 
   indexBuffer = createBuffer(34963, vIndexData.byteLength, 35044);
@@ -100,9 +100,9 @@ export let gl_init = (context: WebGLRenderingContext): void =>
   ctx.bufferSubData(34963, 0, vIndexData);
   ctx.bindBuffer(34962, vertexBuffer);
 
-  vertexAttr = ctx.getAttribLocation(shader, `v`);
-  textureAttr = ctx.getAttribLocation(shader, `t`);
-  colourAttr = ctx.getAttribLocation(shader, `c`);
+  vertexAttr = ctx.getAttribLocation(shader, "v");
+  textureAttr = ctx.getAttribLocation(shader, "t");
+  colourAttr = ctx.getAttribLocation(shader, "c");
 
   ctx.enableVertexAttribArray(vertexAttr);
   ctx.vertexAttribPointer(vertexAttr, 2, 5126, false, VERTEX_SIZE, 0);
@@ -117,7 +117,7 @@ export let gl_init = (context: WebGLRenderingContext): void =>
 export let gl_createTexture = (image: HTMLImageElement | HTMLCanvasElement): WebGLTexture =>
 {
   let texture = ctx.createTexture();
-  assert(texture !== null, `Unable to create texture.`);
+  assert(texture !== null, "Unable to create texture.");
   ctx.bindTexture(TEXTURE_2D, texture);
   ctx.texParameteri(TEXTURE_2D, 10242, 33071);
   ctx.texParameteri(TEXTURE_2D, 10243, 33071);

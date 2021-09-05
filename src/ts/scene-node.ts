@@ -38,22 +38,6 @@ export let createNode = (): number =>
 
 export let addChildNode = (nodeId: number, childNodeId: number): void =>
 {
-  // If the child node already has a parent, we want to clean that data up.
-  let oldParentId = node_parent[childNodeId];
-  if (oldParentId > 0)
-  {
-    let index = 0;
-    for (let searchId of node_children[oldParentId])
-    {
-      if (searchId === childNodeId)
-      {
-        node_children[oldParentId] = node_children[oldParentId].splice(index, 1);
-        break;
-      }
-      index++;
-    }
-  }
-
   node_parent[childNodeId] = nodeId;
   node_children[nodeId].push(childNodeId);
 };
@@ -66,14 +50,15 @@ export let moveNode = (nodeId: number, x: number, y: number): void =>
 export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext._cursor): void =>
 {
   if (!node_enabled[nodeId] || !node_interactive[nodeId]) return;
+  let [cx, cy] = cursorPosition;
   let [px, py] = node_position[nodeId];
   let [w, h] = node_size[nodeId];
-  let relativePosition: v2 = [cursorPosition[0] - px, cursorPosition[1] - py];
+  let relativePosition: v2 = [cx - px, cy - py];
 
-  if (cursorPosition[0] >= px
-    && cursorPosition[1] >= py
-    && cursorPosition[0] < px + w
-    && cursorPosition[1] < py + h)
+  if (cx >= px
+    && cy >= py
+    && cx < px + w
+    && cy < py + h)
   {
     inputContext._hot = nodeId;
     if (inputContext._active === nodeId)

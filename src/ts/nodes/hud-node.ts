@@ -69,7 +69,7 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
     if (encounter._bounty)
     {
       let currency = encounter._bounty[1] === CURRENCY_CREDITS_INCOMING ? txt_cr : "kb";
-      descriptionText.push(` (bounty: ${ encounter._bounty[0] }${ currency })\n`);
+      descriptionText.push(` (bounty ${ encounter._bounty[0] }${ currency })\n`);
     }
     else
     {

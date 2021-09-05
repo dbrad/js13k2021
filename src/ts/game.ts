@@ -7,6 +7,7 @@ import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
 import { moveNode, renderNode } from "./scene-node";
 import { registerScene, renderScene, updateScene } from "./scene";
+import { setupAudio, startMusic } from "./zzfx";
 
 import { Adventure } from "./scenes/adventure";
 import { GameMenu } from "./scenes/game-menu";
@@ -19,7 +20,6 @@ import { loadSpriteSheet } from "./texture";
 import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
-import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
 {
@@ -35,10 +35,10 @@ window.addEventListener("load", async () =>
   let playing: boolean = false;
   let loadGame = () =>
   {
-    assert(canvas !== null, `Unable to find canvas element on index.html`);
-    canvas.removeEventListener(`pointerdown`, loadGame);
-    canvas.removeEventListener(`touchstart`, loadGame);
-    updateTextNode(preGameMessage, `loading...`);
+    assert(canvas !== null, "Unable to find canvas element on index.html");
+    canvas.removeEventListener("pointerdown", loadGame);
+    canvas.removeEventListener("touchstart", loadGame);
+    updateTextNode(preGameMessage, "loading...");
 
     setTimeout(() =>
     {
@@ -54,13 +54,13 @@ window.addEventListener("load", async () =>
       registerScene(GameMenu._sceneId, GameMenu._setup, GameMenu._update);
 
       makeStars();
-      //startMusic();
+      startMusic();
     }, 16);
   };
 
-  canvas.addEventListener(`pointerdown`, loadGame);
-  canvas.addEventListener(`touchstart`, loadGame);
-  let preGameMessage = createTextNode(`touch to start`, { _scale: 2, _textAlign: Align_Center });
+  canvas.addEventListener("pointerdown", loadGame);
+  canvas.addEventListener("touchstart", loadGame);
+  let preGameMessage = createTextNode("touch to start", { _scale: 2, _textAlign: Align_Center });
   moveNode(preGameMessage, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
 
   // x,y,z,timer
@@ -81,7 +81,6 @@ window.addEventListener("load", async () =>
     }
     sortable.sort();
 
-
     for (let i in stars)
     {
       stars[i][2] = sortable[i];
@@ -90,10 +89,10 @@ window.addEventListener("load", async () =>
 
   let starSpeedTable = [
     [],
-    [640, 512, 384, 256, 128],
-    [480, 384, 288, 192, 96],
-    [320, 256, 192, 128, 64],
-    [160, 128, 96, 64, 32],
+    [800, 512, 384, 256, 128],
+    [640, 384, 288, 192, 96],
+    [480, 256, 192, 128, 64],
+    [320, 128, 96, 64, 32],
   ];
 
   let loop = (now: number): void =>

@@ -81,4 +81,4 @@ Space Saving Ideas
 ✔ Remove unneeded sprites / symbols @done(21-08-31 07:26)
 ✔ Remove manditory width on text node @done(21-08-31 07:21)
 ✔ Rip out zindex and manually sort @done(21-08-31 07:12)
-☐ Collapse visible and enabled
+✔ Collapse visible and enabled @done(21-09-04 19:21)

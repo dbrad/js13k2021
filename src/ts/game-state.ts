@@ -38,6 +38,22 @@ export let toggleMusic = (): void =>
     musicEnabled = true;
   }
 };
+export const CONTRACT_MINING = 0;
+export const CONTRACT_RESEARCH = 1;
+export const CONTRACT_BOUNTIES = 2;
+export const CONTRACT_DELIVERY = 3;
+export const CONTRACT_ANOMALY = 4;
+
+export type Contract = {
+  reward: number,
+  type: number,
+  materialsRequired?: number,
+  dataRequired?: number,
+  bountiesRequired?: number,
+  bountiesCollected?: number,
+  hasPackage?: boolean,
+  destination?: number;
+};
 
 type GameState = {
   _generatorLevel: number,
@@ -53,20 +69,11 @@ type GameState = {
 };
 export let gameState: GameState;
 
-export let maxHull = (): number =>
-{
-  return 4 + (gameState._systemLevels[HULL][1]);
-};
+export let maxHull = (): number => 4 + (gameState._systemLevels[HULL][1]);
 
-export let currentHull = (): number =>
-{
-  return gameState._systemLevels[HULL][0];
-};
+export let currentHull = (): number => gameState._systemLevels[HULL][0];
 
-export let maxAvailablePower = (): number =>
-{
-  return 3 + gameState._generatorLevel * 2;
-};
+export let maxAvailablePower = (): number => 3 + gameState._generatorLevel * 2;
 
 export let hurtPlayer = (): void =>
 {
@@ -81,8 +88,8 @@ export let hurtPlayer = (): void =>
   if (gameState._systemLevels[HULL][0] === 0)
   {
     zzfxP(shipDieSound);
-    pushScene(MissionSelect._sceneId, WHITE);
     qReset(true);
+    pushScene(MissionSelect._sceneId, WHITE);
   }
 };
 
@@ -145,16 +152,16 @@ export let initGameState = (): void =>
 };
 
 let saveName = `idle4xdb-save`;
-
+let storage = window.localStorage;
 export let saveGame = (): void =>
 {
   let json = JSON.stringify(gameState);
   let b64 = btoa(json);
-  window.localStorage.setItem(saveName, b64);
+  storage.setItem(saveName, b64);
 };
 export let loadGame = (): void =>
 {
-  let b64 = window.localStorage.getItem(saveName);
+  let b64 = storage.getItem(saveName);
   if (!b64)
   {
     initGameState();
@@ -166,5 +173,5 @@ export let loadGame = (): void =>
 
 export let hasSaveFile = (): boolean =>
 {
-  return window.localStorage.getItem(saveName) !== null;
+  return storage.getItem(saveName) !== null;
 };

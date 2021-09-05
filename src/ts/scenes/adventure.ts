@@ -1,5 +1,5 @@
-import { CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, saveGame } from "../game-state";
-import { ENC_SPACE_BEAST, ENC_STATION } from "../gameplay/encounters";
+import { CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, saveGame, softReset } from "../game-state";
+import { ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STATION } from "../gameplay/encounters";
 import { GREY_111, GREY_666, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { TAG_ENTITY_NONE, TAG_ENTITY_PLAYER_SHIP, createEntityNode, updateEntityNode } from "../nodes/entity-node";
@@ -61,7 +61,8 @@ export namespace Adventure
 
   let stationButton: number;
   let leaveButton: number;
-  let qDrive: number;
+  //let qDrive: number;
+
   export let _setup = (): number =>
   {
     let rootId = createNode();
@@ -180,7 +181,7 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    for (let h = 0; h < 2; h++)
+    for (let h = 0; h < 3; h++)
     {
       let hudWindow = createHUDNode();
       moveNode(hudWindow, 192, SCREEN_CENTER_Y + 44 * (h + 1));
@@ -202,9 +203,9 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    qDrive = createQDriveNode();
-    moveNode(qDrive, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 20);
-    addChildNode(rootId, qDrive);
+    // qDrive = createQDriveNode();
+    // moveNode(qDrive, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 20);
+    // addChildNode(rootId, qDrive);
 
     ////////////////////////////////////////
 
@@ -217,15 +218,16 @@ export namespace Adventure
 
   let systemAffected = -1;
   let shipMovementTimer = 0;
-  let shipTimings = [32, 16, 16, 16, 16];
-  let shipDistance = [1, 1, 2, 3, 4];
+  let shipTimings = [0, 32, 16, 16, 16];
+  let shipDistance = [0, 1, 1, 2, 3];
   let stopped = false;
+  let entityTimer = 0;
+
   export let _update = (now: number, delta: number): void =>
   {
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
-    node_enabled[qDrive] = gameState._generatorLevel < 5;
-
+    //node_enabled[qDrive] = gameState._generatorLevel < 5;
 
     if (inputContext._fire === stationButton)
     {
@@ -236,6 +238,8 @@ export namespace Adventure
       gameState._adventureEncounters = [];
       gameState._shipPosition = 0;
       saveGame();
+      softReset();
+      gameState._systemLevels[ENGINES][0] = 1;
       pushScene(MissionSelect._sceneId);
     }
     else if (inputContext._fire === menuButton)
@@ -244,7 +248,9 @@ export namespace Adventure
     }
     else
     {
+      //#region SHIP MOVEMENET
       shipMovementTimer += delta;
+      entityTimer += delta;
       if (shipMovementTimer > shipTimings[gameState._systemLevels[ENGINES][0]] && !stopped)
       {
         shipMovementTimer -= shipTimings[gameState._systemLevels[ENGINES][0]];
@@ -342,10 +348,17 @@ export namespace Adventure
       let hudIndex = 0;
       node_enabled[hudWindows[0]] = false;
       node_enabled[hudWindows[1]] = false;
+      node_enabled[hudWindows[2]] = false;
 
       for (let encounter of gameState._adventureEncounters)
       {
+        // Check if an encounter in onscreenish
         assert(encounter._position !== undefined, `No position for encounter`);
+        if ((encounter._type === ENC_ASTEROID || encounter._type === ENC_PIRATE || encounter._type === ENC_SPACE_BEAST) && entityTimer >= 16)
+        {
+          encounter._position--;
+        }
+
         if (encounter._position > gameState._shipPosition - 480 && encounter._position < gameState._shipPosition + 480)
         {
           if (encounter._maxHp && !encounter._hp)
@@ -366,8 +379,11 @@ export namespace Adventure
           && encounter._position < gameState._shipPosition + windowWidth + 16
           && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
         {
-          updateHUDNode(hudWindows[hudIndex], encounter);
-          hudIndex++;
+          if (hudIndex < hudWindows.length)
+          {
+            updateHUDNode(hudWindows[hudIndex], encounter);
+            hudIndex++;
+          }
 
           // NOTE(dbrad): STATION
           if (encounter._type === ENC_STATION)
@@ -450,6 +466,10 @@ export namespace Adventure
       {
         updateEntityNode(entityPool[entityIndex], TAG_ENTITY_NONE);
       }
+      if (entityTimer >= 16)
+      {
+        entityTimer = 0;
+      }
       //#endregion Entities / Encounters
 
       //#region SHIELDS
@@ -473,7 +493,6 @@ export namespace Adventure
       }
       updateProgressBarNode(systems[SHIELDS][PROGRESS_BAR], shieldTimer / SHIELD_COOLDOWN * 100);
       //#endregion SHIELDS
-
     }
   };
 }

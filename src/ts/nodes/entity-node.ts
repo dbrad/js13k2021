@@ -1,9 +1,10 @@
+import { ENGINES, gameState } from "../game-state";
 import { SHIELD_BLUE, WHITE, colourToHex } from "../colour";
+import { SPRITE_ANOMALY, SPRITE_ASTEROID, SPRITE_GAS_PLANET, SPRITE_PIRATE_SHIP, SPRITE_PLAYER_SHIP, SPRITE_ROCK_PLANET, SPRITE_SHIELD, SPRITE_SPACE_BEAST, SPRITE_STAR, SPRITE_STATION } from "../texture";
 import { addChildNode, createNode, moveNode, node_enabled, node_position, node_render_function } from "../scene-node";
 import { createRangeIndicator, updateRangeIndicator } from "./range-indicator";
 import { createSpriteNode, setSpriteNode } from "./sprite-node";
 
-import { gameState } from "../game-state";
 import { math } from "../math";
 import { pushQuad } from "../draw";
 import { rand } from "../random";
@@ -51,7 +52,7 @@ export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: 
   addChildNode(nodeId, range);
   node_entity_range[nodeId] = range;
 
-  let shieldSprite = createSpriteNode("shld", { _scale: 4, _colour: SHIELD_BLUE });
+  let shieldSprite = createSpriteNode(SPRITE_SHIELD, { _scale: 4, _colour: SHIELD_BLUE });
   moveNode(shieldSprite, -16, -16);
   addChildNode(sprite, shieldSprite);
   node_entity_shield_sprite[nodeId] = shieldSprite;
@@ -78,7 +79,7 @@ export type EncounterParams = {
   _enableAnimations?: boolean,
   _range?: number;
 };
-let textureMap = ["stn", "star", "gas", "rock", "prt", "bst", "ast", "ano", "ps"];
+let textureMap = [SPRITE_STATION, SPRITE_STAR, SPRITE_GAS_PLANET, SPRITE_ROCK_PLANET, SPRITE_PIRATE_SHIP, SPRITE_SPACE_BEAST, SPRITE_ASTEROID, SPRITE_ANOMALY, SPRITE_PLAYER_SHIP];
 export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -1, extraParams: EncounterParams = {}): void =>
 {
   if (entityId === node_entity_id[nodeId]) return;
@@ -120,9 +121,12 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
   let tag = node_entity_tag[nodeId];
   let offset = node_entity_yOffset[nodeId];
   let enableAnimations = node_entity_enable_animations[nodeId];
-  let particleDirection = tag === TAG_ENTITY_PLAYER_SHIP ? 1 : -1;
+  let isPlayerShip = tag === TAG_ENTITY_PLAYER_SHIP;
+  let isPirateShip = tag === TAG_ENTITY_PIRATE_SHIP;
+  let particleDirection = isPlayerShip ? 1 : -1;
 
-  if (enableAnimations && (tag === TAG_ENTITY_PLAYER_SHIP || tag === TAG_ENTITY_PIRATE_SHIP || tag === TAG_ENTITY_SPACE_BEAST))
+  if (enableAnimations
+    && (isPlayerShip || isPirateShip || tag === TAG_ENTITY_SPACE_BEAST))
   {
     node_entity_offsetTimer[nodeId][0] += delta;
     if (node_entity_offsetTimer[nodeId][0] > node_entity_offsetTimer[nodeId][1])
@@ -139,10 +143,12 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
   }
 
   // Hide shield for everything but player ship
-  node_enabled[node_entity_shield_sprite[nodeId]] = tag === TAG_ENTITY_PLAYER_SHIP && gameState._currentShield > 0;
+  node_enabled[node_entity_shield_sprite[nodeId]] = isPlayerShip && gameState._currentShield > 0;
 
   // Only render particles for ships
-  if (enableAnimations && (tag === TAG_ENTITY_PLAYER_SHIP || tag === TAG_ENTITY_PIRATE_SHIP))
+  if (enableAnimations
+    && ((isPlayerShip && gameState._systemLevels[ENGINES][0] > 0)
+      || isPirateShip))
   {
     let particles = node_entity_particles[nodeId];
     let colour = 0;
@@ -163,5 +169,6 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
       colour = colourToHex(math.max(0, 255 - math.ceil(255 * (particle[0] / 20))), rand(125, 255), 100, 100);
       pushQuad(offsetX + particleDirection * -particle[0], offset[0] + particle[1] - 1, 2, 2, colour);
     }
+    if (isPlayerShip && gameState._systemLevels[ENGINES][0] === 0) return;
   }
 };

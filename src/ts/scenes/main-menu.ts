@@ -52,24 +52,19 @@ export namespace MainMenu
       if (hasSaveFile())
       {
         // TODO(dbrad): Need an in engine confirm here
-        if (confirm("?"))
+        if (!confirm("?"))
         {
-          initGameState();
-          saveGame();
-          pushScene(MissionSelect._sceneId);
+          return;
         }
       }
-      else
-      {
-        initGameState();
-        saveGame();
-        pushScene(MissionSelect._sceneId);
-      }
+      initGameState();
+      saveGame();
+      pushScene(MissionSelect._sceneId);
     }
     else if (inputContext._fire === loadButton)
     {
       loadGame();
-      if (0 > 0)// TODO(dbrad): need new flag to check for mid-transit
+      if (gameState._adventureEncounters.length > 0)
       {
         pushScene(Adventure._sceneId);
       }

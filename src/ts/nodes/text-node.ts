@@ -1,4 +1,4 @@
-import { HULL_RED, POWER_GREEN, WHITE } from "../colour";
+import { GREY_999, HULL_RED, POWER_GREEN, WHITE } from "../colour";
 import { createNode, node_interactive, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
@@ -142,6 +142,7 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
         {
           if (letter === "R") colour = HULL_RED;
           else if (letter === "G") colour = POWER_GREEN;
+          else if (letter === "F") colour = GREY_999;
           // @ifdef DEBUG
           else assert(false, `Non-control capital letter used ${ letter }`);
           // @endif

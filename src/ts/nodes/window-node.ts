@@ -1,4 +1,3 @@
-import { GREY_111, GREY_333 } from "../colour";
 import { createNode, node_position, node_render_function, node_size } from "../scene-node";
 
 import { pushQuad } from "../draw";
