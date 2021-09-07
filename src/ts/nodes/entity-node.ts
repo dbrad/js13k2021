@@ -3,7 +3,7 @@ import { SHIELD_BLUE, WHITE, colourToHex } from "../colour";
 import { SPRITE_ANOMALY, SPRITE_ASTEROID, SPRITE_GAS_PLANET, SPRITE_PIRATE_SHIP, SPRITE_PLAYER_SHIP, SPRITE_ROCK_PLANET, SPRITE_SHIELD, SPRITE_SPACE_BEAST, SPRITE_STAR, SPRITE_STATION } from "../texture";
 import { addChildNode, createNode, moveNode, node_enabled, node_position, node_render_function } from "../scene-node";
 import { createRangeIndicator, updateRangeIndicator } from "./range-indicator";
-import { createSpriteNode, setSpriteNode } from "./sprite-node";
+import { createSpriteNode, updateSpriteNode } from "./sprite-node";
 
 import { math } from "../math";
 import { pushQuad } from "../draw";
@@ -106,7 +106,7 @@ export let updateEntityNode = (nodeId: number, tag: number, entityId: number = -
     node_enabled[sprite] = false;
   }
 
-  setSpriteNode(sprite, textureName, { _scale: scale, _colour: colour });
+  updateSpriteNode(sprite, textureName, { _scale: scale, _colour: colour });
 
   if (range > 0)
   {

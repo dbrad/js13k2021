@@ -1,7 +1,7 @@
 import { Align_Center, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, requestFullscreen } from "../screen";
 import { addChildNode, createNode, moveNode, node_enabled, node_size } from "../scene-node";
-import { gameState, hasSaveFile, initGameState, loadGame, saveGame } from "../game-state";
+import { gameState, hasSaveFile, initGameState, loadGame } from "../game-state";
 
 import { Adventure } from "./adventure";
 import { MissionSelect } from "./mission-select";
@@ -50,16 +50,7 @@ export namespace MainMenu
 
     if (inputContext._fire === newGameButton)
     {
-      if (hasSaveFile())
-      {
-        // TODO(dbrad): Need an in engine confirm here
-        if (!confirm("?"))
-        {
-          return;
-        }
-      }
       initGameState();
-      saveGame();
       pushScene(ShipSelect._sceneId);
     }
     else if (inputContext._fire === loadGameButton)

@@ -1,10 +1,11 @@
-import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, softReset } from "../game-state";
+import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, saveGame, softReset } from "../game-state";
 import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_LAWLESS, Star } from "../gameplay/encounters";
-import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
+import { GAS_PLANET_COLOURS, GREY_111, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
 import { addChildNode, createNode, moveNode, node_interactive, node_position, node_render_function, node_size } from "../scene-node";
 import { buttonSound, zzfxP } from "../zzfx";
+import { createSpriteNode, updateSpriteNode } from "../nodes/sprite-node";
 import { createTextNode, updateTextNode } from "../nodes/text-node";
 import { generateSRand, rand } from "../random";
 import { txt_asteroid, txt_empty_string, txt_menu, txt_pirate_ship, txt_quantum_anomaly, txt_space_beast, txt_station } from "../text";
@@ -15,7 +16,6 @@ import { Station } from "./station";
 import { assert } from "../debug";
 import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
-import { createSpriteNode } from "../nodes/sprite-node";
 import { createWindowNode } from "../nodes/window-node";
 import { inputContext } from "../input";
 import { math } from "../math";
@@ -34,9 +34,11 @@ export namespace MissionSelect
   let stationButton: number;
 
   let mapWindow: number;
+  let starNodes: number[] = [];
 
   let background_stars: v2[] = [];
   let stars: Star[] = [];
+  let contractIndicators: number[] = [];
 
   let selected_system_label: number;
   let current_system_label: number;
@@ -64,6 +66,22 @@ export namespace MissionSelect
     let galaxyArt = createNode();
     node_render_function[galaxyArt] = renderGalaxyMapArt;
     addChildNode(mapWindow, galaxyArt);
+
+    for (let s = 0; s < 20; s++)
+    {
+      let star = createSpriteNode(SPRITE_STAR);
+      moveNode(star, 999, 999);
+      addChildNode(mapWindow, star);
+      starNodes[s] = star;
+    }
+
+    for (let i = 0; i < 4; i++)
+    {
+      let bang = createTextNode("!", { _colour: GREY_111, _scale: 2 });
+      moveNode(bang, 999, 999);
+      addChildNode(mapWindow, bang);
+      contractIndicators[i] = bang;
+    }
 
     playerLocationIndicator = createSpriteNode(SPRITE_SHIELD, { _scale: 2 });
     addChildNode(mapWindow, playerLocationIndicator);
@@ -110,12 +128,12 @@ export namespace MissionSelect
     if (stars.length === 0) generateGalaxy();
     while (gameState._contracts.length < 4)
     {
-      let starId: number;
+      let starIndex: number;
       do
       {
-        starId = rand(0, stars.length - 1);
+        starIndex = rand(0, 19);
         // We don't want to add a contract onto a system that has one, or is where the player is already.
-      } while (gameState._contracts.some((contract) => contract._starId === starId || starId === gameState._currentPlayerSystem));
+      } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex === gameState._currentPlayerSystem);
 
       let type: number;
       if (gameState._qLevel / qDriveCosts[gameState._generatorLevel] >= 100)
@@ -133,7 +151,7 @@ export namespace MissionSelect
         let amount = rand(25, 75);
         contract = {
           _type: type,
-          _starId: starId,
+          _starId: starIndex,
           _reward: amount * 4,
           _materialsRequired: amount,
         };
@@ -143,7 +161,7 @@ export namespace MissionSelect
         let amount = rand(2, 6) * 8;
         contract = {
           _type: type,
-          _starId: starId,
+          _starId: starIndex,
           _reward: amount * 5,
           _dataRequired: amount,
         };
@@ -153,7 +171,7 @@ export namespace MissionSelect
         let amount = rand(3, 5);
         contract = {
           _type: type,
-          _starId: starId,
+          _starId: starIndex,
           _reward: amount * 200,
           _bountiesRequired: amount,
           _bountiesCollected: 0
@@ -163,13 +181,13 @@ export namespace MissionSelect
       {
         // Pick a destination that isn't the sender.
         let destinationId: number;
-        do { destinationId = rand(0, stars.length - 1); } while (starId == destinationId);
-        let [x1, y1] = [stars[starId]._x, stars[starId]._y];
+        do { destinationId = rand(0, stars.length - 1); } while (starIndex == destinationId);
+        let [x1, y1] = [stars[starIndex]._x, stars[starIndex]._y];
         let [x2, y2] = [stars[destinationId]._x, stars[destinationId]._y];
         let pay = math.floor((math.hypot(x2 - x1, y2 - y1) * 250) / 6);
         contract = {
           _type: type,
-          _starId: starId,
+          _starId: starIndex,
           _reward: pay,
           _hasPackage: false,
           _destination: destinationId
@@ -179,11 +197,12 @@ export namespace MissionSelect
       {
         contract = {
           _type: type,
-          _starId: starId,
+          _starId: starIndex,
           _reward: 0
         };
       }
       gameState._contracts.push(contract);
+      saveGame();
     }
 
     let ps = stars[gameState._currentPlayerSystem];
@@ -220,7 +239,7 @@ export namespace MissionSelect
     else
     {
       let distance = (x: number, y: number) => math.floor(math.hypot(x - ps._x, y - ps._y) * 250);
-      let destinationDescription = "";
+      let destinationDescription = txt_empty_string;
       for (let star of stars)
       {
         if (inputContext._fire === star._nodeId)
@@ -257,11 +276,13 @@ export namespace MissionSelect
 
       destinationDescription += `contracts\n\n`;
       let currentSystemContractText = "none";
+      let i = 0;
       for (let contract of gameState._contracts)
       {
         let star = stars[contract._starId];
         let [complete, text] = contractProgress(contract);
-        destinationDescription += `Fsystem ${ star._name }\nFtype   ${ contractTypeName[contract._type] }\nFstatus ${ text }\nFreward ${ contract._reward === 0 ? "F-" : contract._reward }\n\n`;
+        let bump = contract._starId === gameState._destinationSystem ? " " : txt_empty_string;
+        destinationDescription += `${ bump }Fsystem ${ star._name }\n${ bump }Ftype   ${ contractTypeName[contract._type] }\n${ bump }Fstatus ${ text }\n${ bump }Freward ${ contract._reward === 0 ? "F-" : contract._reward }\n\n`;
         if (contract._starId === gameState._currentPlayerSystem)
         {
           if (contract._type === CONTRACT_DELIVERY && !contract._hasPackage)
@@ -273,6 +294,8 @@ export namespace MissionSelect
           node_interactive[completeContractButton] = complete;
           currentSystemContractText = complete ? "Gcomplete" : "Rin progress";
         }
+        moveNode(contractIndicators[i], star._x, star._y);
+        i++;
       }
       updateTextNode(selected_system_label, destinationDescription);
 
@@ -291,7 +314,7 @@ export namespace MissionSelect
   };
   let contractProgress = (contract: Contract): [boolean, string] =>
   {
-    let result = "";
+    let result = txt_empty_string;
     let complete = false;
     if (contract._type === CONTRACT_MINING)
     {
@@ -316,7 +339,7 @@ export namespace MissionSelect
     {
       if (!contract._hasPackage)
       {
-        result = "Rneeds Rpickup";
+        result = "Rpickup Rreq.";
       }
       else
       {
@@ -362,6 +385,7 @@ export namespace MissionSelect
     let number = srand(10000, 99900);
     let rot = math.PI * srandom();
     let counter = 0;
+    let i = 0;
 
     for (var arm = 0; arm < 10; arm++)
     {
@@ -396,9 +420,9 @@ export namespace MissionSelect
           let afterPlanets: Planet[] = generatePlanets(srand(1, 2));
           let colour = STAR_COLOURS[srand(0, 2)];
 
-          let star = createSpriteNode(SPRITE_STAR, { _colour: colour });
+          let star = starNodes[i];
+          updateSpriteNode(star, SPRITE_STAR, { _colour: colour });
           moveNode(star, pX, pY);
-          addChildNode(mapWindow, star);
 
           stars.push({
             _index: stars.length,
@@ -413,6 +437,7 @@ export namespace MissionSelect
             _civStatus: STATUS_LAWLESS
           });
 
+          i++;
           counter++;
           if (counter === 5)
           {

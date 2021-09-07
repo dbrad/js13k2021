@@ -20,11 +20,11 @@ export let createSpriteNode = (textureName: string, params: SpriteParams = {}): 
 {
   let nodeId = createNode();
   node_render_function[nodeId] = renderSpriteNode;
-  setSpriteNode(nodeId, textureName, params);
+  updateSpriteNode(nodeId, textureName, params);
   return nodeId;
 };
 
-export let setSpriteNode = (nodeId: number, textureName: string, params: SpriteParams = {}): void =>
+export let updateSpriteNode = (nodeId: number, textureName: string, params: SpriteParams = {}): void =>
 {
   let scale = params._scale || 1;
   let hFlip = params._hFlip || false;
