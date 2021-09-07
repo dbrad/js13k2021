@@ -78,11 +78,11 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   }
   if (encounter._minable)
   {
-    descriptionText.push("minable\n");
+    descriptionText.push(`minable (${ encounter._minable }kg)\n`);
   }
   if (encounter._researchable)
   {
-    descriptionText.push("researchable");
+    descriptionText.push(`researchable (${ encounter._researchable }kb)`);
   }
   if (encounter._type === ENC_STATION)
   {

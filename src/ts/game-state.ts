@@ -1,10 +1,7 @@
-import { music, shipDieSound, startMusic, zzfxP } from "./zzfx";
+import { music, startMusic } from "./zzfx";
 
 import { Encounter } from "./gameplay/encounters";
-import { MissionSelect } from "./scenes/mission-select";
-import { WHITE } from "./colour";
 import { math } from "./math";
-import { pushScene } from "./scene";
 
 // Ship System Indexes
 export let ENGINES = 0 as const;
@@ -45,14 +42,15 @@ export const CONTRACT_DELIVERY = 3;
 export const CONTRACT_ANOMALY = 4;
 
 export type Contract = {
-  reward: number,
-  type: number,
-  materialsRequired?: number,
-  dataRequired?: number,
-  bountiesRequired?: number,
-  bountiesCollected?: number,
-  hasPackage?: boolean,
-  destination?: number;
+  _starId: number,
+  _reward: number,
+  _type: number,
+  _materialsRequired?: number,
+  _dataRequired?: number,
+  _bountiesRequired?: number,
+  _bountiesCollected?: number,
+  _hasPackage?: boolean,
+  _destination?: number;
 };
 
 type GameState = {
@@ -63,7 +61,9 @@ type GameState = {
   _systemLevels: [number, number][],
   _currency: [number, number, number, number, number, number],
   _galaxySeed: number,
+  _contracts: Contract[],
   _currentPlayerSystem: number,
+  _destinationSystem: number,
   _shipPosition: number,
   _adventureEncounters: Encounter[],
 };
@@ -85,12 +85,6 @@ export let hurtPlayer = (): void =>
   {
     gameState._systemLevels[HULL][0] = math.max(0, gameState._systemLevels[HULL][0] - 1);
   }
-  if (gameState._systemLevels[HULL][0] === 0)
-  {
-    zzfxP(shipDieSound);
-    qReset(true);
-    pushScene(MissionSelect._sceneId, WHITE);
-  }
 };
 
 export let qReset = (death: boolean = false): void =>
@@ -107,12 +101,13 @@ export let qReset = (death: boolean = false): void =>
     gameState._systemLevels[i][1] = math.min(1, gameState._systemLevels[i][1]);
   }
   gameState._currency[CURRENCY_CREDITS] += gameState._currency[CURRENCY_CREDITS_INCOMING];
-  gameState._currency[CURRENCY_CREDITS] = math.floor(gameState._currency[CURRENCY_CREDITS] * 0.25);
+  gameState._currency[CURRENCY_CREDITS] = math.floor(gameState._currency[CURRENCY_CREDITS] * 0.5);
 
   gameState._currency[CURRENCY_MATERIALS] += gameState._currency[CURRENCY_MATERIALS_INCOMING];
-  gameState._currency[CURRENCY_MATERIALS] = math.floor(gameState._currency[CURRENCY_MATERIALS] * 0.25);
+  gameState._currency[CURRENCY_MATERIALS] = math.floor(gameState._currency[CURRENCY_MATERIALS] * 0.5);
 
   gameState._currency[CURRENCY_RESEARCH] += gameState._currency[CURRENCY_RESEARCH_INCOMING];
+  gameState._currency[CURRENCY_RESEARCH] += math.floor(gameState._currency[CURRENCY_RESEARCH] * 0.5);
 
   softReset();
 };
@@ -144,7 +139,9 @@ export let initGameState = (): void =>
     ],
     _currency: [0, 0, 0, 0, 0, 0],
     _galaxySeed: performance.now(),
+    _contracts: [],
     _currentPlayerSystem: 0,
+    _destinationSystem: -1,
     _shipPosition: 0,
     _adventureEncounters: [],
   };

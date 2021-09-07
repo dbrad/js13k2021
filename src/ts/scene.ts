@@ -51,7 +51,9 @@ let transitionToScene = (scene: Scene, speed: number = 250): void =>
     CurrentScene = scene;
     clearInput();
 
-    let transition = createInterpolationData(speed, [255], [0]);
+    let transition = createInterpolationData(speed, [255], [0], () =>
+    {
+    });
     Interpolators.set(TRANSITION_KEY, transition);
   });
   Interpolators.set(TRANSITION_KEY, transition);

@@ -5,6 +5,7 @@ import { gameState, hasSaveFile, initGameState, loadGame, saveGame } from "../ga
 
 import { Adventure } from "./adventure";
 import { MissionSelect } from "./mission-select";
+import { ShipSelect } from "./ship-select";
 import { createButtonNode } from "../nodes/button-node";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
@@ -14,8 +15,8 @@ export namespace MainMenu
 {
   export const _sceneId = 0;
 
-  let startButton: number;
-  let loadButton: number;
+  let newGameButton: number;
+  let loadGameButton: number;
   let fullscreenButton: number;
 
   export let _setup = (): number =>
@@ -25,16 +26,16 @@ export namespace MainMenu
 
     let textNodeId = createTextNode("2dq4x13k", { _scale: 4, _textAlign: Align_Center });
     moveNode(textNodeId, SCREEN_CENTER_X, 20);
-    addChildNode(rootId, textNodeId);;
+    addChildNode(rootId, textNodeId);
 
-    startButton = createButtonNode("new game", [288, 40]);
-    moveNode(startButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
-    addChildNode(rootId, startButton);
+    newGameButton = createButtonNode("new game", [288, 40]);
+    moveNode(newGameButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
+    addChildNode(rootId, newGameButton);
 
-    loadButton = createButtonNode("load game", [288, 40]);
-    moveNode(loadButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 44);
-    addChildNode(rootId, loadButton);
-    node_enabled[loadButton] = hasSaveFile();
+    loadGameButton = createButtonNode("load game", [288, 40]);
+    moveNode(loadGameButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 44);
+    addChildNode(rootId, loadGameButton);
+    node_enabled[loadGameButton] = hasSaveFile();
 
     fullscreenButton = createButtonNode(txt_toggle_fullscreen, [288, 40]);
     moveNode(fullscreenButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 100);
@@ -45,9 +46,9 @@ export namespace MainMenu
 
   export let _update = (now: number, delta: number): void =>
   {
-    node_enabled[loadButton] = hasSaveFile();
+    node_enabled[loadGameButton] = hasSaveFile();
 
-    if (inputContext._fire === startButton)
+    if (inputContext._fire === newGameButton)
     {
       if (hasSaveFile())
       {
@@ -59,9 +60,9 @@ export namespace MainMenu
       }
       initGameState();
       saveGame();
-      pushScene(MissionSelect._sceneId);
+      pushScene(ShipSelect._sceneId);
     }
-    else if (inputContext._fire === loadButton)
+    else if (inputContext._fire === loadGameButton)
     {
       loadGame();
       if (gameState._adventureEncounters.length > 0)

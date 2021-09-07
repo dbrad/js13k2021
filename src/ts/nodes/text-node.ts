@@ -50,7 +50,7 @@ export let createTextNode = (text: string, parameters: TextParameters = {}): num
 
 export let updateTextNode = (nodeId: number, text: string | null, parameters: TextParameters = {}): void =>
 {
-  node_text[nodeId] = text || node_text[nodeId];
+  node_text[nodeId] = text === null ? node_text[nodeId] : text;
   node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
   node_text_colour[nodeId] = parameters._colour || node_text_colour[nodeId];

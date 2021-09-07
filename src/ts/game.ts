@@ -13,6 +13,7 @@ import { Adventure } from "./scenes/adventure";
 import { GameMenu } from "./scenes/game-menu";
 import { MainMenu } from "./scenes/main-menu";
 import { MissionSelect } from "./scenes/mission-select";
+import { ShipSelect } from "./scenes/ship-select";
 import { Station } from "./scenes/station";
 import { assert } from "./debug";
 import { colourToHex } from "./colour";
@@ -48,6 +49,7 @@ window.addEventListener("load", async () =>
 
       setupAudio();
       registerScene(MainMenu._sceneId, MainMenu._setup, MainMenu._update);
+      registerScene(ShipSelect._sceneId, ShipSelect._setup, ShipSelect._update);
       registerScene(MissionSelect._sceneId, MissionSelect._setup, MissionSelect._update);
       registerScene(Adventure._sceneId, Adventure._setup, Adventure._update);
       registerScene(Station._sceneId, Station._setup, Station._update);
@@ -87,13 +89,7 @@ window.addEventListener("load", async () =>
     }
   };
 
-  let starSpeedTable = [
-    [],
-    [800, 512, 384, 256, 128],
-    [640, 384, 288, 192, 96],
-    [480, 256, 192, 128, 64],
-    [320, 128, 96, 64, 32],
-  ];
+  let starSpeedTable = [0, 128, 96, 64, 32];
 
   let loop = (now: number): void =>
   {
@@ -105,22 +101,20 @@ window.addEventListener("load", async () =>
     {
       for (let i in stars)
       {
-        stars[i][3] += delta;
-        if (stars[i][3] > starSpeedTable[stars[i][2]][gameState._systemLevels[ENGINES][0]])
+        let star = stars[i];
+        star[3] += delta;
+        if (star[3] > starSpeedTable[star[2]] * (5 - (gameState._systemLevels[ENGINES][0])))
         {
-          stars[i][3] = 0;
-          stars[i][0] -= 1;
+          star[3] = 0;
+          star[0] -= 1;
         }
 
-        if (stars[i][0] < -2)
+        if (star[0] < -2)
         {
-          stars[i][0] = SCREEN_WIDTH + 2;
-          stars[i][1] = rand(1, SCREEN_HEIGHT - 1);
+          star[0] = SCREEN_WIDTH + 2;
+          star[1] = rand(1, SCREEN_HEIGHT - 1);
         }
-      }
 
-      for (let i in stars)
-      {
         let value = math.ceil(255 - 185 * (1 - stars[i][2] / 4));
         let colour = colourToHex(value, value, value, value);
         let size = math.ceil(stars[i][2] / 2);
@@ -152,6 +146,7 @@ window.addEventListener("load", async () =>
     gl_flush();
     tickStats(now, delta);
 
+    // Prevent the 'cursor' from hovering an element after touching it
     if (inputContext._fire >= -1 && inputContext._isTouch)
     {
       inputContext._cursor[0] = 0;
@@ -161,7 +156,7 @@ window.addEventListener("load", async () =>
 
     requestAnimationFrame(loop);
   };
-  gl_setClear(6, 6, 6);
+  gl_setClear(0, 0, 0);
   then = performance.now();
   requestAnimationFrame(loop);
 });

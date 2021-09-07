@@ -1,10 +1,10 @@
-import { CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, saveGame, softReset } from "../game-state";
+import { CONTRACT_BOUNTIES, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, HULL, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, qReset, saveGame, softReset } from "../game-state";
 import { ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STATION } from "../gameplay/encounters";
 import { GREY_111, GREY_666, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { TAG_ENTITY_NONE, TAG_ENTITY_PLAYER_SHIP, createEntityNode, updateEntityNode } from "../nodes/entity-node";
 import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, createNode, moveNode, node_enabled, node_interactive, node_size, node_tag } from "../scene-node";
-import { beastDieSound, hullHitSound, scanSound, shipDieSound, shootSound, zzfxP } from "../zzfx";
+import { beastDieSound, hullHitSound, qDriveSound, scanSound, shipDieSound, shootSound, zzfxP } from "../zzfx";
 import { createHUDNode, updateHUDNode } from "../nodes/hud-node";
 import { createProgressBarNode, updateProgressBarNode } from "../nodes/progress-bar-node";
 import { createRangeIndicator, updateRangeIndicator } from "../nodes/range-indicator";
@@ -17,7 +17,6 @@ import { Station } from "./station";
 import { assert } from "../debug";
 import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
-import { createQDriveNode } from "../nodes/quantum-drive-node";
 import { createTextNode } from "../nodes/text-node";
 import { inputContext } from "../input";
 import { math } from "../math";
@@ -52,7 +51,7 @@ export namespace Adventure
   let playerRange: number;
   let WOO_WIDTH_BASE = 128;
   let WOO_INCREMENT = 8;
-  let windowWidth = WOO_WIDTH_BASE;
+  let rangeWidth = WOO_WIDTH_BASE;
 
   let entityPool: number[] = [];
   let hudWindows: number[] = [];
@@ -61,7 +60,6 @@ export namespace Adventure
 
   let stationButton: number;
   let leaveButton: number;
-  //let qDrive: number;
 
   export let _setup = (): number =>
   {
@@ -165,7 +163,7 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    playerRange = createRangeIndicator(0x99FFFFFF, windowWidth);
+    playerRange = createRangeIndicator(0x99FFFFFF, rangeWidth);
     moveNode(playerRange, SCREEN_CENTER_X, SCREEN_CENTER_Y - 84);
     addChildNode(rootId, playerRange);
 
@@ -218,8 +216,8 @@ export namespace Adventure
 
   let systemAffected = -1;
   let shipMovementTimer = 0;
-  let shipTimings = [0, 32, 16, 16, 16];
-  let shipDistance = [0, 1, 1, 2, 3];
+  let shipTimings = [0, 16, 16, 16, 16];
+  let shipDistance = [0, 1, 2, 3, 4];
   let stopped = false;
   let entityTimer = 0;
 
@@ -227,9 +225,15 @@ export namespace Adventure
   {
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
-    //node_enabled[qDrive] = gameState._generatorLevel < 5;
 
-    if (inputContext._fire === stationButton)
+    if (gameState._systemLevels[HULL][0] === 0)
+    {
+      zzfxP(qDriveSound);
+      qReset(true);
+      saveGame();
+      pushScene(MissionSelect._sceneId, 1000, WHITE);
+    }
+    else if (inputContext._fire === stationButton)
     {
       pushScene(Station._sceneId);
     }
@@ -237,9 +241,11 @@ export namespace Adventure
     {
       gameState._adventureEncounters = [];
       gameState._shipPosition = 0;
-      saveGame();
       softReset();
+      gameState._currentPlayerSystem = gameState._destinationSystem;
+      gameState._destinationSystem = -1;
       gameState._systemLevels[ENGINES][0] = 1;
+      saveGame();
       pushScene(MissionSelect._sceneId);
     }
     else if (inputContext._fire === menuButton)
@@ -339,8 +345,8 @@ export namespace Adventure
       //#endregion Systems
 
       //#region Window of Oppertunity
-      windowWidth = WOO_WIDTH_BASE + (WOO_INCREMENT * gameState._systemLevels[SCANNERS][0]);
-      updateRangeIndicator(playerRange, windowWidth);
+      rangeWidth = WOO_WIDTH_BASE + (WOO_INCREMENT * gameState._systemLevels[SCANNERS][0]);
+      updateRangeIndicator(playerRange, rangeWidth);
       //#endregion Window of Oppertunity
 
       //#region Entities / Encounters
@@ -359,7 +365,7 @@ export namespace Adventure
           encounter._position--;
         }
 
-        if (encounter._position > gameState._shipPosition - 480 && encounter._position < gameState._shipPosition + 480)
+        if (encounter._position > gameState._shipPosition - 520 && encounter._position < gameState._shipPosition + 520)
         {
           if (encounter._maxHp && !encounter._hp)
           {
@@ -375,8 +381,8 @@ export namespace Adventure
         }
 
         // Check if in range and alive if it has HP
-        if (encounter._position + 16 * (encounter._scale || 1) > gameState._shipPosition - windowWidth + 16
-          && encounter._position < gameState._shipPosition + windowWidth + 16
+        if (encounter._position + 16 * (encounter._scale || 1) > gameState._shipPosition - rangeWidth + 16
+          && encounter._position < gameState._shipPosition + rangeWidth + 16
           && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
         {
           if (hudIndex < hudWindows.length)
@@ -388,7 +394,7 @@ export namespace Adventure
           // NOTE(dbrad): STATION
           if (encounter._type === ENC_STATION)
           {
-            if (encounter._exit)
+            if (encounter._exit && encounter._position - gameState._shipPosition <= 16)
             {
               stopped = true;
               node_enabled[leaveButton] = true;
@@ -403,20 +409,20 @@ export namespace Adventure
           if (encounter._minable && systemProgress[MINING_LASERS] >= 100)
           {
             systemProgress[MINING_LASERS]++;
-            let amount = 13;
-            gameState._currency[CURRENCY_MATERIALS_INCOMING] += amount;
+            let minerals = math.min(encounter._minable, 13);
+            encounter._minable -= minerals;
+            gameState._currency[CURRENCY_MATERIALS_INCOMING] += minerals;
             zzfxP(shootSound);
-            // TODO(dbrad): add mining effects
           }
 
           // NOTE(dbrad): RESARCHABLE
-          if (encounter._researchable && systemProgress[SCANNERS] >= 100 && (encounter._maxHp === undefined || (encounter._maxHp && encounter._hp)))
+          if (encounter._researchable && systemProgress[SCANNERS] >= 100 && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
           {
             systemProgress[SCANNERS]++;
-            let amount = 8;
-            gameState._currency[CURRENCY_RESEARCH_INCOMING] += amount;
+            let data = math.min(encounter._researchable, 8);
+            encounter._researchable -= data;
+            gameState._currency[CURRENCY_RESEARCH_INCOMING] += data;
             zzfxP(scanSound);
-            // TODO(dbrad): add research effects
           }
 
           // NOTE(dbrad): COMBAT
@@ -433,6 +439,15 @@ export namespace Adventure
               else
               {
                 zzfxP(shipDieSound);
+                for (let contract of gameState._contracts)
+                {
+                  if (contract._type === CONTRACT_BOUNTIES)
+                  {
+                    assert(contract._bountiesCollected !== undefined, "Bounty contract with no _bountiesCollected");
+                    assert(contract._bountiesRequired !== undefined, "Bounty contract with no _bountiesRequired");
+                    contract._bountiesCollected = math.min(contract._bountiesRequired, contract._bountiesCollected + 1);
+                  }
+                }
               }
 
               if (encounter._bounty)
@@ -441,14 +456,13 @@ export namespace Adventure
               }
             }
             zzfxP(shootSound);
-            // TODO(dbrad): add combat effects
           }
 
           if (encounter._hazardRange)
           {
-            // TODO(dbrad): FIX ME, I think this position comparison is slightly off, maybe need to visualize it.
-            if (encounter._position + 8 + encounter._hazardRange > gameState._shipPosition
-              && encounter._position + 8 - encounter._hazardRange < gameState._shipPosition + 16)
+            let encounterMiddle = encounter._position + encounter._scale * 8;
+            if (gameState._shipPosition + 32 > encounterMiddle - encounter._hazardRange
+              && gameState._shipPosition < encounterMiddle + encounter._hazardRange)
             {
               assert(encounter._attack !== undefined, `hazard range with no attack setup`);
               encounter._attack[0] += delta;

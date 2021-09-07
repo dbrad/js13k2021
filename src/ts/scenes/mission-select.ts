@@ -1,10 +1,10 @@
-import { CURRENCY_CREDITS_INCOMING, CURRENCY_RESEARCH_INCOMING, gameState, qDriveCosts, qReset, softReset } from "../game-state";
-import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_CIVILIZED, STATUS_LAWLESS, STATUS_NEUTRAL, Star } from "../gameplay/encounters";
-import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
-import { SCREEN_CENTER_X, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
+import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, softReset } from "../game-state";
+import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_LAWLESS, Star } from "../gameplay/encounters";
+import { GAS_PLANET_COLOURS, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
-import { addChildNode, createNode, moveNode, node_enabled, node_interactive, node_position, node_render_function, node_size } from "../scene-node";
-import { buttonSound, qDriveSound, zzfxP } from "../zzfx";
+import { addChildNode, createNode, moveNode, node_interactive, node_position, node_render_function, node_size } from "../scene-node";
+import { buttonSound, zzfxP } from "../zzfx";
 import { createTextNode, updateTextNode } from "../nodes/text-node";
 import { generateSRand, rand } from "../random";
 import { txt_asteroid, txt_empty_string, txt_menu, txt_pirate_ship, txt_quantum_anomaly, txt_space_beast, txt_station } from "../text";
@@ -12,6 +12,7 @@ import { txt_asteroid, txt_empty_string, txt_menu, txt_pirate_ship, txt_quantum_
 import { Adventure } from "./adventure";
 import { GameMenu } from "./game-menu";
 import { Station } from "./station";
+import { assert } from "../debug";
 import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
 import { createSpriteNode } from "../nodes/sprite-node";
@@ -37,7 +38,6 @@ export namespace MissionSelect
   let background_stars: v2[] = [];
   let stars: Star[] = [];
 
-  let selectedStarIndex: number = -1;
   let selected_system_label: number;
   let current_system_label: number;
 
@@ -108,20 +108,110 @@ export namespace MissionSelect
   export let _update = (now: number, delta: number): void =>
   {
     if (stars.length === 0) generateGalaxy();
+    while (gameState._contracts.length < 4)
+    {
+      let starId: number;
+      do
+      {
+        starId = rand(0, stars.length - 1);
+        // We don't want to add a contract onto a system that has one, or is where the player is already.
+      } while (gameState._contracts.some((contract) => contract._starId === starId || starId === gameState._currentPlayerSystem));
+
+      let type: number;
+      if (gameState._qLevel / qDriveCosts[gameState._generatorLevel] >= 100)
+      {
+        type = CONTRACT_ANOMALY;
+      }
+      else
+      {
+        type = rand(0, 3);
+      }
+
+      let contract: Contract;
+      if (type === CONTRACT_MINING)
+      {
+        let amount = rand(25, 75);
+        contract = {
+          _type: type,
+          _starId: starId,
+          _reward: amount * 4,
+          _materialsRequired: amount,
+        };
+      }
+      else if (type === CONTRACT_RESEARCH)
+      {
+        let amount = rand(2, 6) * 8;
+        contract = {
+          _type: type,
+          _starId: starId,
+          _reward: amount * 5,
+          _dataRequired: amount,
+        };
+      }
+      else if (type === CONTRACT_BOUNTIES)
+      {
+        let amount = rand(3, 5);
+        contract = {
+          _type: type,
+          _starId: starId,
+          _reward: amount * 200,
+          _bountiesRequired: amount,
+          _bountiesCollected: 0
+        };
+      }
+      else if (type === CONTRACT_DELIVERY)
+      {
+        // Pick a destination that isn't the sender.
+        let destinationId: number;
+        do { destinationId = rand(0, stars.length - 1); } while (starId == destinationId);
+        let [x1, y1] = [stars[starId]._x, stars[starId]._y];
+        let [x2, y2] = [stars[destinationId]._x, stars[destinationId]._y];
+        let pay = math.floor((math.hypot(x2 - x1, y2 - y1) * 250) / 6);
+        contract = {
+          _type: type,
+          _starId: starId,
+          _reward: pay,
+          _hasPackage: false,
+          _destination: destinationId
+        };
+      }
+      else
+      {
+        contract = {
+          _type: type,
+          _starId: starId,
+          _reward: 0
+        };
+      }
+      gameState._contracts.push(contract);
+    }
+
     let ps = stars[gameState._currentPlayerSystem];
     moveNode(playerLocationIndicator, ps._x - 8, ps._y - 8);
     node_interactive[completeContractButton] = false;
-    node_interactive[departButton] = selectedStarIndex > -1;
+    node_interactive[departButton] = gameState._destinationSystem > -1;
 
     if (inputContext._fire === menuButton)
     {
       pushScene(GameMenu._sceneId);
     }
+    else if (inputContext._fire === completeContractButton)
+    {
+      for (let [index, contract] of gameState._contracts.entries())
+      {
+        if (gameState._currentPlayerSystem === contract._starId)
+        {
+          gameState._currency[CURRENCY_CREDITS_INCOMING] += contract._reward;
+          gameState._contracts.splice(index, 1);
+          break;
+        }
+      }
+    }
     else if (inputContext._fire === stationButton)
     {
       pushScene(Station._sceneId);
     }
-    else if (inputContext._fire === departButton && selectedStarIndex !== -1)
+    else if (inputContext._fire === departButton && gameState._destinationSystem !== -1)
     {
       softReset();
       generateAdventure();
@@ -129,8 +219,6 @@ export namespace MissionSelect
     }
     else
     {
-      let currentSystemDescription = `current system\n\nFname ${ ps._name }\nFlaw ${ lawDescription(ps._civStatus) }\nFcontract none`;
-      updateTextNode(current_system_label, currentSystemDescription);
       let distance = (x: number, y: number) => math.floor(math.hypot(x - ps._x, y - ps._y) * 250);
       let destinationDescription = "";
       for (let star of stars)
@@ -139,7 +227,7 @@ export namespace MissionSelect
         {
           if (star._nodeId === ps._nodeId) break;
           zzfxP(buttonSound);
-          selectedStarIndex = star._index;
+          gameState._destinationSystem = star._index;
           starsToGenerate = [];
 
           starsToGenerate.push([ps, distance(ps._x, ps._y)]);
@@ -159,21 +247,90 @@ export namespace MissionSelect
           moveNode(selectedStarIndicator, star._x - 8, star._y - 8);
         }
       }
-      if (selectedStarIndex > -1)
+
+
+      if (gameState._destinationSystem > -1)
       {
-        let star = stars[selectedStarIndex];
-        destinationDescription += `target system\n\nFname ${ star._name }\nFdistance ${ distance(star._x, star._y) }\nFlaw ${ lawDescription(star._civStatus) }\n\n---\n\n`;
+        let star = stars[gameState._destinationSystem];
+        destinationDescription += `target system\n\nFname ${ star._name }\nFdistance ${ distance(star._x, star._y) }\n\n---\n\n`;
       }
+
       destinationDescription += `contracts\n\n`;
-      destinationDescription += `Fsystem aa 12345\nFtype   mining\nFstatus 0 of 50\nFreward 200\n\n`;
-      destinationDescription += `Fsystem aa 12345\nFtype   delivery\nFstatus 0 of \nFreward 200\n\n`;
-      destinationDescription += `Fsystem aa 12345\nFtype   research\nFstatus 0 of 64\nFreward 200\n\n`;
-      destinationDescription += `Fsystem aa 12345\nFtype   bounty\nFstatus 0 of 3\nFreward 200\n\n`;
+      let currentSystemContractText = "none";
+      for (let contract of gameState._contracts)
+      {
+        let star = stars[contract._starId];
+        let [complete, text] = contractProgress(contract);
+        destinationDescription += `Fsystem ${ star._name }\nFtype   ${ contractTypeName[contract._type] }\nFstatus ${ text }\nFreward ${ contract._reward === 0 ? "F-" : contract._reward }\n\n`;
+        if (contract._starId === gameState._currentPlayerSystem)
+        {
+          if (contract._type === CONTRACT_DELIVERY && !contract._hasPackage)
+          {
+            contract._hasPackage = true;
+            assert(contract._destination !== undefined, "Delivery should have a destination");
+            contract._starId = contract._destination;
+          }
+          node_interactive[completeContractButton] = complete;
+          currentSystemContractText = complete ? "Gcomplete" : "Rin progress";
+        }
+      }
       updateTextNode(selected_system_label, destinationDescription);
+
+
+      let currentSystemDescription = `current system\n\nFname ${ ps._name }\nFcontract ${ currentSystemContractText }`;
+      updateTextNode(current_system_label, currentSystemDescription);
     }
   };
 
-  let lawDescription = (law: number): string => law === STATUS_CIVILIZED ? "Gcivilized" : law === STATUS_NEUTRAL ? "neutral" : "Rlawless";
+  let contractTypeName = ["mining", "research", "bounties", "delivery", "anomaly"];
+
+  let progressTextOf = (value01: number, value02: number, complete: boolean) =>
+  {
+    let colour: string = complete ? "G" : "R";
+    return `${ colour }${ math.min(value01, value02) } ${ colour }of ${ colour }${ value02 } `;
+  };
+  let contractProgress = (contract: Contract): [boolean, string] =>
+  {
+    let result = "";
+    let complete = false;
+    if (contract._type === CONTRACT_MINING)
+    {
+      assert(contract._materialsRequired !== undefined, "Mining contract with no _materialsRequired");
+      complete = gameState._currency[CURRENCY_MATERIALS] >= contract._materialsRequired;
+      result = progressTextOf(gameState._currency[CURRENCY_MATERIALS], contract._materialsRequired, complete);
+    }
+    else if (contract._type === CONTRACT_RESEARCH)
+    {
+      assert(contract._dataRequired !== undefined, "Data contract with no _dataRequired");
+      complete = gameState._currency[CURRENCY_RESEARCH] >= contract._dataRequired;
+      result = progressTextOf(gameState._currency[CURRENCY_RESEARCH], contract._dataRequired, complete);
+    }
+    else if (contract._type === CONTRACT_BOUNTIES)
+    {
+      assert(contract._bountiesCollected !== undefined, "Bounty contract with no _bountiesCollected");
+      assert(contract._bountiesRequired !== undefined, "Bounty contract with no _bountiesRequired");
+      complete = contract._bountiesCollected >= contract._bountiesRequired;
+      result = progressTextOf(contract._bountiesCollected, contract._bountiesRequired, complete);
+    }
+    else if (contract._type === CONTRACT_DELIVERY)
+    {
+      if (!contract._hasPackage)
+      {
+        result = "Rneeds Rpickup";
+      }
+      else
+      {
+        result = "Genroute";
+        complete = true;
+      }
+    }
+    else
+    {
+      result = "investigate";
+    }
+
+    return [complete, result];
+  };
 
   ////////////////////////
 
@@ -298,7 +455,7 @@ export namespace MissionSelect
       _position: distance,
       _title: star._name,
       _yOffset: rand(-60, 10),
-      _researchable: true,
+      _researchable: 64,
       _colour: star._colour,
       _scale: star._scale,
       _hazardRange: star._scale * 8 + 16,
@@ -316,8 +473,8 @@ export namespace MissionSelect
       _colour: planet._colour,
       _scale: planet._scale,
       _yOffset: rand(-40, 30),
-      _researchable: true,
-      _minable: true
+      _researchable: 32,
+      _minable: rand(52, 65)
     };
   };
 
@@ -332,8 +489,8 @@ export namespace MissionSelect
       _colour: type === 2 ? GAS_PLANET_COLOURS[rand(0, 2)] : ROCK_PLANET_COLOURS[rand(0, 2)],
       _scale: type === 2 ? rand(5, 7) : rand(3, 5),
       _yOffset: rand(-40, 30),
-      _researchable: true,
-      _minable: true
+      _researchable: 32,
+      _minable: rand(52, 65)
     };
   };
 
@@ -345,7 +502,7 @@ export namespace MissionSelect
       _position: distance,
       _title: txt_asteroid,
       _yOffset: rand(-50, 50),
-      _minable: true,
+      _minable: rand(52, 65),
       _scale: rand(1, 2)
     };
   };
@@ -353,7 +510,7 @@ export namespace MissionSelect
   let hpLevel = [3, 4, 5];
   let createPirate = (distance: number, threatLevel: number = 0): Encounter =>
   {
-    let cd = 1500 - (250 * threatLevel);
+    let cd = 1000 - (250 * threatLevel);
     return {
       _id: entityId++,
       _type: ENC_PIRATE,
@@ -363,14 +520,15 @@ export namespace MissionSelect
       _maxHp: hpLevel[threatLevel],
       _hp: hpLevel[threatLevel],
       _bounty: [rand(100, 200) * (threatLevel + 1), CURRENCY_CREDITS_INCOMING],
-      _hazardRange: 96,
+      _hazardRange: 104,
+      _scale: 2,
       _attack: [0, cd]
     };
   };
 
   let createSpaceBeast = (distance: number, threatLevel: number = 0): Encounter =>
   {
-    let cd = 1250 - (250 * threatLevel);
+    let cd = 1000 - (250 * threatLevel);
     return {
       _id: entityId++,
       _type: ENC_SPACE_BEAST,
@@ -378,10 +536,10 @@ export namespace MissionSelect
       _title: txt_space_beast,
       _yOffset: rand(-30, 30),
       _colour: SPACE_BEAST_PURPLE,
-      _researchable: true,
+      _researchable: 64,
       _maxHp: hpLevel[threatLevel],
       _hp: hpLevel[threatLevel],
-      _hazardRange: 48,
+      _hazardRange: 64,
       _attack: [0, cd],
       _bounty: [rand(100, 200) * (threatLevel + 1), CURRENCY_RESEARCH_INCOMING],
       _scale: 3

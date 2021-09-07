@@ -3,6 +3,7 @@ import { CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURREN
 import { GREY_999, HULL_RED, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { addChildNode, createNode, moveNode, node_enabled, node_interactive, node_size } from "../scene-node";
+import { buttonSound, zzfxP } from "../zzfx";
 import { createButtonNode, node_button_text_id } from "../nodes/button-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
 import { systemNames, systemUpgradeCosts } from "../gameplay/systems";
@@ -14,12 +15,11 @@ import { inputContext } from "../input";
 import { math } from "../math";
 import { popScene } from "../scene";
 
-// TODO(dbrad): remove raw materials?
 export namespace Station
 {
   export const _sceneId = 3;
 
-  let LEVEL_LABEL = 0;
+  let SYSTEM_LABEL = 0;
   let COST_LABEL = 1;
   let PURCHASE_BUTTON = 3;
 
@@ -79,12 +79,7 @@ export namespace Station
       let label = createTextNode(systemNames[i], alignR);
       moveNode(label, 69, 37 + h);
       addChildNode(systemUpdatesDiv, label);
-
-      // TODO(dbrad): merge with above label
-      let levelLabel = createTextNode(txt_empty_string, { ...alignR, _colour: GREY_999 });
-      moveNode(levelLabel, 69, 47 + h);
-      addChildNode(systemUpdatesDiv, levelLabel);
-      systems[i][LEVEL_LABEL] = levelLabel;
+      systems[i][SYSTEM_LABEL] = label;
 
       let costLabel = createTextNode(txt_empty_string, alignR);
       moveNode(costLabel, 136, 37 + h);
@@ -161,12 +156,7 @@ export namespace Station
     let upgradeHullLabel = createTextNode(txt_upgrade_hull, alignR);
     moveNode(upgradeHullLabel, 102, 87);
     addChildNode(hullContainer, upgradeHullLabel);
-
-    // TODO(dbrad): merge with above label
-    let upgradeHullLevelLabel = createTextNode(txt_empty_string, { ...alignR, _colour: GREY_999 });
-    moveNode(upgradeHullLevelLabel, 102, 97);
-    addChildNode(hullContainer, upgradeHullLevelLabel);
-    systems[5][LEVEL_LABEL] = upgradeHullLevelLabel;
+    systems[5][SYSTEM_LABEL] = upgradeHullLabel;
 
     let upgradeHullCost = createTextNode(txt_empty_string, alignR);
     moveNode(upgradeHullCost, divWidth - 136, 87);
@@ -185,11 +175,40 @@ export namespace Station
     return rootId;
   };
 
+  let delays = [1000, 500, 250, 125];
+  let delayIndex = 0;
+  let delayTimer = 0;
   export let _update = (now: number, delta: number) =>
   {
     let credits = gameState._currency[CURRENCY_CREDITS];
     let materials = gameState._currency[CURRENCY_MATERIALS];
     let research = gameState._currency[CURRENCY_RESEARCH];
+    let buyMaterials = () =>
+    {
+      if (credits >= 100)
+      {
+        gameState._currency[CURRENCY_CREDITS] -= 100;
+        gameState._currency[CURRENCY_MATERIALS_INCOMING] += 25;
+      }
+    };
+
+    let sellMaterials = () =>
+    {
+      if (materials >= 25)
+      {
+        gameState._currency[CURRENCY_MATERIALS] -= 25;
+        gameState._currency[CURRENCY_CREDITS_INCOMING] += 75;
+      }
+    };
+
+    let sellResearch = () =>
+    {
+      if (research >= 32)
+      {
+        gameState._currency[CURRENCY_RESEARCH] -= 32;
+        gameState._currency[CURRENCY_CREDITS_INCOMING] += 100;
+      }
+    };
 
     node_interactive[buyMaterialsButton] = credits >= 100;
     node_interactive[sellMaterialsButton] = materials >= 25;
@@ -197,43 +216,53 @@ export namespace Station
 
     node_interactive[repairHullButton] = credits >= 50 && gameState._systemLevels[HULL][0] < maxHull();
 
-    if (inputContext._fire === leaveStationButton)
+    let fire = inputContext._fire;
+    let active = inputContext._active;
+
+    if (fire === leaveStationButton)
     {
       saveGame();
       popScene();
       return;
     }
-    else if (inputContext._fire === buyMaterialsButton)
+    else if (fire === buyMaterialsButton)
     {
-      if (credits >= 100)
-      {
-        gameState._currency[CURRENCY_CREDITS] -= 100;
-        gameState._currency[CURRENCY_MATERIALS_INCOMING] += 25;
-      }
+      buyMaterials();
     }
-    else if (inputContext._fire === sellMaterialsButton)
+    else if (fire === sellMaterialsButton)
     {
-      if (materials >= 25)
-      {
-        gameState._currency[CURRENCY_MATERIALS] -= 25;
-        gameState._currency[CURRENCY_CREDITS_INCOMING] += 75;
-      }
+      sellMaterials();
     }
-    else if (inputContext._fire === sellResearchButton)
+    else if (fire === sellResearchButton)
     {
-      if (research >= 32)
-      {
-        gameState._currency[CURRENCY_RESEARCH] -= 32;
-        gameState._currency[CURRENCY_CREDITS_INCOMING] += 100;
-      }
+      sellResearch();
     }
-    else if (inputContext._fire === repairHullButton)
+    else if (fire === repairHullButton)
     {
       if (credits >= 50 && gameState._systemLevels[HULL][0] < maxHull())
       {
         gameState._currency[CURRENCY_CREDITS] -= 50;
         gameState._systemLevels[HULL][0] = math.min(gameState._systemLevels[HULL][0] + 1, maxHull());
       }
+    }
+    else if (active === buyMaterialsButton
+      || active === sellMaterialsButton
+      || active === sellResearchButton)
+    {
+      delayTimer += delta;
+      if (delayTimer >= delays[delayIndex])
+      {
+        delayTimer = 0;
+        delayIndex = math.min(3, delayIndex + 1);
+        zzfxP(buttonSound);
+        if (active === buyMaterialsButton) buyMaterials();
+        else if (active === sellMaterialsButton) sellMaterials();
+        else if (active === sellResearchButton) sellResearch();
+      }
+    }
+    else
+    {
+      delayIndex = delayTimer = 0;
     }
 
     updateSegmentedBarNode(hullBar, maxHull(), currentHull());
@@ -243,7 +272,7 @@ export namespace Station
     {
       let level = gameState._systemLevels[i][1];
       let canUpgrade = level < 4;
-      updateTextNode(systems[i][LEVEL_LABEL], `lvl${ level }`);
+      updateTextNode(systems[i][SYSTEM_LABEL], `${ systemNames[i] }\nFlvl${ level }`);
 
       node_enabled[systems[i][COST_LABEL]] = canUpgrade;
       node_enabled[systems[i][PURCHASE_BUTTON]] = canUpgrade;
@@ -264,7 +293,7 @@ export namespace Station
           updateTextNode(node_button_text_id[systems[i][PURCHASE_BUTTON]], txt_install);
         }
 
-        if (inputContext._fire === systems[i][PURCHASE_BUTTON])
+        if (fire === systems[i][PURCHASE_BUTTON])
         {
           if (hasEnoughCredits && hasEnoughMaterials)
           {
