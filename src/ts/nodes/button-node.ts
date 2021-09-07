@@ -1,7 +1,7 @@
-import { Align, createTextNode, parseText } from "./text-node";
-import { GREY_333, GREY_666, GREY_999 } from "../colour";
-import { addChildNode, createNode, moveNode, node_render_function, node_size } from "../scene-node";
-import { powerSound, zzfxP } from "../zzfx";
+import { Align_Center, createTextNode, parseText, updateTextNode } from "./text-node";
+import { GREY_222, GREY_333, GREY_666, GREY_999, WHITE } from "../colour";
+import { addChildNode, createNode, moveNode, node_interactive, node_render_function, node_size } from "../scene-node";
+import { buttonSound, zzfxP } from "../zzfx";
 
 import { inputContext } from "../input";
 import { math } from "../math";
@@ -15,7 +15,7 @@ export let createButtonNode = (text: string, size: v2, textScale: number = 2): n
   node_render_function[nodeId] = renderButtonNode;
   node_size[nodeId] = size;
   let lines = parseText(text, size[0], 2);
-  let textId = createTextNode(text, size[0], { _scale: textScale, _textAlign: Align.C });
+  let textId = createTextNode(text, { _width: size[0], _scale: textScale, _textAlign: Align_Center });
   moveNode(textId, math.floor(size[0] / 2), math.floor(size[1] / 2) - (8 + (10 * (lines - 1))));
   addChildNode(nodeId, textId);
   node_button_text_id[nodeId] = textId;
@@ -26,9 +26,15 @@ let renderButtonNode = (nodeId: number, now: number, delta: number): void =>
 {
   let size = node_size[nodeId];
   let colour = GREY_666;
-  if (inputContext._fire === nodeId)
+  updateTextNode(node_button_text_id[nodeId], null, { _colour: WHITE });
+  if (!node_interactive[nodeId])
   {
-    zzfxP(powerSound);
+    colour = GREY_222;
+    updateTextNode(node_button_text_id[nodeId], null, { _colour: GREY_666 });
+  }
+  else if (inputContext._fire === nodeId)
+  {
+    zzfxP(buttonSound);
   }
   else if (inputContext._active === nodeId)
   {

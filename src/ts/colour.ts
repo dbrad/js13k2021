@@ -21,13 +21,14 @@ export let colourToHex = (a: number, b: number, g: number, r: number): number =>
 
 export let WHITE = 0xFFFFFFFF;
 export let GREY_111 = 0xFF111111;
+export let GREY_222 = 0xFF222222;
 export let GREY_333 = 0xFF333333;
 export let GREY_666 = 0xFF555555;
 export let GREY_999 = 0xFF999999;
-export let GREY_6333 = 0x66333333;
+export let GREY_6333 = 0x33333333;
 export let SHIELD_BLUE = 0xBBFFAAAA;
-export let HULL_RED = 0xFF0000FF;
-export let POWER_GREEN = 0xFF00FF00;
+export let HULL_RED = 0xFF0F0FE6;
+export let POWER_GREEN = 0xFF50FF5A; // 5aff50
 export let Q_DRIVE_PURPLE = 0xFFCC3399;
 export let SPACE_BEAST_PURPLE = 0xFFAA77AA;
 export let STAR_COLOURS: number[] = [0xFFFFE1BB, 0xFF152fff, 0xFF87f2ff];

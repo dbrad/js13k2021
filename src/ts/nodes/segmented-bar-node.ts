@@ -3,14 +3,14 @@ import { createNode, node_render_function } from "../scene-node";
 
 import { pushQuad } from "../draw";
 
-let SEGMENT_GAP = 2;
-let ENDS_PADDING = 2;
-let SIDES_PADDING = 2;
+const SEGMENT_GAP = 2;
+const ENDS_PADDING = 2;
+const SIDES_PADDING = 2;
 
-let BACKGROUND_COLOUR = GREY_666;
-let BAR_COLOUR = GREY_333;
-let EMPTY_SEGMENT_COLOUR = GREY_111;
-let BAR_HEIGHT = 16;
+const BACKGROUND_COLOUR = GREY_666;
+const BAR_COLOUR = GREY_333;
+const EMPTY_SEGMENT_COLOUR = GREY_111;
+const BAR_HEIGHT = 16;
 
 let node_bar_colour: number[] = [];
 let node_bar_segment_width: number[] = [];
@@ -21,6 +21,7 @@ export let createSegmentedBarNode = (segmentColour: number, segmentWidth: number
 {
   let nodeId = createNode();
   node_render_function[nodeId] = renderSegmentedBar;
+
   node_bar_colour[nodeId] = segmentColour;
   node_bar_segment_width[nodeId] = segmentWidth;
   node_bar_active_segments[nodeId] = activeSegments;

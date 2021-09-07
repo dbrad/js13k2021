@@ -1,42 +1,42 @@
+import { GREY_999, HULL_RED, POWER_GREEN, WHITE } from "../colour";
 import { createNode, node_interactive, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
-import { WHITE } from "../colour";
 import { assert } from "../debug";
 import { getTexture } from "../texture";
 import { math } from "../math";
+import { txt_empty_string } from "../text";
 
-export enum Align
-{
-  L,
-  C,
-  R
-}
+export const Align_Left = 0;
+export const Align_Center = 1;
+export const Align_Right = 2;
 
 export type TextParameters =
   {
     _colour?: number,
-    _textAlign?: Align,
-    _scale?: number;
+    _textAlign?: number,
+    _scale?: number,
+    _width?: number;
   };
 
-let textCache: Map<string, string[]> = new Map();
+let textCache: Map<string, [string, number][]> = new Map();
 let fontSize = 8;
 
 let node_text: string[] = [];
-let node_text_align: Align[] = [];
+let node_text_align: number[] = [];
 let node_text_scale: number[] = [];
 let node_text_colour: number[] = [];
 
-export let createTextNode = (text: string, width: number, parameters: TextParameters = {}): number =>
+export let createTextNode = (text: string, parameters: TextParameters = {}): number =>
 {
+  let width = parameters._width || 640;
   let nodeId = createNode();
 
   node_interactive[nodeId] = false;
   node_render_function[nodeId] = renderTextNode;
 
   node_text[nodeId] = text;
-  node_text_align[nodeId] = parameters._textAlign || Align.L;
+  node_text_align[nodeId] = parameters._textAlign || Align_Left;
   node_text_scale[nodeId] = parameters._scale || 1;
   node_text_colour[nodeId] = parameters._colour || WHITE;
 
@@ -48,9 +48,9 @@ export let createTextNode = (text: string, width: number, parameters: TextParame
   return nodeId;
 };
 
-export let updateTextNode = (nodeId: number, text: string, parameters: TextParameters = {}): void =>
+export let updateTextNode = (nodeId: number, text: string | null, parameters: TextParameters = {}): void =>
 {
-  node_text[nodeId] = text;
+  node_text[nodeId] = text === null ? node_text[nodeId] : text;
   node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
   node_text_colour[nodeId] = parameters._colour || node_text_colour[nodeId];
@@ -61,29 +61,44 @@ export let updateTextNode = (nodeId: number, text: string, parameters: TextParam
   node_size[nodeId][1] = textHeight;
 };
 
-export let parseText = (text: string, width: number, scale: number = 1): number =>
+export let parseText = (text: string, width: number = 640, scale: number = 1): number =>
 {
+  if (textCache.has(`${ text }_${ scale }_${ width }`)) return textCache.get(`${ text }_${ scale }_${ width }`)?.length || 0;
+
   let letterSize: number = fontSize * scale;
-  let allWords: string[] = text.split(" ");
-  let lines: string[] = [];
-  let line: string[] = [];
-  for (let word of allWords)
+  let resultLines: [string, number][] = [];
+  let resultLine: string[] = [];
+
+  let sourceLines = text.split("\n");
+  for (let sourceLine of sourceLines)
   {
-    line.push(word);
-    if ((line.join(" ").length) * letterSize > width)
+    let words: string[] = sourceLine.split(" ");
+    for (let word of words)
     {
-      let lastWord = line.pop();
-      assert(lastWord !== undefined, `No last word to pop found.`);
-      lines.push(line.join(" "));
-      line = [lastWord];
+      resultLine.push(word);
+      if ((resultLine.join(" ").length) * letterSize > width)
+      {
+        let lastWord = resultLine.pop();
+        assert(lastWord !== undefined, `No last word to pop found.`);
+        let line = resultLine.join(" ");
+        let lineLength = line.replace(/[A-Z]/g, txt_empty_string).length;
+        resultLines.push([line, lineLength]);
+        resultLine = [lastWord];
+      }
     }
+    if (resultLine.length > 0)
+    {
+      let line = resultLine.join(" ");
+      let lineLength = line.replace(/[A-Z]/g, txt_empty_string).length;
+      resultLines.push([line, lineLength]);
+    }
+    resultLine = [];
   }
-  if (line.length > 0)
-  {
-    lines.push(line.join(" "));
-  }
-  textCache.set(`${ text }_${ scale }_${ width }`, lines);
-  return lines.length;
+
+  textCache.set(`${ text }_${ scale }_${ width }`, resultLines);
+
+  // return the number of lines this was parsed into
+  return resultLines.length;
 };
 
 let renderTextNode = (nodeId: number, now: number, delta: number): void =>
@@ -103,25 +118,36 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
   let lines = textCache.get(`${ text }_${ scale }_${ size[0] }`);
   assert(lines !== undefined, `text lines not found`);
 
-  for (let line of lines)
+  let alignmentOffset: number = 0;
+
+  for (let [line, characterCount] of lines)
   {
     let words: string[] = line.split(" ");
-    let lineLength: number = line.length * letterSize;
+    let lineLength: number = characterCount * letterSize;
 
-    let alignmentOffset: number = 0;
-    if (align === Align.C)
+    if (align === Align_Center)
     {
       alignmentOffset = math.floor(-lineLength / 2);
     }
-    else if (align === Align.R)
+    else if (align === Align_Right)
     {
       alignmentOffset = math.floor(-(lineLength));
     }
 
     for (let word of words)
     {
-      for (let letter of word.split(""))
+      for (let letter of word.split(txt_empty_string))
       {
+        if (letter === letter.toUpperCase() && /[a-z]+/i.test(letter))
+        {
+          if (letter === "R") colour = HULL_RED;
+          else if (letter === "G") colour = POWER_GREEN;
+          else if (letter === "F") colour = GREY_999;
+          // @ifdef DEBUG
+          else assert(false, `Non-control capital letter used ${ letter }`);
+          // @endif
+          continue;
+        }
         let t = getTexture(letter);
         x = xOffset + alignmentOffset;
         gl_save();
@@ -131,6 +157,7 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
         gl_restore();
         xOffset += letterSize;
       }
+      colour = node_text_colour[nodeId];
       xOffset += letterSize;
     }
     y += letterSize + scale * 2;

@@ -1,43 +1,30 @@
-import { AdventureScene, setupAdventure, updateAdventure } from "./scenes/adventure";
-import { Align, createTextNode } from "./nodes/text-node";
+import { Align_Center, createTextNode, updateTextNode } from "./nodes/text-node";
 import { ENGINES, gameState, initGameState } from "./game-state";
 import { Interpolators, interpolate } from "./interpolate";
-import { MainMenuScene, setupMainMenu, updateMainMenu } from "./scenes/main-menu";
-import { MissionSelectScene, setupMissionSelect, updateMissionSelect } from "./scenes/mission-select";
-import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
-import { StationScene, setupStation, updateStation } from "./scenes/station";
+import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, setupScreen } from "./screen";
 import { gl_clear, gl_flush, gl_getContext, gl_init, gl_setClear } from "./gl";
 import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
 import { moveNode, renderNode } from "./scene-node";
 import { registerScene, renderScene, updateScene } from "./scene";
+import { setupAudio, startMusic } from "./zzfx";
 
+import { Adventure } from "./scenes/adventure";
+import { GameMenu } from "./scenes/game-menu";
+import { MainMenu } from "./scenes/main-menu";
+import { MissionSelect } from "./scenes/mission-select";
+import { ShipSelect } from "./scenes/ship-select";
+import { Station } from "./scenes/station";
 import { assert } from "./debug";
 import { colourToHex } from "./colour";
 import { loadSpriteSheet } from "./texture";
 import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
-import { setupAudio } from "./zzfx";
 
 window.addEventListener("load", async () =>
 {
-  document.title = "2D1D4X13K";
-  let css = "margin:0;padding:0;background-color:#060606;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;";
-  document.documentElement.style.cssText = css;
-  document.body.style.cssText = css;
-
-  let stage = document.createElement("div");
-  stage.style.cssText = "display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vw*(9/16));max-height:100vh;width:100vw;";
-  document.body.appendChild(stage);
-
-  let canvas = document.createElement("canvas");
-  canvas.style.cssText = "height:100%;image-rendering:optimizeSpeed;image-rendering:pixelated;";
-  stage.appendChild(canvas);
-
-  assert(canvas !== null, `Unable to find canvas element on index.html`);
-  canvas.width = SCREEN_WIDTH;
-  canvas.height = SCREEN_HEIGHT;
+  let canvas = setupScreen();
   let context = gl_getContext(canvas);
   gl_init(context);
   await loadSpriteSheet();
@@ -49,27 +36,34 @@ window.addEventListener("load", async () =>
   let playing: boolean = false;
   let loadGame = () =>
   {
-    playing = true;
-    assert(canvas !== null, `Unable to find canvas element on index.html`);
+    assert(canvas !== null, "Unable to find canvas element on index.html");
     canvas.removeEventListener("pointerdown", loadGame);
     canvas.removeEventListener("touchstart", loadGame);
+    updateTextNode(preGameMessage, "loading...");
 
-    initializeInput(canvas);
-    initGameState();
+    setTimeout(() =>
+    {
+      playing = true;
+      initializeInput(canvas);
+      initGameState();
 
-    setupAudio();
-    registerScene(MainMenuScene, setupMainMenu, updateMainMenu);
-    registerScene(MissionSelectScene, setupMissionSelect, updateMissionSelect);
-    registerScene(AdventureScene, setupAdventure, updateAdventure);
-    registerScene(StationScene, setupStation, updateStation);
+      setupAudio();
+      registerScene(MainMenu._sceneId, MainMenu._setup, MainMenu._update);
+      registerScene(ShipSelect._sceneId, ShipSelect._setup, ShipSelect._update);
+      registerScene(MissionSelect._sceneId, MissionSelect._setup, MissionSelect._update);
+      registerScene(Adventure._sceneId, Adventure._setup, Adventure._update);
+      registerScene(Station._sceneId, Station._setup, Station._update);
+      registerScene(GameMenu._sceneId, GameMenu._setup, GameMenu._update);
 
-    makeStars();
+      makeStars();
+      startMusic();
+    }, 16);
   };
 
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
-  let touchToPlayId = createTextNode("touch to start", SCREEN_WIDTH, { _scale: 1, _textAlign: Align.C });
-  moveNode(touchToPlayId, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
+  let preGameMessage = createTextNode("touch to start", { _scale: 2, _textAlign: Align_Center });
+  moveNode(preGameMessage, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
 
   // x,y,z,timer
   let stars: [number, number, number, number][] = [];
@@ -89,20 +83,14 @@ window.addEventListener("load", async () =>
     }
     sortable.sort();
 
-
     for (let i in stars)
     {
       stars[i][2] = sortable[i];
     }
   };
 
-  let starSpeedTable = [
-    [],
-    [640, 512, 384, 256, 128],
-    [480, 384, 288, 192, 96],
-    [320, 256, 192, 128, 64],
-    [160, 128, 96, 64, 32],
-  ];
+  let starSpeedTable = [0, 128, 96, 64, 32];
+
   let loop = (now: number): void =>
   {
     delta = now - then;
@@ -113,22 +101,20 @@ window.addEventListener("load", async () =>
     {
       for (let i in stars)
       {
-        stars[i][3] += delta;
-        if (stars[i][3] > starSpeedTable[stars[i][2]][gameState._systemLevels[ENGINES][0]])
+        let star = stars[i];
+        star[3] += delta;
+        if (star[3] > starSpeedTable[star[2]] * (5 - (gameState._systemLevels[ENGINES][0])))
         {
-          stars[i][3] = 0;
-          stars[i][0] -= 1;
+          star[3] = 0;
+          star[0] -= 1;
         }
 
-        if (stars[i][0] < -2)
+        if (star[0] < -2)
         {
-          stars[i][0] = SCREEN_WIDTH + 2;
-          stars[i][1] = rand(1, SCREEN_HEIGHT - 1);
+          star[0] = SCREEN_WIDTH + 2;
+          star[1] = rand(1, SCREEN_HEIGHT - 1);
         }
-      }
 
-      for (let i in stars)
-      {
         let value = math.ceil(255 - 185 * (1 - stars[i][2] / 4));
         let colour = colourToHex(value, value, value, value);
         let size = math.ceil(stars[i][2] / 2);
@@ -155,16 +141,22 @@ window.addEventListener("load", async () =>
     }
     else
     {
-      renderNode(touchToPlayId, now, delta);
+      renderNode(preGameMessage, now, delta);
     }
     gl_flush();
     tickStats(now, delta);
 
+    // Prevent the 'cursor' from hovering an element after touching it
+    if (inputContext._fire >= -1 && inputContext._isTouch)
+    {
+      inputContext._cursor[0] = 0;
+      inputContext._cursor[1] = 0;
+    }
     inputContext._fire = -1;
 
     requestAnimationFrame(loop);
   };
-  gl_setClear(6, 6, 6);
+  gl_setClear(0, 0, 0);
   then = performance.now();
   requestAnimationFrame(loop);
 });

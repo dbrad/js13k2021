@@ -27,13 +27,13 @@ function buildHtml()
 //#endregion HTML
 
 //#region CSS
-function buildCss()
-{
-  return gulp
-    .src(`./src/css/*.css`)
-    .pipe(minifyCSS())
-    .pipe(gulp.dest(`./build/${ env }/www`));
-}
+// function buildCss()
+// {
+//   return gulp
+//     .src(`./src/css/*.css`)
+//     .pipe(minifyCSS())
+//     .pipe(gulp.dest(`./build/${ env }/www`));
+// }
 //#endregion CSS
 
 //#region JS
@@ -57,7 +57,7 @@ function preprocessJs()
 function watch()
 {
   gulp.watch([`./src/html/index.html`], buildHtml);
-  gulp.watch([`./src/css/*.css`], buildCss);
+  // gulp.watch([`./src/css/*.css`], buildCss);
   gulp.watch([`./src/ts/**/*.ts`], gulp.series(preprocessJs));
 }
 
@@ -65,6 +65,7 @@ const build = exports.build =
   gulp.parallel(
     buildHtml,
     preprocessJs,
-    buildCss);
+    //buildCss
+  );
 
 exports.watch = gulp.series(build, watch);

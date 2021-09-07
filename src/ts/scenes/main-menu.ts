@@ -1,64 +1,82 @@
-import { Align, createTextNode } from "../nodes/text-node";
-import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
+import { Align_Center, createTextNode } from "../nodes/text-node";
+import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, requestFullscreen } from "../screen";
 import { addChildNode, createNode, moveNode, node_enabled, node_size } from "../scene-node";
-import { hasSaveFile, initGameState, loadGame } from "../game-state";
+import { gameState, hasSaveFile, initGameState, loadGame, saveGame } from "../game-state";
 
-import { MissionSelectScene } from "./mission-select";
+import { Adventure } from "./adventure";
+import { MissionSelect } from "./mission-select";
+import { ShipSelect } from "./ship-select";
 import { createButtonNode } from "../nodes/button-node";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
+import { txt_toggle_fullscreen } from "../text";
 
-export let MainMenuScene = 0;
-
-let startButtonId: number;
-let loadButtonId: number;
-
-export let setupMainMenu = (): number =>
+export namespace MainMenu
 {
-  let rootId = createNode();
-  node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
+  export const _sceneId = 0;
 
-  let textNodeId = createTextNode("2d1d4x13k", SCREEN_WIDTH, { _scale: 4, _textAlign: Align.C });
-  moveNode(textNodeId, SCREEN_CENTER_X, 20);
-  addChildNode(rootId, textNodeId);
+  let newGameButton: number;
+  let loadGameButton: number;
+  let fullscreenButton: number;
 
-  let textNodeId02 = createTextNode("the 2d one dimensional 4x game", SCREEN_WIDTH, { _textAlign: Align.C });
-  moveNode(textNodeId02, SCREEN_CENTER_X, 54);
-  addChildNode(rootId, textNodeId02);
-
-  startButtonId = createButtonNode("new game", [180, 40]);
-  moveNode(startButtonId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 90);
-  addChildNode(rootId, startButtonId);
-
-  loadButtonId = createButtonNode("load game", [180, 40]);
-  moveNode(loadButtonId, SCREEN_CENTER_X - 90, SCREEN_CENTER_Y + 30);
-  addChildNode(rootId, loadButtonId);
-  node_enabled[loadButtonId] = hasSaveFile();
-
-  return rootId;
-};
-
-export let updateMainMenu = (now: number, delta: number): void =>
-{
-  if (inputContext._fire === startButtonId)
+  export let _setup = (): number =>
   {
-    if (hasSaveFile())
+    let rootId = createNode();
+    node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
+
+    let textNodeId = createTextNode("2dq4x13k", { _scale: 4, _textAlign: Align_Center });
+    moveNode(textNodeId, SCREEN_CENTER_X, 20);
+    addChildNode(rootId, textNodeId);
+
+    newGameButton = createButtonNode("new game", [288, 40]);
+    moveNode(newGameButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
+    addChildNode(rootId, newGameButton);
+
+    loadGameButton = createButtonNode("load game", [288, 40]);
+    moveNode(loadGameButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 44);
+    addChildNode(rootId, loadGameButton);
+    node_enabled[loadGameButton] = hasSaveFile();
+
+    fullscreenButton = createButtonNode(txt_toggle_fullscreen, [288, 40]);
+    moveNode(fullscreenButton, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 100);
+    addChildNode(rootId, fullscreenButton);
+
+    return rootId;
+  };
+
+  export let _update = (now: number, delta: number): void =>
+  {
+    node_enabled[loadGameButton] = hasSaveFile();
+
+    if (inputContext._fire === newGameButton)
     {
-      if (confirm("?"))
+      if (hasSaveFile())
       {
-        initGameState();
-        pushScene(MissionSelectScene);
+        // TODO(dbrad): Need an in engine confirm here
+        if (!confirm("?"))
+        {
+          return;
+        }
+      }
+      initGameState();
+      saveGame();
+      pushScene(ShipSelect._sceneId);
+    }
+    else if (inputContext._fire === loadGameButton)
+    {
+      loadGame();
+      if (gameState._adventureEncounters.length > 0)
+      {
+        pushScene(Adventure._sceneId);
+      }
+      else
+      {
+        pushScene(MissionSelect._sceneId);
       }
     }
-    else
+    else if (inputContext._fire === fullscreenButton)
     {
-      initGameState();
-      pushScene(MissionSelectScene);
+      requestFullscreen();
     }
-  }
-  else if (inputContext._fire === loadButtonId)
-  {
-    loadGame();
-    pushScene(MissionSelectScene);
-  }
-};
+  };
+}
