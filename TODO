@@ -18,11 +18,11 @@
   ✔ New Game @done(21-08-22 19:47)
   ✔ Load Game @done(21-08-22 19:47)
   ✘ Import/Export Data? @cancelled(21-08-29 13:15)
-☐ Mission Select / Contract Select
+✔ Mission Select / Contract Select @done(21-09-06 20:02)
   ✔ Deck generation @done(21-08-19 20:34)
-  ☐ Add ship select if new game
-    ☐ Coil ship goes here!
-  ☐ Add contract generation?
+  ✔ Add ship select if new game @done(21-09-07 07:58)
+    ✔ Coil ship goes here! @done(21-09-07 07:59)
+  ✔ Add contract generation? @done(21-09-06 20:02)
   ✔ Add Fullscreen support @done(21-08-29 10:14)
 ✔ In-Game Menu @done(21-08-29 15:41)
   ✔ Save and Quit @done(21-08-29 10:14)
@@ -47,7 +47,7 @@
     ✔ Add scaling based on scanners level @done(21-08-16 19:12)
   ✔ Player interacting with events @done(21-08-22 16:22)
     ✔ Get data based interaction working @done(21-08-22 16:22)
-    ☐ Add Visuals and sounds (shots, scanning, etc.)
+    ✘ Add Visuals and sounds (shots, scanning, etc.) @cancelled(21-09-07 07:58)
   ✔ Make ship node usable for pirates and space beasts (and more!) @done(21-08-18 20:27)
   ✔ HUD @done(21-08-21 14:28)
   ✔ Currency Display @done(21-08-22 11:20)
@@ -63,11 +63,11 @@
   ✔ Logic for Buy and Sell @done(21-08-28 11:03)
 ✔ Prestige Effect (white out) @done(21-08-30 07:40)
 ☐ End Game / Scoring / Metadata / Score History??
-☐ Tutorial
+✘ Tutorial @cancelled(21-09-07 07:58)
 
 Bonus Ideas
-☐ Add explosion particle effects?
-☐ Add Keyboard controls (1-5 + shift + 1-5)
+✘ Add explosion particle effects? @cancelled(21-09-07 07:58)
+✘ Add Keyboard controls (1-5 + shift + 1-5) @cancelled(21-09-07 07:58)
 
 Space Saving Ideas
 ✔ Convert all functions to export let = => @done(21-08-19 06:48)
