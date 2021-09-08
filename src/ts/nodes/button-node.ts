@@ -22,6 +22,16 @@ export let createButtonNode = (text: string, size: v2, textScale: number = 2): n
   return nodeId;
 };
 
+export let updateButtonNode = (nodeId: number, text: string): void =>
+{
+  let size = node_size[nodeId];
+  let textId = node_button_text_id[nodeId];
+
+  let lines = parseText(text, size[0], 2);
+  moveNode(textId, math.floor(size[0] / 2), math.floor(size[1] / 2) - (8 + (10 * (lines - 1))));
+  updateTextNode(textId, text);
+};
+
 let renderButtonNode = (nodeId: number, now: number, delta: number): void =>
 {
   let size = node_size[nodeId];

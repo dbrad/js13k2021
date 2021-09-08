@@ -65,6 +65,7 @@ export namespace ShipSelect
   export let _update = (now: number, delta: number): void =>
   {
     let fire = inputContext._fire;
+    let systemLevels = gameState._systemLevels;
     let startGame = false;
     node_interactive[pickCoilVessel] = false;
 
@@ -88,24 +89,24 @@ export namespace ShipSelect
     }
     else if (fire === pickScienceVessel)
     {
-      gameState._systemLevels[SCANNERS][1] = 1;
+      systemLevels[SCANNERS][1] = 1;
       startGame = true;
     }
     else if (fire === pickMiningVessel)
     {
-      gameState._systemLevels[MINING_LASERS][1] = 1;
+      systemLevels[MINING_LASERS][1] = 1;
       startGame = true;
     }
     else if (fire === pickCombatVessel)
     {
-      gameState._systemLevels[WEAPONS][1] = 1;
+      systemLevels[WEAPONS][1] = 1;
       startGame = true;
     }
     else if (fire === pickCoilVessel)
     {
-      gameState._systemLevels[SCANNERS][1] = 1;
-      gameState._systemLevels[MINING_LASERS][1] = 1;
-      gameState._systemLevels[WEAPONS][1] = 1;
+      systemLevels[SCANNERS][1] = 1;
+      systemLevels[MINING_LASERS][1] = 1;
+      systemLevels[WEAPONS][1] = 1;
       startGame = true;
     }
     if (startGame)

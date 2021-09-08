@@ -49,9 +49,9 @@ export namespace Adventure
   let generatorBar: number;
 
   let playerRange: number;
-  let WOO_WIDTH_BASE = 128;
-  let WOO_INCREMENT = 8;
-  let rangeWidth = WOO_WIDTH_BASE;
+  let RANGE_BASE_WIDTH = 128;
+  let RANGE_INCREMENT = 8;
+  let rangeWidth = RANGE_BASE_WIDTH;
 
   let entityPool: number[] = [];
   let hudWindows: number[] = [];
@@ -201,12 +201,6 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    // qDrive = createQDriveNode();
-    // moveNode(qDrive, SCREEN_CENTER_X - 102, SCREEN_HEIGHT - 20);
-    // addChildNode(rootId, qDrive);
-
-    ////////////////////////////////////////
-
     playerShip = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
     moveNode(playerShip, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40);
     addChildNode(rootId, playerShip);
@@ -225,30 +219,32 @@ export namespace Adventure
   {
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
+    let buttonFired = inputContext._fire;
+    let systemLevels = gameState._systemLevels;
 
-    if (gameState._systemLevels[HULL][0] === 0)
+    if (systemLevels[HULL][0] === 0)
     {
       zzfxP(qDriveSound);
       qReset(true);
       saveGame();
       pushScene(MissionSelect._sceneId, 1000, WHITE);
     }
-    else if (inputContext._fire === stationButton)
+    else if (buttonFired === stationButton)
     {
       pushScene(Station._sceneId);
     }
-    else if (inputContext._fire === leaveButton)
+    else if (buttonFired === leaveButton)
     {
       gameState._adventureEncounters = [];
       gameState._shipPosition = 0;
       softReset();
       gameState._currentPlayerSystem = gameState._destinationSystem;
       gameState._destinationSystem = -1;
-      gameState._systemLevels[ENGINES][0] = 1;
+      systemLevels[ENGINES][0] = 1;
       saveGame();
       pushScene(MissionSelect._sceneId);
     }
-    else if (inputContext._fire === menuButton)
+    else if (buttonFired === menuButton)
     {
       pushScene(GameMenu._sceneId);
     }
@@ -257,83 +253,83 @@ export namespace Adventure
       //#region SHIP MOVEMENET
       shipMovementTimer += delta;
       entityTimer += delta;
-      if (shipMovementTimer > shipTimings[gameState._systemLevels[ENGINES][0]] && !stopped)
+      if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]] && !stopped)
       {
-        shipMovementTimer -= shipTimings[gameState._systemLevels[ENGINES][0]];
-        if (shipMovementTimer > shipTimings[gameState._systemLevels[ENGINES][0]]) shipMovementTimer = 0;
-        gameState._shipPosition += shipDistance[gameState._systemLevels[ENGINES][0]];
-        gameState._qLevel += shipDistance[gameState._systemLevels[ENGINES][0]];
+        shipMovementTimer -= shipTimings[systemLevels[ENGINES][0]];
+        if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]]) shipMovementTimer = 0;
+        gameState._shipPosition += shipDistance[systemLevels[ENGINES][0]];
+        gameState._qLevel += shipDistance[systemLevels[ENGINES][0]];
       }
       stopped = false;
       //#endregion SHIP MOVEMENET
 
       //#region Systems
-      if (inputContext._fire === systems[ENGINES][PLUS_BUTTON] || inputContext._fire === systems[ENGINES][MINUS_BUTTON])
+      if (buttonFired === systems[ENGINES][PLUS_BUTTON] || buttonFired === systems[ENGINES][MINUS_BUTTON])
       {
         systemAffected = ENGINES;
       }
-      else if (inputContext._fire === systems[SHIELDS][PLUS_BUTTON] || inputContext._fire === systems[SHIELDS][MINUS_BUTTON])
+      else if (buttonFired === systems[SHIELDS][PLUS_BUTTON] || buttonFired === systems[SHIELDS][MINUS_BUTTON])
       {
         systemAffected = SHIELDS;
       }
-      else if (inputContext._fire === systems[SCANNERS][PLUS_BUTTON] || inputContext._fire === systems[SCANNERS][MINUS_BUTTON])
+      else if (buttonFired === systems[SCANNERS][PLUS_BUTTON] || buttonFired === systems[SCANNERS][MINUS_BUTTON])
       {
         systemAffected = SCANNERS;
       }
-      else if (inputContext._fire === systems[MINING_LASERS][PLUS_BUTTON] || inputContext._fire === systems[MINING_LASERS][MINUS_BUTTON])
+      else if (buttonFired === systems[MINING_LASERS][PLUS_BUTTON] || buttonFired === systems[MINING_LASERS][MINUS_BUTTON])
       {
         systemAffected = MINING_LASERS;
       }
-      else if (inputContext._fire === systems[WEAPONS][PLUS_BUTTON] || inputContext._fire === systems[WEAPONS][MINUS_BUTTON])
+      else if (buttonFired === systems[WEAPONS][PLUS_BUTTON] || buttonFired === systems[WEAPONS][MINUS_BUTTON])
       {
         systemAffected = WEAPONS;
       }
 
       if (systemAffected !== -1)
       {
-        if ((node_tag[inputContext._fire] === TAG_LOWER_POWER) && gameState._systemLevels[systemAffected][0] > 0)
+        if ((node_tag[buttonFired] === TAG_LOWER_POWER) && systemLevels[systemAffected][0] > 0)
         {
-          gameState._systemLevels[systemAffected][0] -= 1;
+          systemLevels[systemAffected][0] -= 1;
           gameState._availablePower += 1;
           if (systemAffected === SHIELDS)
           {
-            gameState._currentShield = math.min(gameState._currentShield, gameState._systemLevels[SHIELDS][0]);
+            gameState._currentShield = math.min(gameState._currentShield, systemLevels[SHIELDS][0]);
           }
         }
 
-        if ((node_tag[inputContext._fire] === TAG_RAISE_POWER) && gameState._systemLevels[systemAffected][0] < gameState._systemLevels[systemAffected][1] && gameState._availablePower > 0)
+        if ((node_tag[buttonFired] === TAG_RAISE_POWER) && systemLevels[systemAffected][0] < systemLevels[systemAffected][1] && gameState._availablePower > 0)
         {
-          gameState._systemLevels[systemAffected][0] += 1;
+          systemLevels[systemAffected][0] += 1;
           gameState._availablePower -= 1;
         }
       }
       systemAffected = -1;
 
       updateSegmentedBarNode(hullBar, maxHull(), currentHull());
-      updateSegmentedBarNode(shieldBar, gameState._systemLevels[SHIELDS][0], gameState._currentShield);
-      node_enabled[shieldContainer] = gameState._systemLevels[SHIELDS][0] > 0;
+      updateSegmentedBarNode(shieldBar, systemLevels[SHIELDS][0], gameState._currentShield);
+      node_enabled[shieldContainer] = systemLevels[SHIELDS][0] > 0;
 
       updateSegmentedBarNode(generatorBar, maxAvailablePower(), gameState._availablePower);
 
       for (let i = 0; i < 5; i++)
       {
-        let systemEnabled = gameState._systemLevels[i][1] > 0;
+        let systemEnabled = systemLevels[i][1] > 0;
         node_enabled[systems[i][POWER_BAR]] = systemEnabled;
         node_enabled[systems[i][PROGRESS_BAR]] = systemEnabled;
         node_enabled[systems[i][DISABLED_TEXT]] = !systemEnabled;
         node_interactive[systems[i][PLUS_BUTTON]] = systemEnabled;
         node_interactive[systems[i][MINUS_BUTTON]] = systemEnabled;
 
-        updateSegmentedBarNode(systems[i][POWER_BAR], gameState._systemLevels[i][1], gameState._systemLevels[i][0]);
+        updateSegmentedBarNode(systems[i][POWER_BAR], systemLevels[i][1], systemLevels[i][0]);
         if ((i === WEAPONS || i === SCANNERS || i === MINING_LASERS))
         {
           if (systemProgress[i] > 100)
           {
             systemProgress[i] = 0;
           }
-          else if (gameState._systemLevels[i][0] > 0)
+          else if (systemLevels[i][0] > 0)
           {
-            systemProgress[i] = math.min(100, systemProgress[i] + (delta / systemCoooldowns[gameState._systemLevels[i][0]]) * 100);
+            systemProgress[i] = math.min(100, systemProgress[i] + (delta / systemCoooldowns[systemLevels[i][0]]) * 100);
           }
           else
           {
@@ -345,7 +341,7 @@ export namespace Adventure
       //#endregion Systems
 
       //#region Window of Oppertunity
-      rangeWidth = WOO_WIDTH_BASE + (WOO_INCREMENT * gameState._systemLevels[SCANNERS][0]);
+      rangeWidth = RANGE_BASE_WIDTH + (RANGE_INCREMENT * systemLevels[SCANNERS][0]);
       updateRangeIndicator(playerRange, rangeWidth);
       //#endregion Window of Oppertunity
 
@@ -405,28 +401,29 @@ export namespace Adventure
             }
           }
 
+          let currency = gameState._currency;
           // NOTE(dbrad): MINABLE
-          if (encounter._minable && systemProgress[MINING_LASERS] >= 100)
+          if (encounter._minable && systemProgress[MINING_LASERS] === 100)
           {
             systemProgress[MINING_LASERS]++;
             let minerals = math.min(encounter._minable, 13);
             encounter._minable -= minerals;
-            gameState._currency[CURRENCY_MATERIALS_INCOMING] += minerals;
+            currency[CURRENCY_MATERIALS_INCOMING] += minerals;
             zzfxP(shootSound);
           }
 
           // NOTE(dbrad): RESARCHABLE
-          if (encounter._researchable && systemProgress[SCANNERS] >= 100 && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
+          if (encounter._researchable && systemProgress[SCANNERS] === 100 && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
           {
             systemProgress[SCANNERS]++;
             let data = math.min(encounter._researchable, 8);
             encounter._researchable -= data;
-            gameState._currency[CURRENCY_RESEARCH_INCOMING] += data;
+            currency[CURRENCY_RESEARCH_INCOMING] += data;
             zzfxP(scanSound);
           }
 
           // NOTE(dbrad): COMBAT
-          if (encounter._hp && encounter._hp > 0 && systemProgress[WEAPONS] >= 100)
+          if (encounter._hp && encounter._hp > 0 && systemProgress[WEAPONS] === 100)
           {
             systemProgress[WEAPONS]++;
             encounter._hp = math.max(0, encounter._hp - 1);
@@ -452,7 +449,7 @@ export namespace Adventure
 
               if (encounter._bounty)
               {
-                gameState._currency[encounter._bounty[1]] += encounter._bounty[0];
+                currency[encounter._bounty[1]] += encounter._bounty[0];
               }
             }
             zzfxP(shootSound);
@@ -476,10 +473,12 @@ export namespace Adventure
           }
         }
       }
+
       for (let e = entityIndex; e < 10; e++)
       {
         updateEntityNode(entityPool[entityIndex], TAG_ENTITY_NONE);
       }
+
       if (entityTimer >= 16)
       {
         entityTimer = 0;
@@ -488,7 +487,7 @@ export namespace Adventure
 
       //#region SHIELDS
       // NOTE(david): We only increment the sheild cooldown is the current shield value is lower than the max.
-      if (gameState._currentShield < gameState._systemLevels[SHIELDS][0])
+      if (gameState._currentShield < systemLevels[SHIELDS][0])
       {
         shieldTimer += delta;
       }
@@ -500,7 +499,7 @@ export namespace Adventure
       if (shieldTimer > SHIELD_COOLDOWN)
       {
         shieldTimer -= SHIELD_COOLDOWN;
-        if (gameState._currentShield < gameState._systemLevels[SHIELDS][0])
+        if (gameState._currentShield < systemLevels[SHIELDS][0])
         {
           gameState._currentShield += 1;
         }
