@@ -56,14 +56,18 @@ export namespace Station
     let stationWindow = createWindowNode(shopWidth, shopHeight, 20, 40);
     addChildNode(rootId, stationWindow);
 
-    let systemUpdatesDiv = createWindowNode(divWidth, divHeight, 4, 4);
+    let systemUpdatesDiv = createNode();
+    node_size[systemUpdatesDiv] = [divWidth, divHeight];
+    moveNode(systemUpdatesDiv, 4, 4);
     addChildNode(stationWindow, systemUpdatesDiv);
 
     let upgradeHeader = createTextNode(txt_systems, { _textAlign: Align_Center, _scale: 2 });
     moveNode(upgradeHeader, divWidth / 2, 0);
     addChildNode(systemUpdatesDiv, upgradeHeader);
 
-    let otherShopDiv = createWindowNode(divWidth, divHeight, divWidth + 8, 4);
+    let otherShopDiv = createNode();
+    node_size[otherShopDiv] = [divWidth, divHeight];
+    moveNode(otherShopDiv, divWidth + 8, 4);
     addChildNode(stationWindow, otherShopDiv);
 
     leaveStationButton = createButtonNode(txt_leave, [divWidth, 50]);
@@ -124,7 +128,9 @@ export namespace Station
 
     ////////////////////////////////////////
 
-    let hullContainer = createWindowNode(divWidth, 118, 0, 118);
+    let hullContainer = createNode();
+    node_size[hullContainer] = [divWidth, 118];
+    moveNode(hullContainer, 0, 118);
     addChildNode(otherShopDiv, hullContainer);
 
     let hullText = createTextNode(txt_hull);
@@ -180,15 +186,16 @@ export namespace Station
   let delayTimer = 0;
   export let _update = (now: number, delta: number) =>
   {
-    let credits = gameState._currency[CURRENCY_CREDITS];
-    let materials = gameState._currency[CURRENCY_MATERIALS];
-    let research = gameState._currency[CURRENCY_RESEARCH];
+    let currency = gameState._currency;
+    let credits = currency[CURRENCY_CREDITS];
+    let materials = currency[CURRENCY_MATERIALS];
+    let research = currency[CURRENCY_RESEARCH];
     let buyMaterials = () =>
     {
       if (credits >= 100)
       {
-        gameState._currency[CURRENCY_CREDITS] -= 100;
-        gameState._currency[CURRENCY_MATERIALS_INCOMING] += 25;
+        currency[CURRENCY_CREDITS] -= 100;
+        currency[CURRENCY_MATERIALS_INCOMING] += 25;
       }
     };
 
@@ -196,8 +203,8 @@ export namespace Station
     {
       if (materials >= 25)
       {
-        gameState._currency[CURRENCY_MATERIALS] -= 25;
-        gameState._currency[CURRENCY_CREDITS_INCOMING] += 75;
+        currency[CURRENCY_MATERIALS] -= 25;
+        currency[CURRENCY_CREDITS_INCOMING] += 75;
       }
     };
 
@@ -205,8 +212,8 @@ export namespace Station
     {
       if (research >= 32)
       {
-        gameState._currency[CURRENCY_RESEARCH] -= 32;
-        gameState._currency[CURRENCY_CREDITS_INCOMING] += 100;
+        currency[CURRENCY_RESEARCH] -= 32;
+        currency[CURRENCY_CREDITS_INCOMING] += 100;
       }
     };
 
@@ -241,7 +248,7 @@ export namespace Station
     {
       if (credits >= 50 && gameState._systemLevels[HULL][0] < maxHull())
       {
-        gameState._currency[CURRENCY_CREDITS] -= 50;
+        currency[CURRENCY_CREDITS] -= 50;
         gameState._systemLevels[HULL][0] = math.min(gameState._systemLevels[HULL][0] + 1, maxHull());
       }
     }
@@ -301,8 +308,8 @@ export namespace Station
             {
               gameState._systemLevels[i][0] += 1;
             }
-            gameState._currency[CURRENCY_CREDITS] -= creditCost;
-            gameState._currency[CURRENCY_MATERIALS] -= materialCost;
+            currency[CURRENCY_CREDITS] -= creditCost;
+            currency[CURRENCY_MATERIALS] -= materialCost;
             gameState._systemLevels[i][1] = math.min(4, gameState._systemLevels[i][1] + 1);
             updateTextNode(node_button_text_id[systems[i][PURCHASE_BUTTON]], txt_upgrade);
           }

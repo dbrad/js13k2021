@@ -12,7 +12,7 @@ export let doc: Document = document;
 export let setupScreen = (): HTMLCanvasElement =>
 {
   doc.title = `2D1D4X13K`;
-  let css = `margin:0;padding:0;background-color:#060606;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;`;
+  let css = `margin:0;padding:0;background-color:#000;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;`;
   doc.documentElement.style.cssText = css;
   doc.body.style.cssText = css;
 

@@ -149,8 +149,6 @@ window.addEventListener("load", async () =>
     // Prevent the 'cursor' from hovering an element after touching it
     if (inputContext._fire > -1 && inputContext._isTouch)
     {
-      console.log((inputContext));
-
       inputContext._cursor[0] = 0;
       inputContext._cursor[1] = 0;
     }

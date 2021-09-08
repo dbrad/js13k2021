@@ -1,10 +1,11 @@
-import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, saveGame, softReset } from "../game-state";
+import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, saveGame, softReset } from "../game-state";
 import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_LAWLESS, Star } from "../gameplay/encounters";
-import { GAS_PLANET_COLOURS, GREY_111, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS } from "../colour";
+import { GAS_PLANET_COLOURS, GREY_111, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
 import { addChildNode, createNode, moveNode, node_interactive, node_position, node_render_function, node_size } from "../scene-node";
-import { buttonSound, zzfxP } from "../zzfx";
+import { buttonSound, qDriveSound, zzfxP } from "../zzfx";
+import { createButtonNode, updateButtonNode } from "../nodes/button-node";
 import { createSpriteNode, updateSpriteNode } from "../nodes/sprite-node";
 import { createTextNode, updateTextNode } from "../nodes/text-node";
 import { generateSRand, rand } from "../random";
@@ -14,7 +15,6 @@ import { Adventure } from "./adventure";
 import { GameMenu } from "./game-menu";
 import { Station } from "./station";
 import { assert } from "../debug";
-import { createButtonNode } from "../nodes/button-node";
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
 import { createWindowNode } from "../nodes/window-node";
 import { inputContext } from "../input";
@@ -30,8 +30,9 @@ export namespace MissionSelect
   let menuButton: number;
 
   let completeContractButton: number;
-  let departButton: number;
   let stationButton: number;
+  let jumpButton: number;
+  let departButton: number;
 
   let mapWindow: number;
   let starNodes: number[] = [];
@@ -106,16 +107,20 @@ export namespace MissionSelect
     current_system_label = createTextNode(txt_empty_string);
     addChildNode(rightPanel, current_system_label);
 
-    completeContractButton = createButtonNode("complete contract", [162, 78]);
+    completeContractButton = createButtonNode("complete contract", [162, 58]);
     moveNode(completeContractButton, 476, 110);
     addChildNode(rootId, completeContractButton);
 
-    stationButton = createButtonNode("upgrade ship", [162, 78]);
-    moveNode(stationButton, 476, 190);
+    stationButton = createButtonNode("upgrade ship", [162, 58]);
+    moveNode(stationButton, 476, 170);
     addChildNode(rootId, stationButton);
 
-    departButton = createButtonNode("depart", [162, 78]);
-    moveNode(departButton, 476, 270);
+    jumpButton = createButtonNode(txt_empty_string, [162, 58]);
+    moveNode(jumpButton, 476, 230);
+    addChildNode(rootId, jumpButton);
+
+    departButton = createButtonNode("depart", [162, 58]);
+    moveNode(departButton, 476, 290);
     addChildNode(rootId, departButton);
 
     return rootId;
@@ -136,7 +141,7 @@ export namespace MissionSelect
       } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex === gameState._currentPlayerSystem);
 
       let type: number;
-      if (gameState._qLevel / qDriveCosts[gameState._generatorLevel] >= 100)
+      if (gameState._qLevel / qDriveCosts[gameState._generatorLevel] >= 1)
       {
         type = CONTRACT_ANOMALY;
       }
@@ -206,15 +211,19 @@ export namespace MissionSelect
     }
 
     let ps = stars[gameState._currentPlayerSystem];
+    let buttonFired = inputContext._fire;
+
     moveNode(playerLocationIndicator, ps._x - 8, ps._y - 8);
     node_interactive[completeContractButton] = false;
     node_interactive[departButton] = gameState._destinationSystem > -1;
+    node_interactive[jumpButton] = false;
 
-    if (inputContext._fire === menuButton)
+
+    if (buttonFired === menuButton)
     {
       pushScene(GameMenu._sceneId);
     }
-    else if (inputContext._fire === completeContractButton)
+    else if (buttonFired === completeContractButton)
     {
       for (let [index, contract] of gameState._contracts.entries())
       {
@@ -226,11 +235,11 @@ export namespace MissionSelect
         }
       }
     }
-    else if (inputContext._fire === stationButton)
+    else if (buttonFired === stationButton)
     {
       pushScene(Station._sceneId);
     }
-    else if (inputContext._fire === departButton && gameState._destinationSystem !== -1)
+    else if (buttonFired === departButton && gameState._destinationSystem !== -1)
     {
       softReset();
       generateAdventure();
@@ -242,7 +251,7 @@ export namespace MissionSelect
       let destinationDescription = txt_empty_string;
       for (let star of stars)
       {
-        if (inputContext._fire === star._nodeId)
+        if (buttonFired === star._nodeId)
         {
           if (star._nodeId === ps._nodeId) break;
           zzfxP(buttonSound);
@@ -263,15 +272,39 @@ export namespace MissionSelect
             }
           }
           starsToGenerate.push([star, distance(star._x, star._y)]);
-          moveNode(selectedStarIndicator, star._x - 8, star._y - 8);
         }
       }
-
 
       if (gameState._destinationSystem > -1)
       {
         let star = stars[gameState._destinationSystem];
-        destinationDescription += `target system\n\nFname ${ star._name }\nFdistance ${ distance(star._x, star._y) }\n\n---\n\n`;
+        let targetDistance = distance(star._x, star._y);
+        let costToJump = math.floor(targetDistance / 100);
+        destinationDescription += `target system\n\nFname ${ star._name }\nFdistance ${ targetDistance }\n\n---\n\n`;
+        moveNode(selectedStarIndicator, star._x - 8, star._y - 8);
+
+        let enoughCredits = gameState._currency[CURRENCY_CREDITS] >= costToJump;
+        node_interactive[jumpButton] = enoughCredits;
+        if (enoughCredits)
+        {
+          updateButtonNode(jumpButton, `jump gate\n${ costToJump }cr`);
+        }
+        else
+        {
+          updateButtonNode(jumpButton, `jump gate\nR${ costToJump }cr`);
+        }
+        if (buttonFired === jumpButton)
+        {
+          gameState._currency[CURRENCY_CREDITS] -= costToJump;
+          gameState._currentPlayerSystem = gameState._destinationSystem;
+          gameState._destinationSystem = -1;
+          zzfxP(qDriveSound);
+          pushScene(MissionSelect._sceneId, 750, WHITE);
+        }
+      }
+      else
+      {
+        updateButtonNode(jumpButton, `jump gate`);
       }
 
       destinationDescription += `contracts\n\n`;
@@ -599,7 +632,7 @@ export namespace MissionSelect
       if (currentDistance > 0)
       {
         let nextDistance = currentDistance + encounterInterval * i + rand(200, 550);
-        while (nextDistance + 160 <= distance - (encounterInterval + star._beforePlanets.length * encounterInterval))
+        while (nextDistance + 160 <= distance - (encounterInterval + (star._beforePlanets.length + 1) * encounterInterval))
         {
           if (rand(0, 1) === 0)
           {
@@ -613,6 +646,7 @@ export namespace MissionSelect
           nextDistance = currentDistance + encounterInterval * i + rand(200, 550);
         }
       }
+
       i = 2;
       for (let planet of star._beforePlanets)
       {

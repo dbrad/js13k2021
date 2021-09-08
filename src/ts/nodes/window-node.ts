@@ -14,6 +14,5 @@ export let createWindowNode = (w: number, h: number, x: number, y: number): numb
 let renderWindow = (nodeId: number, now: number, delta: number) =>
 {
   let size = node_size[nodeId];
-  pushQuad(-4, -4, size[0] + 8, size[1] + 8, 0x99333333);
-  pushQuad(-2, -2, size[0] + 4, size[1] + 4, 0x99111111);
+  pushQuad(-4, -4, size[0] + 8, size[1] + 8, 0x99222222);
 };

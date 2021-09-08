@@ -4,19 +4,19 @@ import { Encounter } from "./gameplay/encounters";
 import { math } from "./math";
 
 // Ship System Indexes
-export let ENGINES = 0 as const;
-export let SHIELDS = 1 as const;
-export let SCANNERS = 2 as const;
-export let MINING_LASERS = 3 as const;
-export let WEAPONS = 4 as const;
-export let HULL = 5 as const;
+export let ENGINES = 0;
+export let SHIELDS = 1;
+export let SCANNERS = 2;
+export let MINING_LASERS = 3;
+export let WEAPONS = 4;
+export let HULL = 5;
 
-export let CURRENCY_CREDITS_INCOMING = 0 as const;
-export let CURRENCY_CREDITS = 1 as const;
-export let CURRENCY_MATERIALS_INCOMING = 2 as const;
-export let CURRENCY_MATERIALS = 3 as const;
-export let CURRENCY_RESEARCH_INCOMING = 4 as const;
-export let CURRENCY_RESEARCH = 5 as const;
+export let CURRENCY_CREDITS_INCOMING = 0;
+export let CURRENCY_CREDITS = 1;
+export let CURRENCY_MATERIALS_INCOMING = 2;
+export let CURRENCY_MATERIALS = 3;
+export let CURRENCY_RESEARCH_INCOMING = 4;
+export let CURRENCY_RESEARCH = 5;
 
 export let qDriveCosts = [6000, 12000, 18000, 36000, 54000];
 
@@ -89,6 +89,7 @@ export let hurtPlayer = (): void =>
 
 export let qReset = (death: boolean = false): void =>
 {
+  let currency = gameState._currency;
   if (!death)
   {
     gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
@@ -100,14 +101,14 @@ export let qReset = (death: boolean = false): void =>
   {
     gameState._systemLevels[i][1] = math.min(1, gameState._systemLevels[i][1]);
   }
-  gameState._currency[CURRENCY_CREDITS] += gameState._currency[CURRENCY_CREDITS_INCOMING];
-  gameState._currency[CURRENCY_CREDITS] = math.floor(gameState._currency[CURRENCY_CREDITS] * 0.5);
+  currency[CURRENCY_CREDITS] += currency[CURRENCY_CREDITS_INCOMING];
+  currency[CURRENCY_CREDITS] = math.floor(currency[CURRENCY_CREDITS] * 0.5);
 
-  gameState._currency[CURRENCY_MATERIALS] += gameState._currency[CURRENCY_MATERIALS_INCOMING];
-  gameState._currency[CURRENCY_MATERIALS] = math.floor(gameState._currency[CURRENCY_MATERIALS] * 0.5);
+  currency[CURRENCY_MATERIALS] += currency[CURRENCY_MATERIALS_INCOMING];
+  currency[CURRENCY_MATERIALS] = math.floor(currency[CURRENCY_MATERIALS] * 0.5);
 
-  gameState._currency[CURRENCY_RESEARCH] += gameState._currency[CURRENCY_RESEARCH_INCOMING];
-  gameState._currency[CURRENCY_RESEARCH] += math.floor(gameState._currency[CURRENCY_RESEARCH] * 0.5);
+  currency[CURRENCY_RESEARCH] += currency[CURRENCY_RESEARCH_INCOMING];
+  currency[CURRENCY_RESEARCH] += math.floor(currency[CURRENCY_RESEARCH] * 0.5);
 
   softReset();
 };
