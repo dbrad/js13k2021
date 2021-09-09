@@ -1,6 +1,6 @@
 import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, saveGame, softReset } from "../game-state";
 import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_LAWLESS, Star } from "../gameplay/encounters";
-import { GAS_PLANET_COLOURS, GREY_111, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
+import { GAS_PLANET_COLOURS, GREY_111, Q_DRIVE_PURPLE, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
 import { addChildNode, createNode, moveNode, node_interactive, node_position, node_render_function, node_size } from "../scene-node";
@@ -186,10 +186,10 @@ export namespace MissionSelect
       {
         // Pick a destination that isn't the sender.
         let destinationId: number;
-        do { destinationId = rand(0, stars.length - 1); } while (starIndex == destinationId);
+        do { destinationId = rand(0, stars.length - 1); } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex == destinationId);
         let [x1, y1] = [stars[starIndex]._x, stars[starIndex]._y];
         let [x2, y2] = [stars[destinationId]._x, stars[destinationId]._y];
-        let pay = math.floor((math.hypot(x2 - x1, y2 - y1) * 250) / 6);
+        let pay = math.floor((math.hypot(x2 - x1, y2 - y1) * 250) / 25);
         contract = {
           _type: type,
           _starId: starIndex,
@@ -284,8 +284,13 @@ export namespace MissionSelect
         moveNode(selectedStarIndicator, star._x - 8, star._y - 8);
 
         let enoughCredits = gameState._currency[CURRENCY_CREDITS] >= costToJump;
-        node_interactive[jumpButton] = enoughCredits;
-        if (enoughCredits)
+        let isAnomaly = isAnomalySystem(star);
+        node_interactive[jumpButton] = enoughCredits && !isAnomaly;
+        if (isAnomaly)
+        {
+          updateButtonNode(jumpButton, `jump gate\noffline`);
+        }
+        else if (enoughCredits)
         {
           updateButtonNode(jumpButton, `jump gate\n${ costToJump }cr`);
         }
@@ -325,7 +330,7 @@ export namespace MissionSelect
             contract._starId = contract._destination;
           }
           node_interactive[completeContractButton] = complete;
-          currentSystemContractText = complete ? "Gcomplete" : "Rin progress";
+          currentSystemContractText = complete ? "Gcomplete" : "Rincomplete";
         }
         moveNode(contractIndicators[i], star._x, star._y);
         i++;
@@ -486,7 +491,17 @@ export namespace MissionSelect
   };
 
   ////////////////////////
-
+  let isAnomalySystem = (star: Star): boolean =>
+  {
+    for (let contract of gameState._contracts)
+    {
+      if (star._index === contract._starId && contract._type === CONTRACT_ANOMALY)
+      {
+        return true;
+      }
+    }
+    return false;
+  };
 
   let entityId: number;
 
@@ -612,6 +627,7 @@ export namespace MissionSelect
       _position: distance,
       _title: txt_quantum_anomaly,
       _yOffset: rand(-30, 30),
+      _colour: Q_DRIVE_PURPLE,
       _scale: 3,
       _exit: true
     };
@@ -656,7 +672,16 @@ export namespace MissionSelect
 
       encounterDeck.push(createStar(star, distance));
       if (gameState._shipPosition === 0) gameState._shipPosition = distance + star._scale * 16 + 240;
-      encounterDeck.push(createStation(distance + star._scale * 16 + 160, index === starsToGenerate.length - 1));
+
+      let lastStar = index === starsToGenerate.length - 1;
+      if (isAnomalySystem(star) && lastStar)
+      {
+        encounterDeck.push(createAnomaly(distance + star._scale * 16 + 160));
+      }
+      else
+      {
+        encounterDeck.push(createStation(distance + star._scale * 16 + 160, lastStar));
+      }
 
       i = 2;
       for (let planet of star._afterPlanets)

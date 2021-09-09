@@ -87,13 +87,18 @@ export let hurtPlayer = (): void =>
   }
 };
 
-export let qReset = (death: boolean = false): void =>
+
+export let quamtumLeap = (): void =>
+{
+  gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
+  gameState._qLevel = 0;
+  softReset();
+  gameState._contracts = gameState._contracts.filter(contract => contract._type !== CONTRACT_ANOMALY);
+};
+
+export let deathReset = (): void =>
 {
   let currency = gameState._currency;
-  if (!death)
-  {
-    gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
-  }
   gameState._qLevel = 0;
   gameState._systemLevels[HULL][0] = 4;
   gameState._systemLevels[HULL][1] = 0;
@@ -112,6 +117,7 @@ export let qReset = (death: boolean = false): void =>
 
   softReset();
 };
+
 export let softReset = (): void =>
 {
   gameState._currentShield = 0;

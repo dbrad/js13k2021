@@ -1,5 +1,5 @@
-import { CONTRACT_BOUNTIES, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, HULL, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, gameState, hurtPlayer, maxAvailablePower, maxHull, qReset, saveGame, softReset } from "../game-state";
-import { ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STATION } from "../gameplay/encounters";
+import { CONTRACT_BOUNTIES, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH_INCOMING, ENGINES, HULL, MINING_LASERS, SCANNERS, SHIELDS, WEAPONS, currentHull, deathReset, gameState, hurtPlayer, maxAvailablePower, maxHull, quamtumLeap, saveGame, softReset } from "../game-state";
+import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STATION } from "../gameplay/encounters";
 import { GREY_111, GREY_666, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { TAG_ENTITY_NONE, TAG_ENTITY_PLAYER_SHIP, createEntityNode, updateEntityNode } from "../nodes/entity-node";
@@ -225,7 +225,7 @@ export namespace Adventure
     if (systemLevels[HULL][0] === 0)
     {
       zzfxP(qDriveSound);
-      qReset(true);
+      deathReset();
       saveGame();
       pushScene(MissionSelect._sceneId, 1000, WHITE);
     }
@@ -235,8 +235,6 @@ export namespace Adventure
     }
     else if (buttonFired === leaveButton)
     {
-      gameState._adventureEncounters = [];
-      gameState._shipPosition = 0;
       softReset();
       gameState._currentPlayerSystem = gameState._destinationSystem;
       gameState._destinationSystem = -1;
@@ -374,6 +372,19 @@ export namespace Adventure
             moveNode(entityPool[entityIndex], position, SCREEN_CENTER_Y - 40 + encounter._yOffset);
           }
           entityIndex++;
+        }
+
+        if (encounter._type === ENC_ANOMALY && encounter._position - gameState._shipPosition <= 0)
+        {
+          stopped = true;
+          gameState._currentPlayerSystem = gameState._destinationSystem;
+          gameState._destinationSystem = -1;
+          quamtumLeap();
+          systemLevels[ENGINES][0] = 1;
+          saveGame();
+          zzfxP(qDriveSound);
+          pushScene(MissionSelect._sceneId, 1000, WHITE);
+          return;
         }
 
         // Check if in range and alive if it has HP

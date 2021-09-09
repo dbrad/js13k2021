@@ -24,7 +24,7 @@ export namespace MainMenu
     let rootId = createNode();
     node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
 
-    let textNodeId = createTextNode("2dq4x13k", { _scale: 4, _textAlign: Align_Center });
+    let textNodeId = createTextNode("2d4x13k", { _scale: 4, _textAlign: Align_Center });
     moveNode(textNodeId, SCREEN_CENTER_X, 20);
     addChildNode(rootId, textNodeId);
 
