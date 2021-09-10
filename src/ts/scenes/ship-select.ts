@@ -1,12 +1,13 @@
 import { Align_Center, createTextNode, updateTextNode } from "../nodes/text-node";
 import { MINING_LASERS, SCANNERS, WEAPONS, gameState, saveGame } from "../game-state";
-import { SCREEN_CENTER_X, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
-import { addChildNode, createNode, moveNode, node_interactive, node_size } from "../scene-node";
+import { SCREEN_CENTER_X, SCREEN_HEIGHT, SCREEN_WIDTH, doc } from "../screen";
+import { addChildNode, createNode, nodeSize, node_interactive } from "../scene-node";
 import { popScene, pushScene } from "../scene";
 
 import { MissionSelect } from "./mission-select";
 import { createButtonNode } from "../nodes/button-node";
 import { inputContext } from "../input";
+import { setDialogText } from "./dialog";
 import { txt_empty_string } from "../text";
 
 export namespace ShipSelect
@@ -23,57 +24,56 @@ export namespace ShipSelect
   export let _setup = (): number =>
   {
     let rootId = createNode();
-    node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
+    nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let textNodeId = createTextNode("choose a starting vessel", { _scale: 2, _textAlign: Align_Center });
-    moveNode(textNodeId, SCREEN_CENTER_X, 20);
+    let textNodeId = createTextNode("choose a starting vessel", SCREEN_CENTER_X, 20, { _scale: 2, _textAlign: Align_Center });
     addChildNode(rootId, textNodeId);
 
-    pickScienceVessel = createButtonNode("old research vessel", [430, 40]);
-    moveNode(pickScienceVessel, SCREEN_CENTER_X - 215, 70);
+    pickScienceVessel = createButtonNode("old research vessel", 430, 40, SCREEN_CENTER_X - 215, 70);
     addChildNode(rootId, pickScienceVessel);
 
-    pickMiningVessel = createButtonNode("rusted mining vessel", [430, 40]);
-    moveNode(pickMiningVessel, SCREEN_CENTER_X - 215, 130);
+    pickMiningVessel = createButtonNode("rusted mining vessel", 430, 40, SCREEN_CENTER_X - 215, 130);
     addChildNode(rootId, pickMiningVessel);
 
-    pickCombatVessel = createButtonNode("retired combat vessel", [430, 40]);
-    moveNode(pickCombatVessel, SCREEN_CENTER_X - 215, 190);
+    pickCombatVessel = createButtonNode("retired combat vessel", 430, 40, SCREEN_CENTER_X - 215, 190);
     addChildNode(rootId, pickCombatVessel);
 
 
-    let coilBonusText = createTextNode("Fcoil Fsupporter Fbonus", { _textAlign: Align_Center });
-    moveNode(coilBonusText, SCREEN_CENTER_X, 250);
+    let coilBonusText = createTextNode("Fcoil Fsupporter Fbonus", SCREEN_CENTER_X, 250, { _textAlign: Align_Center });
     addChildNode(rootId, coilBonusText);
 
 
-    coilStatusText = createTextNode(txt_empty_string, { _textAlign: Align_Center });
-    moveNode(coilStatusText, SCREEN_CENTER_X, SCREEN_HEIGHT - 16);
+    coilStatusText = createTextNode(txt_empty_string, SCREEN_CENTER_X, SCREEN_HEIGHT - 16, { _textAlign: Align_Center });
     addChildNode(rootId, coilStatusText);
 
-    pickCoilVessel = createButtonNode("abandoned imperial cruiser", [430, 40]);
-    moveNode(pickCoilVessel, SCREEN_CENTER_X - 215, 265);
+    pickCoilVessel = createButtonNode("abandoned imperial cruiser", 430, 40, SCREEN_CENTER_X - 215, 265);
     addChildNode(rootId, pickCoilVessel);
 
-    backButton = createButtonNode("back", [80, 40]);
-    moveNode(backButton, 2, 2);
+    backButton = createButtonNode("back", 80, 40, 2, 2);
     addChildNode(rootId, backButton);
 
     return rootId;
   };
 
+  let textShown = false;
   export let _update = (now: number, delta: number): void =>
   {
+    if (!textShown)
+    {
+      setDialogText("congratulations on receiving your piloting license!\n\nyou will be awarded a refurbished wartime vessel to contribute to the galactic economic and research efforts.");
+      textShown = true;
+    }
     let fire = inputContext._fire;
     let systemLevels = gameState._systemLevels;
     let startGame = false;
+    let monetization = doc.monetization;
     node_interactive[pickCoilVessel] = false;
 
-    if (document.monetization && document.monetization.state === "pending")
+    if (monetization && monetization.state === "pending")
     {
       updateTextNode(coilStatusText, "Fchecking Fcoil Fsubscription...");
     }
-    else if (document.monetization && document.monetization.state === "started")
+    else if (monetization && monetization.state === "started")
     {
       updateTextNode(coilStatusText, "Gcoil Gsubscription Gfound!");
       node_interactive[pickCoilVessel] = true;

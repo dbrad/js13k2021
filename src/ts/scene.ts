@@ -1,6 +1,7 @@
 import { Interpolators, createInterpolationData } from "./interpolate";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./screen";
 import { colourToHex, hexToColour } from "./colour";
+import { dialogActive, dialogRootId } from "./scenes/dialog";
 import { nodeInput, renderNode } from "./scene-node";
 
 import { assert } from "./debug";
@@ -71,17 +72,28 @@ export let popScene = (): void =>
 export let updateScene = (now: number, delta: number): void =>
 {
   let rootId = CurrentScene._rootId;
-  if (!Interpolators.has(TRANSITION_KEY))
+  if (dialogActive)
   {
-    nodeInput(rootId);
+    nodeInput(dialogRootId);
   }
-  CurrentScene._updateFn(now, delta);
+  else
+  {
+    if (!Interpolators.has(TRANSITION_KEY))
+    {
+      nodeInput(rootId);
+    }
+    CurrentScene._updateFn(now, delta);
+  }
 };
 
 export let renderScene = (now: number, delta: number): void =>
 {
   let rootId = CurrentScene._rootId;
   renderNode(rootId, now, delta);
+  if (dialogActive)
+  {
+    renderNode(dialogRootId, now, delta);
+  }
 
   if (Interpolators.has(TRANSITION_KEY))
   {

@@ -23,18 +23,3 @@ export let generateSRand = (seed: number): [() => number, (min: number, max: num
       return randomInRange(next(), min, max);
     }];
 };
-
-export let shuffle = <T>(array: T[]): T[] =>
-{
-  let currentIndex: number = array.length, temporaryValue: T, randomIndex: number;
-  let arr: T[] = [...array];
-  while (0 !== currentIndex)
-  {
-    randomIndex = rand(0, currentIndex - 1);
-    currentIndex -= 1;
-    temporaryValue = arr[currentIndex];
-    arr[currentIndex] = arr[randomIndex];
-    arr[randomIndex] = temporaryValue;
-  }
-  return arr;
-};

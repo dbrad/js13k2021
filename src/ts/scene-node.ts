@@ -22,8 +22,8 @@ export let createNode = (): number =>
 {
   let nodeId = ++nextNodeId;
 
-  node_position[nodeId] = [0, 0];
-  node_size[nodeId] = [1, 1];
+  moveNode(nodeId, 0, 0);
+  nodeSize(nodeId, 1, 1);
 
   node_enabled[nodeId] = true;
   node_interactive[nodeId] = true;
@@ -45,6 +45,12 @@ export let addChildNode = (nodeId: number, childNodeId: number): void =>
 export let moveNode = (nodeId: number, x: number, y: number): void =>
 {
   node_position[nodeId] = [x, y];
+};
+
+
+export let nodeSize = (nodeId: number, w: number, h: number): void =>
+{
+  node_size[nodeId] = [w, h];
 };
 
 export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext._cursor): void =>
