@@ -22,8 +22,8 @@ export let createNode = (): number =>
 {
   let nodeId = ++nextNodeId;
 
-  node_position[nodeId] = [0, 0];
-  node_size[nodeId] = [1, 1];
+  moveNode(nodeId, 0, 0);
+  nodeSize(nodeId, 1, 1);
 
   node_enabled[nodeId] = true;
   node_interactive[nodeId] = true;

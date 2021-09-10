@@ -101,30 +101,31 @@ export let loadSpriteSheet = (): Promise<void> =>
 
         for (let texture of sheet._textures)
         {
+          let { _w, _h, _x, _y, _name } = texture;
           if (texture._type === "s")
           {
-            TEXTURE_CACHE.set(texture._name as string, {
+            TEXTURE_CACHE.set(_name as string, {
               _atlas: glTexture,
-              _w: texture._w,
-              _h: texture._h,
-              _u0: texture._x / width,
-              _v0: texture._y / height,
-              _u1: (texture._x + texture._w) / width,
-              _v1: (texture._y + texture._h) / height
+              _w: _w,
+              _h: _h,
+              _u0: _x / width,
+              _v0: _y / height,
+              _u1: (_x + _w) / width,
+              _v1: (_y + _h) / height
             });
           }
           else
           {
-            for (let ox: number = texture._x, i: number = 0; ox < width; ox += texture._w)
+            for (let ox: number = _x, i: number = 0; ox < width; ox += _w)
             {
-              TEXTURE_CACHE.set(texture._name[i], {
+              TEXTURE_CACHE.set(_name[i], {
                 _atlas: glTexture,
-                _w: texture._w,
-                _h: texture._h,
+                _w: _w,
+                _h: _h,
                 _u0: ox / width,
-                _v0: texture._y / height,
-                _u1: (ox + texture._w) / width,
-                _v1: (texture._y + texture._h) / height
+                _v0: _y / height,
+                _u1: (ox + _w) / width,
+                _v1: (_y + _h) / height
               });
               i++;
             }

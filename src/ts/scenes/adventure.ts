@@ -109,15 +109,13 @@ export namespace Adventure
       moveNode(systemContainer, 0, 75 + (52 * i));
       addChildNode(rootId, systemContainer);
 
-      let minusButton = createButtonNode("-", 26, 26);
+      let minusButton = createButtonNode("-", 26, 26, 2);
       node_tag[minusButton] = TAG_LOWER_POWER;
-      moveNode(minusButton, 2, 0);
       addChildNode(systemContainer, minusButton);
       systems[i][MINUS_BUTTON] = minusButton;
 
-      let plusButton = createButtonNode("+", 26, 26);
+      let plusButton = createButtonNode("+", 26, 26, 30);
       node_tag[plusButton] = TAG_RAISE_POWER;
-      moveNode(plusButton, 30, 0);
       addChildNode(systemContainer, plusButton);
       systems[i][PLUS_BUTTON] = plusButton;
 
@@ -168,8 +166,7 @@ export namespace Adventure
     moveNode(currency, 219, 0);
     addChildNode(rootId, currency);
 
-    menuButton = createButtonNode(txt_menu, 70, 28);
-    moveNode(menuButton, SCREEN_WIDTH - 70, 0);
+    menuButton = createButtonNode(txt_menu, 70, 28, SCREEN_WIDTH - 70);
     addChildNode(rootId, menuButton);
 
     ////////////////////////////////////////
@@ -184,14 +181,12 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    stationButton = createButtonNode(txt_visit_station, 160, 80);
-    moveNode(stationButton, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
+    stationButton = createButtonNode(txt_visit_station, 160, 80, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
     addChildNode(rootId, stationButton);
 
     ////////////////////////////////////////
 
-    leaveButton = createButtonNode(txt_exit_system, 160, 80);
-    moveNode(leaveButton, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
+    leaveButton = createButtonNode(txt_exit_system, 160, 80, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
     addChildNode(rootId, leaveButton);
 
     ////////////////////////////////////////
@@ -209,9 +204,12 @@ export namespace Adventure
   let shipDistance = [0, 1, 2, 3, 4];
   let stopped = false;
   let entityTimer = 0;
+  let saveTimer = 0;
 
   export let _update = (now: number, delta: number): void =>
   {
+    saveTimer += delta;
+    if (saveTimer > 5000) { saveGame(); }
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
     let buttonFired = inputContext._fire;

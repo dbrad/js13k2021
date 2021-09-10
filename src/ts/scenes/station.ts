@@ -2,7 +2,7 @@ import { Align_Center, Align_Right, createTextNode, updateTextNode } from "../no
 import { CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH, HULL, currentHull, gameState, maxHull, saveGame } from "../game-state";
 import { GREY_999, HULL_RED, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
-import { addChildNode, createNode, moveNode, nodeSize, node_enabled, node_interactive, node_size } from "../scene-node";
+import { addChildNode, createNode, moveNode, nodeSize, node_enabled, node_interactive } from "../scene-node";
 import { buttonSound, zzfxP } from "../zzfx";
 import { createButtonNode, updateButtonNode } from "../nodes/button-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
@@ -69,8 +69,7 @@ export namespace Station
     moveNode(otherShopDiv, divWidth + 8, 4);
     addChildNode(stationWindow, otherShopDiv);
 
-    leaveStationButton = createButtonNode(txt_leave, divWidth, 50);
-    moveNode(leaveStationButton, 0, divHeight - 50);
+    leaveStationButton = createButtonNode(txt_leave, divWidth, 50, 0, divHeight - 50);
     addChildNode(otherShopDiv, leaveStationButton);
 
     let upgradeHeight = 52;
@@ -90,8 +89,7 @@ export namespace Station
       let soldOutLabel = createTextNode(txt_upgraded_fully, divWidth - 76, 37 + h, { _textAlign: Align_Center, _colour: GREY_999 });
       addChildNode(systemUpdatesDiv, soldOutLabel);
 
-      let button = createButtonNode(txt_upgrade, 142, 32);
-      moveNode(button, divWidth - 150, 30 + h);
+      let button = createButtonNode(txt_upgrade, 142, 32, divWidth - 150, 30 + h);
       addChildNode(systemUpdatesDiv, button);
       systems[i][PURCHASE_BUTTON] = button;
     }
@@ -101,22 +99,19 @@ export namespace Station
     let buyMaterialsLabel = createTextNode(txt_buy_raw_materials, 6, 8);
     addChildNode(otherShopDiv, buyMaterialsLabel);
 
-    buyMaterialsButton = createButtonNode(txt_buy, 76, 32);
-    moveNode(buyMaterialsButton, divWidth - 80, 0);
+    buyMaterialsButton = createButtonNode(txt_buy, 76, 32, divWidth - 80);
     addChildNode(otherShopDiv, buyMaterialsButton);
 
     let sellMaterialsLabel = createTextNode(txt_sell_raw_materials, 6, 48);
     addChildNode(otherShopDiv, sellMaterialsLabel);
 
-    sellMaterialsButton = createButtonNode(txt_sell, 76, 32);
-    moveNode(sellMaterialsButton, divWidth - 80, 40);
+    sellMaterialsButton = createButtonNode(txt_sell, 76, 32, divWidth - 80, 40);
     addChildNode(otherShopDiv, sellMaterialsButton);
 
     let sellResearchLabel = createTextNode(txt_sell_research, 6, 88);
     addChildNode(otherShopDiv, sellResearchLabel);
 
-    sellResearchButton = createButtonNode(txt_sell, 76, 32);
-    moveNode(sellResearchButton, divWidth - 80, 80);
+    sellResearchButton = createButtonNode(txt_sell, 76, 32, divWidth - 80, 80);
     addChildNode(otherShopDiv, sellResearchButton);
 
     ////////////////////////////////////////
@@ -142,8 +137,7 @@ export namespace Station
     repairHullCost = createTextNode(txt_hull_repair_cost, divWidth - 136, 52, alignR);
     addChildNode(hullContainer, repairHullCost);
 
-    repairHullButton = createButtonNode(txt_repair, 124, 32);
-    moveNode(repairHullButton, divWidth - 128, 40);
+    repairHullButton = createButtonNode(txt_repair, 124, 32, divWidth - 128, 40);
     addChildNode(hullContainer, repairHullButton);
 
     ////////////////////////////////////////
@@ -161,8 +155,7 @@ export namespace Station
     let hullMaxedOut = createTextNode(txt_upgraded_fully, divWidth - 62, 87, { _textAlign: Align_Center, _colour: GREY_999 });
     addChildNode(hullContainer, hullMaxedOut);
 
-    let upgradeHullButton = createButtonNode(txt_upgrade, 124, 32);
-    moveNode(upgradeHullButton, divWidth - 128, 80);
+    let upgradeHullButton = createButtonNode(txt_upgrade, 124, 32, divWidth - 128, 80);
     addChildNode(hullContainer, upgradeHullButton);
     systems[5][PURCHASE_BUTTON] = upgradeHullButton;
 

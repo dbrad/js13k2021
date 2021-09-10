@@ -57,8 +57,7 @@ export namespace MissionSelect
     moveNode(currencyBar, 217, 0);
     addChildNode(rootId, currencyBar);
 
-    menuButton = createButtonNode(txt_menu, 70, 28);
-    moveNode(menuButton, SCREEN_WIDTH - 72, 0);
+    menuButton = createButtonNode(txt_menu, 70, 28, SCREEN_WIDTH - 72);
     addChildNode(rootId, menuButton);
 
 
@@ -107,20 +106,16 @@ export namespace MissionSelect
     current_system_label = createTextNode(txt_empty_string);
     addChildNode(rightPanel, current_system_label);
 
-    completeContractButton = createButtonNode("complete contract", 162, 58);
-    moveNode(completeContractButton, 476, 110);
+    completeContractButton = createButtonNode("complete contract", 162, 58, 476, 110);
     addChildNode(rootId, completeContractButton);
 
-    stationButton = createButtonNode("upgrade ship", 162, 58);
-    moveNode(stationButton, 476, 170);
+    stationButton = createButtonNode("upgrade ship", 162, 58, 476, 170);
     addChildNode(rootId, stationButton);
 
-    jumpButton = createButtonNode(txt_empty_string, 162, 58);
-    moveNode(jumpButton, 476, 230);
+    jumpButton = createButtonNode(txt_empty_string, 162, 58, 476, 230);
     addChildNode(rootId, jumpButton);
 
-    departButton = createButtonNode("depart", 162, 58);
-    moveNode(departButton, 476, 290);
+    departButton = createButtonNode("depart", 162, 58, 476, 290);
     addChildNode(rootId, departButton);
 
     return rootId;
@@ -244,6 +239,7 @@ export namespace MissionSelect
           break;
         }
       }
+      saveGame();
     }
     else if (buttonFired === stationButton)
     {

@@ -8,13 +8,14 @@ import { math } from "../math";
 import { pushQuad } from "../draw";
 
 let node_button_text_id: number[] = [];
-export let createButtonNode = (text: string, w: number, h: number, textScale: number = 2): number =>
+export let createButtonNode = (text: string, w: number, h: number, x: number = 0, y: number = 0): number =>
 {
   let nodeId = createNode();
   node_render_function[nodeId] = renderButtonNode;
   nodeSize(nodeId, w, h);
+  moveNode(nodeId, x, y);
   let lines = parseText(text, w, 2);
-  let textId = createTextNode(text, math.floor(w / 2), math.floor(h / 2) - (8 + (10 * (lines - 1))), { _width: w, _scale: textScale, _textAlign: Align_Center });
+  let textId = createTextNode(text, math.floor(w / 2), math.floor(h / 2) - (8 + (10 * (lines - 1))), { _width: w, _scale: 2, _textAlign: Align_Center });
   addChildNode(nodeId, textId);
   node_button_text_id[nodeId] = textId;
   return nodeId;
