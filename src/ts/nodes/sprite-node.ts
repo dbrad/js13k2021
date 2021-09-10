@@ -1,5 +1,5 @@
 import { Texture, getTexture } from "../texture";
-import { createNode, node_render_function, node_size } from "../scene-node";
+import { createNode, nodeSize, node_render_function } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
 import { WHITE } from "../colour";
@@ -33,7 +33,7 @@ export let updateSpriteNode = (nodeId: number, textureName: string, params: Spri
   let texture = getTexture(textureName);
 
   node_sprite[nodeId] = texture;
-  node_size[nodeId] = [texture._w * scale, texture._h * scale];
+  nodeSize(nodeId, texture._w * scale, texture._h * scale);
   node_sprite_scale[nodeId] = scale;
   node_sprite_flip[nodeId] = [hFlip, vFlip];
   node_sprite_colour[nodeId] = colour;

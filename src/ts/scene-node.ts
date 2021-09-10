@@ -47,6 +47,12 @@ export let moveNode = (nodeId: number, x: number, y: number): void =>
   node_position[nodeId] = [x, y];
 };
 
+
+export let nodeSize = (nodeId: number, w: number, h: number): void =>
+{
+  node_size[nodeId] = [w, h];
+};
+
 export let nodeInput = (nodeId: number, cursorPosition: number[] = inputContext._cursor): void =>
 {
   if (!node_enabled[nodeId] || !node_interactive[nodeId]) return;

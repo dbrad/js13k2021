@@ -1,9 +1,9 @@
-import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, qDriveCosts, saveGame, softReset } from "../game-state";
+import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, saveGame, softReset } from "../game-state";
 import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_LAWLESS, Star } from "../gameplay/encounters";
 import { GAS_PLANET_COLOURS, GREY_111, Q_DRIVE_PURPLE, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
-import { addChildNode, createNode, moveNode, node_interactive, node_position, node_render_function, node_size } from "../scene-node";
+import { addChildNode, createNode, moveNode, nodeSize, node_interactive, node_position, node_render_function } from "../scene-node";
 import { buttonSound, qDriveSound, zzfxP } from "../zzfx";
 import { createButtonNode, updateButtonNode } from "../nodes/button-node";
 import { createSpriteNode, updateSpriteNode } from "../nodes/sprite-node";
@@ -21,6 +21,7 @@ import { inputContext } from "../input";
 import { math } from "../math";
 import { pushQuad } from "../draw";
 import { pushScene } from "../scene";
+import { setDialogText } from "./dialog";
 import { v2 } from "../v2";
 
 export namespace MissionSelect
@@ -50,13 +51,13 @@ export namespace MissionSelect
   export let _setup = (): number =>
   {
     let rootId = createNode();
-    node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
+    nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     let currencyBar = createCurrencyGroupNode();
     moveNode(currencyBar, 217, 0);
     addChildNode(rootId, currencyBar);
 
-    menuButton = createButtonNode(txt_menu, [70, 28]);
+    menuButton = createButtonNode(txt_menu, 70, 28);
     moveNode(menuButton, SCREEN_WIDTH - 72, 0);
     addChildNode(rootId, menuButton);
 
@@ -71,15 +72,14 @@ export namespace MissionSelect
     for (let s = 0; s < 20; s++)
     {
       let star = createSpriteNode(SPRITE_STAR);
-      moveNode(star, 999, 999);
+      moveNode(star, SCREEN_WIDTH, SCREEN_HEIGHT);
       addChildNode(mapWindow, star);
       starNodes[s] = star;
     }
 
     for (let i = 0; i < 4; i++)
     {
-      let bang = createTextNode("!", { _colour: GREY_111, _scale: 2 });
-      moveNode(bang, 999, 999);
+      let bang = createTextNode("!", SCREEN_WIDTH, SCREEN_HEIGHT, { _colour: GREY_111, _scale: 2 });
       addChildNode(mapWindow, bang);
       contractIndicators[i] = bang;
     }
@@ -89,7 +89,7 @@ export namespace MissionSelect
     node_interactive[playerLocationIndicator] = false;
 
     selectedStarIndicator = createSpriteNode(SPRITE_SHIELD, { _scale: 2 });
-    moveNode(selectedStarIndicator, 999, 999);
+    moveNode(selectedStarIndicator, SCREEN_WIDTH, SCREEN_HEIGHT);
     addChildNode(mapWindow, selectedStarIndicator);
     node_interactive[selectedStarIndicator] = false;
 
@@ -107,19 +107,19 @@ export namespace MissionSelect
     current_system_label = createTextNode(txt_empty_string);
     addChildNode(rightPanel, current_system_label);
 
-    completeContractButton = createButtonNode("complete contract", [162, 58]);
+    completeContractButton = createButtonNode("complete contract", 162, 58);
     moveNode(completeContractButton, 476, 110);
     addChildNode(rootId, completeContractButton);
 
-    stationButton = createButtonNode("upgrade ship", [162, 58]);
+    stationButton = createButtonNode("upgrade ship", 162, 58);
     moveNode(stationButton, 476, 170);
     addChildNode(rootId, stationButton);
 
-    jumpButton = createButtonNode(txt_empty_string, [162, 58]);
+    jumpButton = createButtonNode(txt_empty_string, 162, 58);
     moveNode(jumpButton, 476, 230);
     addChildNode(rootId, jumpButton);
 
-    departButton = createButtonNode("depart", [162, 58]);
+    departButton = createButtonNode("depart", 162, 58);
     moveNode(departButton, 476, 290);
     addChildNode(rootId, departButton);
 
@@ -141,7 +141,7 @@ export namespace MissionSelect
       } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex === gameState._currentPlayerSystem);
 
       let type: number;
-      if (gameState._qLevel / qDriveCosts[gameState._generatorLevel] >= 1)
+      if (gameState._qLevel / 6000 * (2 ** gameState._generatorLevel) >= 1)
       {
         type = CONTRACT_ANOMALY;
       }
@@ -219,6 +219,16 @@ export namespace MissionSelect
     node_interactive[jumpButton] = false;
 
 
+    if (!gameState._tutorial01)
+    {
+      setDialogText("welcome newcomer!\n\ngather resources, complete contracts, upgrade your vessel, and help unravel the mysteries of our galaxy.");
+      gameState._tutorial01 = true;
+    }
+    else if (!gameState._tutorial02)
+    {
+      setDialogText("to get started select a nearby star from the star chart and depart on your first flight!");
+      gameState._tutorial02 = true;
+    }
     if (buttonFired === menuButton)
     {
       pushScene(GameMenu._sceneId);
@@ -256,28 +266,29 @@ export namespace MissionSelect
           if (star._nodeId === ps._nodeId) break;
           zzfxP(buttonSound);
           gameState._destinationSystem = star._index;
-          starsToGenerate = [];
-
-          starsToGenerate.push([ps, distance(ps._x, ps._y)]);
-
-          let validator = getValidatorForPoints(ps._x, ps._y, star._x, star._y);
-
-          // look for stars between the origin and destination
-          for (let searchStar of stars)
-          {
-            if (searchStar._nodeId === ps._nodeId || star._nodeId === searchStar._nodeId) continue;
-            if (validator(searchStar._x, searchStar._y))
-            {
-              starsToGenerate.push([searchStar, distance(searchStar._x, searchStar._y)]);
-            }
-          }
-          starsToGenerate.push([star, distance(star._x, star._y)]);
         }
       }
 
       if (gameState._destinationSystem > -1)
       {
         let star = stars[gameState._destinationSystem];
+        starsToGenerate = [];
+
+        starsToGenerate.push([ps, distance(ps._x, ps._y)]);
+
+        let validator = getValidatorForPoints(ps._x, ps._y, star._x, star._y);
+
+        // look for stars between the origin and destination
+        for (let searchStar of stars)
+        {
+          if (searchStar._nodeId === ps._nodeId || star._nodeId === searchStar._nodeId) continue;
+          if (validator(searchStar._x, searchStar._y))
+          {
+            starsToGenerate.push([searchStar, distance(searchStar._x, searchStar._y)]);
+          }
+        }
+        starsToGenerate.push([star, distance(star._x, star._y)]);
+
         let targetDistance = distance(star._x, star._y);
         let costToJump = math.floor(targetDistance / 100);
         destinationDescription += `target system\n\nFname ${ star._name }\nFdistance ${ targetDistance }\n\n---\n\n`;
@@ -340,7 +351,7 @@ export namespace MissionSelect
 
       let currentSystemDescription = `current system\n\nFname ${ ps._name }\nFcontract ${ currentSystemContractText }`;
       updateTextNode(current_system_label, currentSystemDescription);
-    }
+    };
   };
 
   let contractTypeName = ["mining", "research", "bounties", "delivery", "anomaly"];
@@ -580,28 +591,25 @@ export namespace MissionSelect
     };
   };
 
-  let hpLevel = [3, 4, 5];
-  let createPirate = (distance: number, threatLevel: number = 0): Encounter =>
+  let createPirate = (distance: number): Encounter =>
   {
-    let cd = 1000 - (250 * threatLevel);
     return {
       _id: entityId++,
       _type: ENC_PIRATE,
       _position: distance,
       _title: txt_pirate_ship,
       _yOffset: rand(-30, 30),
-      _maxHp: hpLevel[threatLevel],
-      _hp: hpLevel[threatLevel],
-      _bounty: [rand(100, 200) * (threatLevel + 1), CURRENCY_CREDITS_INCOMING],
+      _maxHp: 3,
+      _hp: 3,
+      _bounty: [rand(100, 200), CURRENCY_CREDITS_INCOMING],
       _hazardRange: 104,
       _scale: 2,
-      _attack: [0, cd]
+      _attack: [0, 1000]
     };
   };
 
-  let createSpaceBeast = (distance: number, threatLevel: number = 0): Encounter =>
+  let createSpaceBeast = (distance: number): Encounter =>
   {
-    let cd = 1000 - (250 * threatLevel);
     return {
       _id: entityId++,
       _type: ENC_SPACE_BEAST,
@@ -610,11 +618,11 @@ export namespace MissionSelect
       _yOffset: rand(-30, 30),
       _colour: SPACE_BEAST_PURPLE,
       _researchable: 64,
-      _maxHp: hpLevel[threatLevel],
-      _hp: hpLevel[threatLevel],
+      _maxHp: 3,
+      _hp: 3,
       _hazardRange: 64,
-      _attack: [0, cd],
-      _bounty: [rand(100, 200) * (threatLevel + 1), CURRENCY_RESEARCH_INCOMING],
+      _attack: [0, 1000],
+      _bounty: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
       _scale: 3
     };
   };

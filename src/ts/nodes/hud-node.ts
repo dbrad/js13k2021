@@ -20,13 +20,11 @@ export let createHUDNode = (): number =>
   let nodeId = createNode();
   node_render_function[nodeId] = renderHUD;
 
-  let title = createTextNode(txt_empty_string, { _scale: 2 });
-  moveNode(title, 2, 2);
+  let title = createTextNode(txt_empty_string, 2, 2, { _scale: 2 });
   addChildNode(nodeId, title);
   node_hud_title[nodeId] = title;
 
-  let description = createTextNode(txt_empty_string);
-  moveNode(description, 2, 22);
+  let description = createTextNode(txt_empty_string, 2, 22);
   addChildNode(nodeId, description);
   node_hud_description[nodeId] = description;
 
@@ -69,7 +67,7 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
     if (encounter._bounty)
     {
       let currency = encounter._bounty[1] === CURRENCY_CREDITS_INCOMING ? txt_cr : "kb";
-      descriptionText.push(` (bounty ${ encounter._bounty[0] }${ currency })\n`);
+      descriptionText.push(` - bounty ${ encounter._bounty[0] }${ currency }\n`);
     }
     else
     {
@@ -78,11 +76,11 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   }
   if (encounter._minable)
   {
-    descriptionText.push(`minable (${ encounter._minable }kg)\n`);
+    descriptionText.push(`minable - ${ encounter._minable }kg\n`);
   }
   if (encounter._researchable)
   {
-    descriptionText.push(`researchable (${ encounter._researchable }kb)`);
+    descriptionText.push(`researchable - ${ encounter._researchable }kb`);
   }
   if (encounter._type === ENC_STATION)
   {
@@ -95,9 +93,7 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
       descriptionText.push("ship upgrades");
     }
   }
-
   updateTextNode(description, descriptionText.join(txt_empty_string));
-
   updateTextNode(title, encounter._title);
 };
 

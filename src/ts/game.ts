@@ -21,6 +21,7 @@ import { loadSpriteSheet } from "./texture";
 import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
+import { setupDialogSystem } from "./scenes/dialog";
 
 window.addEventListener("load", async () =>
 {
@@ -54,6 +55,7 @@ window.addEventListener("load", async () =>
       registerScene(Adventure._sceneId, Adventure._setup, Adventure._update);
       registerScene(Station._sceneId, Station._setup, Station._update);
       registerScene(GameMenu._sceneId, GameMenu._setup, GameMenu._update);
+      setupDialogSystem();
 
       makeStars();
       startMusic();
@@ -62,8 +64,7 @@ window.addEventListener("load", async () =>
 
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
-  let preGameMessage = createTextNode("touch to start", { _scale: 2, _textAlign: Align_Center });
-  moveNode(preGameMessage, SCREEN_CENTER_X, SCREEN_CENTER_Y - 10);
+  let preGameMessage = createTextNode("touch to start", SCREEN_CENTER_X, SCREEN_CENTER_Y - 10, { _scale: 2, _textAlign: Align_Center });
 
   // x,y,z,timer
   let stars: [number, number, number, number][] = [];

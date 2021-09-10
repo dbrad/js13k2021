@@ -48,9 +48,8 @@ let pointerDown = (e: PointerEvent | TouchEvent) =>
   if (isTouch(e))
   {
     let canvasBounds = canvasRef.getBoundingClientRect();
-    let touchEvent = e as TouchEvent;
-    touchEvent.preventDefault();
-    let touch: Touch = touchEvent.touches[0];
+    e.preventDefault();
+    let touch: Touch = e.touches[0];
     inputContext._cursor[0] = math.floor((touch.clientX - canvasBounds.left) / (canvasBounds.width / SCREEN_WIDTH));
     inputContext._cursor[1] = math.floor((touch.clientY - canvasBounds.top) / (canvasBounds.height / SCREEN_HEIGHT));
   }

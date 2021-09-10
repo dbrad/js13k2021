@@ -3,7 +3,7 @@ import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STATION } f
 import { GREY_111, GREY_666, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { TAG_ENTITY_NONE, TAG_ENTITY_PLAYER_SHIP, createEntityNode, updateEntityNode } from "../nodes/entity-node";
-import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, createNode, moveNode, node_enabled, node_interactive, node_size, node_tag } from "../scene-node";
+import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, createNode, moveNode, nodeSize, node_enabled, node_interactive, node_tag } from "../scene-node";
 import { beastDieSound, hullHitSound, qDriveSound, scanSound, shipDieSound, shootSound, zzfxP } from "../zzfx";
 import { createHUDNode, updateHUDNode } from "../nodes/hud-node";
 import { createProgressBarNode, updateProgressBarNode } from "../nodes/progress-bar-node";
@@ -64,7 +64,7 @@ export namespace Adventure
   export let _setup = (): number =>
   {
     let rootId = createNode();
-    node_size[rootId] = [SCREEN_WIDTH, SCREEN_HEIGHT];
+    nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     ////////////////////////////////////////
 
@@ -80,8 +80,7 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    let hullText = createTextNode(txt_hull);
-    moveNode(hullText, 2, 2);
+    let hullText = createTextNode(txt_hull, 2, 2);
     addChildNode(rootId, hullText);
 
     hullBar = createSegmentedBarNode(HULL_RED, 16, 4, 4);
@@ -110,28 +109,25 @@ export namespace Adventure
       moveNode(systemContainer, 0, 75 + (52 * i));
       addChildNode(rootId, systemContainer);
 
-      let minusButton = createButtonNode("-", [26, 26]);
+      let minusButton = createButtonNode("-", 26, 26);
       node_tag[minusButton] = TAG_LOWER_POWER;
       moveNode(minusButton, 2, 0);
       addChildNode(systemContainer, minusButton);
       systems[i][MINUS_BUTTON] = minusButton;
 
-      let plusButton = createButtonNode("+", [26, 26]);
+      let plusButton = createButtonNode("+", 26, 26);
       node_tag[plusButton] = TAG_RAISE_POWER;
       moveNode(plusButton, 30, 0);
       addChildNode(systemContainer, plusButton);
       systems[i][PLUS_BUTTON] = plusButton;
 
-      let textShadow = createTextNode(systemNames[i], { _colour: GREY_111 });
-      moveNode(textShadow, 58, 1);
+      let textShadow = createTextNode(systemNames[i], 58, 1, { _colour: GREY_111 });
       addChildNode(systemContainer, textShadow);
 
-      let systemText = createTextNode(systemNames[i], { _colour: WHITE });
-      moveNode(systemText, 58, 0);
+      let systemText = createTextNode(systemNames[i], 58, 0, { _colour: WHITE });
       addChildNode(systemContainer, systemText);
 
-      let notInstalledText = createTextNode(txt_not_installed, { _colour: GREY_666 });
-      moveNode(notInstalledText, 58, 14);
+      let notInstalledText = createTextNode(txt_not_installed, 58, 14, { _colour: GREY_666 });
       addChildNode(systemContainer, notInstalledText);
       systems[i][DISABLED_TEXT] = notInstalledText;
 
@@ -148,13 +144,12 @@ export namespace Adventure
         systems[i][PROGRESS_BAR] = progressBar;
       }
 
-      node_size[systemContainer] = [100, 30];
+      nodeSize(systemContainer, 100, 30);
     }
 
     ////////////////////////////////////////
 
-    let generatorText = createTextNode(txt_available_power, { _colour: WHITE });
-    moveNode(generatorText, 2, 332);
+    let generatorText = createTextNode(txt_available_power, 2, 332, { _colour: WHITE });
     addChildNode(rootId, generatorText);
 
     generatorBar = createSegmentedBarNode(POWER_GREEN, 8, 3, 3);
@@ -173,7 +168,7 @@ export namespace Adventure
     moveNode(currency, 219, 0);
     addChildNode(rootId, currency);
 
-    menuButton = createButtonNode(txt_menu, [70, 28]);
+    menuButton = createButtonNode(txt_menu, 70, 28);
     moveNode(menuButton, SCREEN_WIDTH - 70, 0);
     addChildNode(rootId, menuButton);
 
@@ -189,13 +184,13 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    stationButton = createButtonNode(txt_visit_station, [160, 80]);
+    stationButton = createButtonNode(txt_visit_station, 160, 80);
     moveNode(stationButton, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
     addChildNode(rootId, stationButton);
 
     ////////////////////////////////////////
 
-    leaveButton = createButtonNode(txt_exit_system, [160, 80]);
+    leaveButton = createButtonNode(txt_exit_system, 160, 80);
     moveNode(leaveButton, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
     addChildNode(rootId, leaveButton);
 
@@ -382,8 +377,6 @@ export namespace Adventure
           quamtumLeap();
           systemLevels[ENGINES][0] = 1;
           saveGame();
-          zzfxP(qDriveSound);
-          pushScene(MissionSelect._sceneId, 1000, WHITE);
           return;
         }
 

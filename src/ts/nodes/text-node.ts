@@ -1,5 +1,5 @@
 import { GREY_999, HULL_RED, POWER_GREEN, WHITE } from "../colour";
-import { createNode, node_interactive, node_render_function, node_size } from "../scene-node";
+import { createNode, moveNode, nodeSize, node_interactive, node_render_function, node_size } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
 import { assert } from "../debug";
@@ -27,7 +27,7 @@ let node_text_align: number[] = [];
 let node_text_scale: number[] = [];
 let node_text_colour: number[] = [];
 
-export let createTextNode = (text: string, parameters: TextParameters = {}): number =>
+export let createTextNode = (text: string, x: number = 0, y: number = 0, parameters: TextParameters = {}): number =>
 {
   let width = parameters._width || 640;
   let nodeId = createNode();
@@ -43,22 +43,24 @@ export let createTextNode = (text: string, parameters: TextParameters = {}): num
   let numberOfLines = parseText(node_text[nodeId], width, node_text_scale[nodeId]);
   let textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
 
-  node_size[nodeId] = [width, textHeight];
+  moveNode(nodeId, x, y);
+  nodeSize(nodeId, width, textHeight);
 
   return nodeId;
 };
 
 export let updateTextNode = (nodeId: number, text: string | null, parameters: TextParameters = {}): void =>
 {
+  let w = node_size[nodeId][0];
   node_text[nodeId] = text === null ? node_text[nodeId] : text;
   node_text_align[nodeId] = parameters._textAlign || node_text_align[nodeId];
   node_text_scale[nodeId] = parameters._scale || node_text_scale[nodeId];
   node_text_colour[nodeId] = parameters._colour || node_text_colour[nodeId];
 
-  let numberOfLines = parseText(node_text[nodeId], node_size[nodeId][0], node_text_scale[nodeId]);
+  let numberOfLines = parseText(node_text[nodeId], w, node_text_scale[nodeId]);
   let textHeight = ((numberOfLines - 1) * ((fontSize + 2) * node_text_scale[nodeId])) + (fontSize * node_text_scale[nodeId]);
 
-  node_size[nodeId][1] = textHeight;
+  nodeSize(nodeId, w, textHeight);
 };
 
 export let parseText = (text: string, width: number = 640, scale: number = 1): number =>
@@ -107,7 +109,7 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
   let align = node_text_align[nodeId];
   let scale = node_text_scale[nodeId];
   let colour = node_text_colour[nodeId];
-  let size = node_size[nodeId];
+  let w = node_size[nodeId][0];
   let x = 0;
   let y = 0;
 
@@ -115,7 +117,7 @@ let renderTextNode = (nodeId: number, now: number, delta: number): void =>
 
   let xOffset: number = 0;
 
-  let lines = textCache.get(`${ text }_${ scale }_${ size[0] }`);
+  let lines = textCache.get(`${ text }_${ scale }_${ w }`);
   assert(lines !== undefined, `text lines not found`);
 
   let alignmentOffset: number = 0;

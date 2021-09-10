@@ -18,7 +18,6 @@ export let colourToHex = (a: number, b: number, g: number, r: number): number =>
   return out;
 };
 
-
 export let WHITE = 0xFFFFFFFF;
 export let GREY_111 = 0xFF111111;
 export let GREY_222 = 0xFF222222;
