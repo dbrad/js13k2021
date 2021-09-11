@@ -29,7 +29,7 @@
   ✔ Fullscreen @done(21-08-29 10:14)
   ✔ Mute Music @done(21-08-29 15:41)
 ✔ Muuuusic @done(21-08-29 15:41)
-☐ Game Screen
+✔ Game Screen @done(21-09-10 19:28)
   ✔ Player Sprite @done(21-08-13 20:15)
   ✔ Engine Particles @done(21-08-13 20:15)
   ✔ Starfield Effect @done(21-08-13 20:15)
@@ -54,7 +54,7 @@
   ✔ Progress Bar Node @done(21-08-23 20:12)
   ✔ QDrive @done(21-08-29 14:58)
   ✔ Shop Button @done(21-08-27 07:04)
-  ☐ Timed saves (10s?)
+  ✔ Timed saves (10s?) @done(21-09-10 19:28)
   ✔ Add Hazard / Player Damage @done(21-08-28 20:10)
   ✔ Exit mechanic @done(21-08-28 19:10)
 ✔ Store / Upgrades Scene !!! @done(21-08-28 11:03)
@@ -62,7 +62,7 @@
   ✔ Upgrade Hull @done(21-08-28 11:03)
   ✔ Logic for Buy and Sell @done(21-08-28 11:03)
 ✔ Prestige Effect (white out) @done(21-08-30 07:40)
-☐ End Game / Scoring / Metadata / Score History??
+✘ End Game / Scoring / Metadata / Score History?? @cancelled(21-09-10 19:28)
 ✘ Tutorial @cancelled(21-09-07 07:58)
 
 Bonus Ideas

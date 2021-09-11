@@ -209,7 +209,7 @@ export namespace Adventure
   export let _update = (now: number, delta: number): void =>
   {
     saveTimer += delta;
-    if (saveTimer > 5000) { saveGame(); }
+    if (saveTimer > 5000) { saveTimer = 0; saveGame(); }
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
     let buttonFired = inputContext._fire;
@@ -249,7 +249,6 @@ export namespace Adventure
         shipMovementTimer -= shipTimings[systemLevels[ENGINES][0]];
         if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]]) shipMovementTimer = 0;
         gameState._shipPosition += shipDistance[systemLevels[ENGINES][0]];
-        gameState._qLevel += shipDistance[systemLevels[ENGINES][0]];
       }
       stopped = false;
       //#endregion SHIP MOVEMENET

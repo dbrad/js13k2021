@@ -24,7 +24,7 @@ export namespace MainMenu
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let textNodeId = createTextNode("2d4x13k", SCREEN_CENTER_X, 20, { _scale: 4, _textAlign: Align_Center });
+    let textNodeId = createTextNode("2d4x13k", SCREEN_CENTER_X, 40, { _scale: 5, _textAlign: Align_Center });
     addChildNode(rootId, textNodeId);
 
     newGameButton = createButtonNode("new game", 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
