@@ -114,7 +114,7 @@ export let deathReset = (): void =>
   gameState._systemLevels[HULL][1] = 0;
   for (let i = 0; i < 5; i++)
   {
-    gameState._systemLevels[i][1] = math.max(1, gameState._systemLevels[i][1] - 1);
+    gameState._systemLevels[i][1] = math.max(math.min(gameState._systemLevels[i][1], 1), gameState._systemLevels[i][1] - 1);
   }
   currency[CURRENCY_CREDITS] = math.floor((currency[CURRENCY_CREDITS] + currency[CURRENCY_CREDITS_INCOMING]) * 0.5);
   currency[CURRENCY_MATERIALS] = math.floor((currency[CURRENCY_MATERIALS] + currency[CURRENCY_MATERIALS_INCOMING]) * 0.5);
