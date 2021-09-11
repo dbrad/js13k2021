@@ -84,6 +84,7 @@ export namespace MissionSelect
     }
 
     playerLocationIndicator = createSpriteNode(SPRITE_SHIELD, { _scale: 2 });
+    moveNode(playerLocationIndicator, SCREEN_WIDTH, SCREEN_HEIGHT);
     addChildNode(mapWindow, playerLocationIndicator);
     node_interactive[playerLocationIndicator] = false;
 
@@ -213,17 +214,6 @@ export namespace MissionSelect
     node_interactive[departButton] = gameState._destinationSystem > -1;
     node_interactive[jumpButton] = false;
 
-
-    if (!gameState._tutorial01)
-    {
-      setDialogText("welcome newcomer!\n\ngather resources, complete contracts, upgrade your vessel, and help unravel the mysteries of our galaxy.");
-      gameState._tutorial01 = true;
-    }
-    else if (!gameState._tutorial02)
-    {
-      setDialogText("to get started select a nearby star from the star chart and depart on your first flight!");
-      gameState._tutorial02 = true;
-    }
     if (buttonFired === menuButton)
     {
       pushScene(GameMenu._sceneId);
@@ -349,6 +339,16 @@ export namespace MissionSelect
       let currentSystemDescription = `current system\n\nFname ${ ps._name }\nFcontract ${ currentSystemContractText }`;
       updateTextNode(current_system_label, currentSystemDescription);
     };
+    if (!gameState._tutorial01)
+    {
+      setDialogText("welcome newcomer!\n\ngather resources, complete contracts, upgrade your vessel, and help unravel the mysteries of our galaxy.");
+      gameState._tutorial01 = true;
+    }
+    else if (!gameState._tutorial02)
+    {
+      setDialogText("to get started select a nearby star from the star chart and depart on your first flight!");
+      gameState._tutorial02 = true;
+    }
   };
 
   let contractTypeName = ["mining", "research", "bounties", "delivery", "anomaly"];
