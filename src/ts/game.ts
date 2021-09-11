@@ -1,7 +1,7 @@
 import { Align_Center, createTextNode, updateTextNode } from "./nodes/text-node";
 import { ENGINES, gameState, initGameState } from "./game-state";
 import { Interpolators, interpolate } from "./interpolate";
-import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, setupScreen } from "./screen";
+import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, doc, setupScreen } from "./screen";
 import { gl_clear, gl_flush, gl_getContext, gl_init, gl_setClear } from "./gl";
 import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
@@ -59,6 +59,9 @@ window.addEventListener("load", async () =>
 
       makeStars();
       startMusic();
+
+      updateTextNode(preGameMessage, "paused");
+      doc.addEventListener("visibilitychange", () => { console.log(doc.hidden); playing = !doc.hidden; });
     }, 16);
   };
 

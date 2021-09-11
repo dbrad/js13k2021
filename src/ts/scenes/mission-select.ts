@@ -554,7 +554,7 @@ export namespace MissionSelect
     };
   };
 
-  let createAsteroid = (distance: number): Encounter =>
+  let createAsteroid = (distance: number, adjustment: number = 0): Encounter =>
   {
     return {
       _id: entityId++,
@@ -562,8 +562,8 @@ export namespace MissionSelect
       _position: distance,
       _title: txt_asteroid,
       _yOffset: rand(-50, 50),
-      _minable: rand(52, 65),
-      _scale: rand(1, 2)
+      _minable: rand(52, 65) + (adjustment * 13),
+      _scale: rand(1, 2) + (adjustment * 2)
     };
   };
 
@@ -638,7 +638,7 @@ export namespace MissionSelect
         {
           if (rand(0, 1) === 0)
           {
-            encounterDeck.push(createAsteroid(nextDistance));
+            encounterDeck.push(createAsteroid(nextDistance, 1));
           }
           else
           {
@@ -679,7 +679,7 @@ export namespace MissionSelect
       }
     }
 
-    for (let d = 2000; d < currentDistance; d += 1000)
+    for (let d = 2000; d < currentDistance + 10000; d += 1000)
     {
       let postion = d + rand(-250, 250);
       if (d % 2000 === 0)

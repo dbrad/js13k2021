@@ -157,7 +157,6 @@ export namespace Adventure
 
   let systemAffected = -1;
   let shipMovementTimer = 0;
-  let shipTimings = [0, 16, 16, 16, 16];
   let shipDistance = [0, 1, 2, 3, 4];
   let stopped = false;
   let entityTimer = 0;
@@ -203,10 +202,9 @@ export namespace Adventure
       //#region SHIP MOVEMENET
       shipMovementTimer += delta;
       entityTimer += delta;
-      if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]] && !stopped)
+      if (shipMovementTimer >= 16 && !stopped)
       {
-        shipMovementTimer -= shipTimings[systemLevels[ENGINES][0]];
-        if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]]) shipMovementTimer -= 16;
+        shipMovementTimer -= 16;
         gameState._shipPosition += shipDistance[systemLevels[ENGINES][0]];
       }
       stopped = false;
@@ -305,7 +303,13 @@ export namespace Adventure
       {
         // Check if an encounter in onscreenish
         assert(encounter._position !== undefined, `No position for encounter`);
-        if ((encounter._type === ENC_ASTEROID || encounter._type === ENC_PIRATE || encounter._type === ENC_SPACE_BEAST) && entityTimer >= 16)
+        if (
+          (
+            (encounter._type === ENC_ASTEROID && encounter._scale < 3)
+            || encounter._type === ENC_PIRATE
+            || encounter._type === ENC_SPACE_BEAST
+          )
+          && entityTimer >= 16)
         {
           encounter._position--;
         }
@@ -429,7 +433,7 @@ export namespace Adventure
               encounter._attack[0] += delta;
               if (encounter._attack[0] >= encounter._attack[1])
               {
-                encounter._attack[0] -= encounter._attack[1];
+                encounter._attack[0] = 0;
                 hurtPlayer();
                 zzfxP(hullHitSound);
               }
