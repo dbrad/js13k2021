@@ -27,10 +27,10 @@ let node_text_align: number[] = [];
 let node_text_scale: number[] = [];
 let node_text_colour: number[] = [];
 
-export let createTextNode = (text: string, x: number = 0, y: number = 0, parameters: TextParameters = {}): number =>
+export let createTextNode = (parentId: number, text: string, x: number = 0, y: number = 0, parameters: TextParameters = {}): number =>
 {
   let width = parameters._width || 640;
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
 
   node_interactive[nodeId] = false;
   node_render_function[nodeId] = renderTextNode;

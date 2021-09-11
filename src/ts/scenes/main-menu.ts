@@ -1,6 +1,6 @@
 import { Align_Center, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, requestFullscreen } from "../screen";
-import { addChildNode, createNode, nodeSize, node_enabled } from "../scene-node";
+import { createNode, nodeSize, node_enabled } from "../scene-node";
 import { gameState, hasSaveFile, initGameState, loadGame } from "../game-state";
 
 import { Adventure } from "./adventure";
@@ -24,18 +24,14 @@ export namespace MainMenu
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let textNodeId = createTextNode("2d4x13k", SCREEN_CENTER_X, 40, { _scale: 5, _textAlign: Align_Center });
-    addChildNode(rootId, textNodeId);
+    createTextNode(rootId, "2d4x13k", SCREEN_CENTER_X, 40, { _scale: 5, _textAlign: Align_Center });
 
-    newGameButton = createButtonNode("new game", 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
-    addChildNode(rootId, newGameButton);
+    newGameButton = createButtonNode(rootId, "new game", 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
 
-    loadGameButton = createButtonNode("load game", 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 44);
-    addChildNode(rootId, loadGameButton);
+    loadGameButton = createButtonNode(rootId, "load game", 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 44);
     node_enabled[loadGameButton] = hasSaveFile();
 
-    fullscreenButton = createButtonNode(txt_toggle_fullscreen, 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 100);
-    addChildNode(rootId, fullscreenButton);
+    fullscreenButton = createButtonNode(rootId, txt_toggle_fullscreen, 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 100);
 
     return rootId;
   };

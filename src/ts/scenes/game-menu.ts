@@ -1,5 +1,5 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH, requestFullscreen } from "../screen";
-import { addChildNode, createNode, nodeSize } from "../scene-node";
+import { createNode, nodeSize } from "../scene-node";
 import { popScene, pushScene } from "../scene";
 import { saveGame, toggleMusic } from "../game-state";
 import { txt_back, txt_save_and_quit, txt_toggle_fullscreen, txt_toggle_music } from "../text";
@@ -23,20 +23,15 @@ export namespace GameMenu
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let menuWindow = createWindowNode(300, 220, 170, 80);
-    addChildNode(rootId, menuWindow);
+    let menuWindow = createWindowNode(rootId, 300, 220, 170, 80);
 
-    musicButton = createButtonNode(txt_toggle_music, 300, 50);
-    addChildNode(menuWindow, musicButton);
+    musicButton = createButtonNode(menuWindow, txt_toggle_music, 300, 50);
 
-    fullscreenButton = createButtonNode(txt_toggle_fullscreen, 300, 50, 0, 55);
-    addChildNode(menuWindow, fullscreenButton);
+    fullscreenButton = createButtonNode(menuWindow, txt_toggle_fullscreen, 300, 50, 0, 55);
 
-    saveButton = createButtonNode(txt_save_and_quit, 300, 50, 0, 110);
-    addChildNode(menuWindow, saveButton);
+    saveButton = createButtonNode(menuWindow, txt_save_and_quit, 300, 50, 0, 110);
 
-    backButton = createButtonNode(txt_back, 300, 50, 0, 170);
-    addChildNode(menuWindow, backButton);
+    backButton = createButtonNode(menuWindow, txt_back, 300, 50, 0, 170);
 
     return rootId;
   };

@@ -10,7 +10,7 @@ export let node_size: v2[] = [];
 export let node_enabled: boolean[] = [];
 export let node_interactive: boolean[] = [];
 let node_parent: number[] = [];
-let node_children: number[][] = [];
+let node_children: number[][] = [[]];
 export let node_tag: number[] = [];
 
 //#region TAGS
@@ -18,7 +18,7 @@ export let TAG_LOWER_POWER = 0;
 export let TAG_RAISE_POWER = 1;
 //#endregion TAGS
 
-export let createNode = (): number =>
+export let createNode = (parentId: number = 0): number =>
 {
   let nodeId = ++nextNodeId;
 
@@ -28,7 +28,7 @@ export let createNode = (): number =>
   node_enabled[nodeId] = true;
   node_interactive[nodeId] = true;
 
-  node_parent[nodeId] = 0;
+  addChildNode(parentId, nodeId);
   node_children[nodeId] = [];
 
   node_tag[nodeId] = 0;
@@ -36,10 +36,10 @@ export let createNode = (): number =>
   return nodeId;
 };
 
-export let addChildNode = (nodeId: number, childNodeId: number): void =>
+let addChildNode = (parentNodeId: number, childNodeId: number): void =>
 {
-  node_parent[childNodeId] = nodeId;
-  node_children[nodeId].push(childNodeId);
+  node_parent[childNodeId] = parentNodeId;
+  node_children[parentNodeId].push(childNodeId);
 };
 
 export let moveNode = (nodeId: number, x: number, y: number): void =>

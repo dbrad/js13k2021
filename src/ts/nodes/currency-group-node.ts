@@ -1,31 +1,24 @@
 import { CURRENCY_CREDITS, CURRENCY_MATERIALS, CURRENCY_RESEARCH, gameState } from "../game-state";
-import { addChildNode, createNode, moveNode, node_render_function } from "../scene-node";
 import { createCurrencyNode, updateCurrencyNode } from "./currency-node";
+import { createNode, moveNode, node_render_function } from "../scene-node";
 import { txt_cr, txt_credits, txt_kb, txt_kg, txt_raw_materials, txt_research_data } from "../text";
 
 import { math } from "../math";
 
 let node_currency_nodes: number[][] = [];
-export let createCurrencyGroupNode = () =>
+export let createCurrencyGroupNode = (parentId: number, x: number, y: number) =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = updateAndRenderCurrencyGroup;
+
+  moveNode(nodeId, x, y);
   node_currency_nodes[nodeId] = [];
 
-  let credits = createCurrencyNode(txt_credits, txt_cr);
-  moveNode(credits, 0, 0);
-  addChildNode(nodeId, credits);
-  node_currency_nodes[nodeId][CURRENCY_CREDITS] = credits;
+  node_currency_nodes[nodeId][CURRENCY_CREDITS] = createCurrencyNode(nodeId, 0, 0, txt_credits, txt_cr);
 
-  let rawMaterials = createCurrencyNode(txt_raw_materials, txt_kg);
-  moveNode(rawMaterials, 117, 0);
-  addChildNode(nodeId, rawMaterials);
-  node_currency_nodes[nodeId][CURRENCY_MATERIALS] = rawMaterials;
+  node_currency_nodes[nodeId][CURRENCY_MATERIALS] = createCurrencyNode(nodeId, 117, 0, txt_raw_materials, txt_kg);
 
-  let researchData = createCurrencyNode(txt_research_data, txt_kb);
-  moveNode(researchData, 234, 0);
-  addChildNode(nodeId, researchData);
-  node_currency_nodes[nodeId][CURRENCY_RESEARCH] = researchData;
+  node_currency_nodes[nodeId][CURRENCY_RESEARCH] = createCurrencyNode(nodeId, 234, 0, txt_research_data, txt_kb);
 
   return nodeId;
 };

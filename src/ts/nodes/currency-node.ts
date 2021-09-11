@@ -1,5 +1,5 @@
 import { Align_Right, createTextNode, updateTextNode } from "./text-node";
-import { addChildNode, createNode, node_render_function } from "../scene-node";
+import { createNode, moveNode, node_render_function } from "../scene-node";
 
 import { GREY_6333 } from "../colour";
 import { pushQuad } from "../draw";
@@ -7,19 +7,18 @@ import { txt_empty_string } from "../text";
 
 let node_currency_display: number[] = [];
 
-export let createCurrencyNode = (label: string, postfix: string): number =>
+export let createCurrencyNode = (parentId: number, x: number, y: number, label: string, postfix: string): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderCurrency;
 
-  let labelNode = createTextNode(label, 2, 3);
-  addChildNode(nodeId, labelNode);
+  moveNode(nodeId, x, y);
 
-  let postfixNode = createTextNode(postfix, 114, 17, { _textAlign: Align_Right });
-  addChildNode(nodeId, postfixNode);
+  createTextNode(nodeId, label, 2, 3);
 
-  let display = createTextNode(txt_empty_string, 90, 17, { _textAlign: Align_Right });
-  addChildNode(nodeId, display);
+  createTextNode(nodeId, postfix, 114, 17, { _textAlign: Align_Right });
+
+  let display = createTextNode(nodeId, txt_empty_string, 90, 17, { _textAlign: Align_Right });
   node_currency_display[nodeId] = display;
 
   return nodeId;

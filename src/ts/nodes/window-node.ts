@@ -2,9 +2,9 @@ import { createNode, moveNode, nodeSize, node_render_function, node_size } from 
 
 import { pushQuad } from "../draw";
 
-export let createWindowNode = (w: number, h: number, x: number, y: number): number => 
+export let createWindowNode = (parentId: number, w: number, h: number, x: number, y: number): number => 
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderWindow;
   nodeSize(nodeId, w, h);
   moveNode(nodeId, x, y);

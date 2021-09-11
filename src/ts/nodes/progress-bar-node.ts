@@ -1,15 +1,16 @@
 import { GREY_111, GREY_333, GREY_666 } from "../colour";
-import { createNode, node_render_function } from "../scene-node";
+import { createNode, moveNode, node_render_function } from "../scene-node";
 
 import { pushQuad } from "../draw";
 
 let node_bar_value: number[] = [];
 let node_bar_colour: number[] = [];
 let node_bar_width: number[] = [];
-export let createProgressBarNode = (colour: number, width: number): number =>
+export let createProgressBarNode = (parentId: number, x: number, y: number, colour: number, width: number): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderProgressBar;
+  moveNode(nodeId, x, y);
   node_bar_value[nodeId] = 0;
   node_bar_colour[nodeId] = colour;
   node_bar_width[nodeId] = width;

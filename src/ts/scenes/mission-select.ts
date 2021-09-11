@@ -3,9 +3,9 @@ import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_S
 import { GAS_PLANET_COLOURS, GREY_111, Q_DRIVE_PURPLE, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
-import { addChildNode, createNode, moveNode, nodeSize, node_interactive, node_position, node_render_function } from "../scene-node";
 import { buttonSound, qDriveSound, zzfxP } from "../zzfx";
 import { createButtonNode, updateButtonNode } from "../nodes/button-node";
+import { createNode, moveNode, nodeSize, node_interactive, node_position, node_render_function } from "../scene-node";
 import { createSpriteNode, updateSpriteNode } from "../nodes/sprite-node";
 import { createTextNode, updateTextNode } from "../nodes/text-node";
 import { generateSRand, rand } from "../random";
@@ -53,77 +53,54 @@ export namespace MissionSelect
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let currencyBar = createCurrencyGroupNode();
-    moveNode(currencyBar, 217, 0);
-    addChildNode(rootId, currencyBar);
+    createCurrencyGroupNode(rootId, 217, 0);
 
-    menuButton = createButtonNode(txt_menu, 70, 28, SCREEN_WIDTH - 72);
-    addChildNode(rootId, menuButton);
+    menuButton = createButtonNode(rootId, txt_menu, 70, 28, SCREEN_WIDTH - 72);
 
+    mapWindow = createWindowNode(rootId, 300, 300, 170, 44);
 
-    mapWindow = createWindowNode(300, 300, 170, 44);
-    addChildNode(rootId, mapWindow);
-
-    let galaxyArt = createNode();
+    let galaxyArt = createNode(mapWindow);
     node_render_function[galaxyArt] = renderGalaxyMapArt;
-    addChildNode(mapWindow, galaxyArt);
 
     for (let s = 0; s < 20; s++)
     {
-      let star = createSpriteNode(SPRITE_STAR);
-      moveNode(star, SCREEN_WIDTH, SCREEN_HEIGHT);
-      addChildNode(mapWindow, star);
-      starNodes[s] = star;
+      starNodes[s] = createSpriteNode(mapWindow, SPRITE_STAR, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     for (let i = 0; i < 4; i++)
     {
-      let bang = createTextNode("!", SCREEN_WIDTH, SCREEN_HEIGHT, { _colour: GREY_111, _scale: 2 });
-      addChildNode(mapWindow, bang);
-      contractIndicators[i] = bang;
+      contractIndicators[i] = createTextNode(mapWindow, "!", SCREEN_WIDTH, SCREEN_HEIGHT, { _colour: GREY_111, _scale: 2 });
     }
 
-    playerLocationIndicator = createSpriteNode(SPRITE_SHIELD, { _scale: 2 });
-    moveNode(playerLocationIndicator, SCREEN_WIDTH, SCREEN_HEIGHT);
-    addChildNode(mapWindow, playerLocationIndicator);
+    playerLocationIndicator = createSpriteNode(mapWindow, SPRITE_SHIELD, SCREEN_WIDTH, SCREEN_HEIGHT, { _scale: 2 });
     node_interactive[playerLocationIndicator] = false;
 
-    selectedStarIndicator = createSpriteNode(SPRITE_SHIELD, { _scale: 2 });
-    moveNode(selectedStarIndicator, SCREEN_WIDTH, SCREEN_HEIGHT);
-    addChildNode(mapWindow, selectedStarIndicator);
+    selectedStarIndicator = createSpriteNode(mapWindow, SPRITE_SHIELD, SCREEN_WIDTH, SCREEN_HEIGHT, { _scale: 2 });
     node_interactive[selectedStarIndicator] = false;
 
 
-    let leftPanel = createWindowNode(154, 300, 6, 44);
-    addChildNode(rootId, leftPanel);
+    let leftPanel = createWindowNode(rootId, 154, 300, 6, 44);
 
-    selected_system_label = createTextNode(txt_empty_string);
-    addChildNode(leftPanel, selected_system_label);
+    selected_system_label = createTextNode(leftPanel, txt_empty_string);
 
 
-    let rightPanel = createWindowNode(154, 60, 480, 44);
-    addChildNode(rootId, rightPanel);
+    let rightPanel = createWindowNode(rootId, 154, 60, 480, 44);
 
-    current_system_label = createTextNode(txt_empty_string);
-    addChildNode(rightPanel, current_system_label);
+    current_system_label = createTextNode(rightPanel, txt_empty_string);
 
-    completeContractButton = createButtonNode("complete contract", 162, 58, 476, 110);
-    addChildNode(rootId, completeContractButton);
+    completeContractButton = createButtonNode(rootId, "complete contract", 162, 58, 476, 110);
 
-    stationButton = createButtonNode("upgrade ship", 162, 58, 476, 170);
-    addChildNode(rootId, stationButton);
+    stationButton = createButtonNode(rootId, "upgrade ship", 162, 58, 476, 170);
 
-    jumpButton = createButtonNode(txt_empty_string, 162, 58, 476, 230);
-    addChildNode(rootId, jumpButton);
+    jumpButton = createButtonNode(rootId, txt_empty_string, 162, 58, 476, 230);
 
-    departButton = createButtonNode("depart", 162, 58, 476, 290);
-    addChildNode(rootId, departButton);
+    departButton = createButtonNode(rootId, "depart", 162, 58, 476, 290);
 
     return rootId;
   };
 
   let starsToGenerate: [Star, number][] = [];
-
+  let lastContractType = CONTRACT_BOUNTIES;
   export let _update = (now: number, delta: number): void =>
   {
     if (stars.length === 0) generateGalaxy();
@@ -143,7 +120,8 @@ export namespace MissionSelect
       }
       else
       {
-        type = rand(0, 3);
+        do { type = rand(0, 3); } while (type === lastContractType);
+        lastContractType = type;
       }
 
       let contract: Contract;

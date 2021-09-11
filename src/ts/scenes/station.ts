@@ -2,9 +2,9 @@ import { Align_Center, Align_Right, createTextNode, updateTextNode } from "../no
 import { CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH, HULL, currentHull, gameState, maxHull, saveGame } from "../game-state";
 import { GREY_999, HULL_RED, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
-import { addChildNode, createNode, moveNode, nodeSize, node_enabled, node_interactive } from "../scene-node";
 import { buttonSound, zzfxP } from "../zzfx";
 import { createButtonNode, updateButtonNode } from "../nodes/button-node";
+import { createNode, moveNode, nodeSize, node_enabled, node_interactive } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
 import { systemNames, systemUpgradeCosts } from "../gameplay/systems";
 import { txt_buy, txt_buy_raw_materials, txt_cr, txt_empty_string, txt_hull, txt_hull_repair_cost, txt_install, txt_kg, txt_leave, txt_repair, txt_repair_hull, txt_sell, txt_sell_raw_materials, txt_sell_research, txt_systems, txt_upgrade, txt_upgrade_hull, txt_upgraded_fully } from "../text";
@@ -41,9 +41,7 @@ export namespace Station
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let currency = createCurrencyGroupNode();
-    moveNode(currency, 289, 0);
-    addChildNode(rootId, currency);
+    createCurrencyGroupNode(rootId, 289, 0);
 
     let alignR = { _textAlign: Align_Right };
 
@@ -53,24 +51,19 @@ export namespace Station
     let divWidth = (shopWidth - 12) / 2;
     let divHeight = shopHeight - 8;
 
-    let stationWindow = createWindowNode(shopWidth, shopHeight, 20, 40);
-    addChildNode(rootId, stationWindow);
+    let stationWindow = createWindowNode(rootId, shopWidth, shopHeight, 20, 40);
 
-    let systemUpdatesDiv = createNode();
+    let systemUpdatesDiv = createNode(stationWindow);
     nodeSize(systemUpdatesDiv, divWidth, divHeight);
     moveNode(systemUpdatesDiv, 4, 4);
-    addChildNode(stationWindow, systemUpdatesDiv);
 
-    let upgradeHeader = createTextNode(txt_systems, divWidth / 2, 0, { _textAlign: Align_Center, _scale: 2 });
-    addChildNode(systemUpdatesDiv, upgradeHeader);
+    createTextNode(systemUpdatesDiv, txt_systems, divWidth / 2, 0, { _textAlign: Align_Center, _scale: 2 });
 
-    let otherShopDiv = createNode();
+    let otherShopDiv = createNode(stationWindow);
     nodeSize(otherShopDiv, divWidth, divHeight);
     moveNode(otherShopDiv, divWidth + 8, 4);
-    addChildNode(stationWindow, otherShopDiv);
 
-    leaveStationButton = createButtonNode(txt_leave, divWidth, 50, 0, divHeight - 50);
-    addChildNode(otherShopDiv, leaveStationButton);
+    leaveStationButton = createButtonNode(otherShopDiv, txt_leave, divWidth, 50, 0, divHeight - 50);
 
     let upgradeHeight = 52;
     for (let i = 0; i < 5; i++)
@@ -78,86 +71,58 @@ export namespace Station
       systems[i] = [];
       let h = 2 + i * upgradeHeight;
 
-      let label = createTextNode(systemNames[i], 69, 37 + h, alignR);
-      addChildNode(systemUpdatesDiv, label);
-      systems[i][SYSTEM_LABEL] = label;
+      systems[i][SYSTEM_LABEL] = createTextNode(systemUpdatesDiv, systemNames[i], 69, 37 + h, alignR);
 
-      let costLabel = createTextNode(txt_empty_string, 136, 37 + h, alignR);
-      addChildNode(systemUpdatesDiv, costLabel);
-      systems[i][COST_LABEL] = costLabel;
+      systems[i][COST_LABEL] = createTextNode(systemUpdatesDiv, txt_empty_string, 136, 37 + h, alignR);
 
-      let soldOutLabel = createTextNode(txt_upgraded_fully, divWidth - 76, 37 + h, { _textAlign: Align_Center, _colour: GREY_999 });
-      addChildNode(systemUpdatesDiv, soldOutLabel);
+      createTextNode(systemUpdatesDiv, txt_upgraded_fully, divWidth - 76, 37 + h, { _textAlign: Align_Center, _colour: GREY_999 });
 
-      let button = createButtonNode(txt_upgrade, 142, 32, divWidth - 150, 30 + h);
-      addChildNode(systemUpdatesDiv, button);
-      systems[i][PURCHASE_BUTTON] = button;
+      systems[i][PURCHASE_BUTTON] = createButtonNode(systemUpdatesDiv, txt_upgrade, 142, 32, divWidth - 150, 30 + h);
     }
 
     ////////////////////////////////////////
 
-    let buyMaterialsLabel = createTextNode(txt_buy_raw_materials, 6, 8);
-    addChildNode(otherShopDiv, buyMaterialsLabel);
+    createTextNode(otherShopDiv, txt_buy_raw_materials, 6, 8);
 
-    buyMaterialsButton = createButtonNode(txt_buy, 76, 32, divWidth - 80);
-    addChildNode(otherShopDiv, buyMaterialsButton);
+    buyMaterialsButton = createButtonNode(otherShopDiv, txt_buy, 76, 32, divWidth - 80);
 
-    let sellMaterialsLabel = createTextNode(txt_sell_raw_materials, 6, 48);
-    addChildNode(otherShopDiv, sellMaterialsLabel);
+    createTextNode(otherShopDiv, txt_sell_raw_materials, 6, 48);
 
-    sellMaterialsButton = createButtonNode(txt_sell, 76, 32, divWidth - 80, 40);
-    addChildNode(otherShopDiv, sellMaterialsButton);
+    sellMaterialsButton = createButtonNode(otherShopDiv, txt_sell, 76, 32, divWidth - 80, 40);
 
-    let sellResearchLabel = createTextNode(txt_sell_research, 6, 88);
-    addChildNode(otherShopDiv, sellResearchLabel);
+    createTextNode(otherShopDiv, txt_sell_research, 6, 88);
 
-    sellResearchButton = createButtonNode(txt_sell, 76, 32, divWidth - 80, 80);
-    addChildNode(otherShopDiv, sellResearchButton);
+    sellResearchButton = createButtonNode(otherShopDiv, txt_sell, 76, 32, divWidth - 80, 80);
 
     ////////////////////////////////////////
 
-    let hullContainer = createNode();
+    let hullContainer = createNode(otherShopDiv);
     nodeSize(hullContainer, divWidth, 118);
     moveNode(hullContainer, 0, 118);
-    addChildNode(otherShopDiv, hullContainer);
 
-    let hullText = createTextNode(txt_hull);
-    moveNode(hullText, 6, 6);
-    addChildNode(hullContainer, hullText);
+    createTextNode(hullContainer, txt_hull, 6, 6);
 
-    hullBar = createSegmentedBarNode(HULL_RED, 16, 4, 4);
-    moveNode(hullBar, 6, 16);
-    addChildNode(hullContainer, hullBar);
+    hullBar = createSegmentedBarNode(hullContainer, 6, 16, HULL_RED, 16, 4, 4);
 
     ////////////////////////////////////////
 
-    let repairHullLabel = createTextNode(txt_repair_hull, 102, 52, alignR);
-    addChildNode(hullContainer, repairHullLabel);
+    createTextNode(hullContainer, txt_repair_hull, 102, 52, alignR);
 
-    repairHullCost = createTextNode(txt_hull_repair_cost, divWidth - 136, 52, alignR);
-    addChildNode(hullContainer, repairHullCost);
+    repairHullCost = createTextNode(hullContainer, txt_hull_repair_cost, divWidth - 136, 52, alignR);
 
-    repairHullButton = createButtonNode(txt_repair, 124, 32, divWidth - 128, 40);
-    addChildNode(hullContainer, repairHullButton);
+    repairHullButton = createButtonNode(hullContainer, txt_repair, 124, 32, divWidth - 128, 40);
 
     ////////////////////////////////////////
 
     systems[5] = [];
 
-    let upgradeHullLabel = createTextNode(txt_upgrade_hull, 102, 87, alignR);
-    addChildNode(hullContainer, upgradeHullLabel);
-    systems[5][SYSTEM_LABEL] = upgradeHullLabel;
+    systems[5][SYSTEM_LABEL] = createTextNode(hullContainer, txt_upgrade_hull, 102, 87, alignR);
 
-    let upgradeHullCost = createTextNode(txt_empty_string, divWidth - 136, 87, alignR);
-    addChildNode(hullContainer, upgradeHullCost);
-    systems[5][COST_LABEL] = upgradeHullCost;
+    systems[5][COST_LABEL] = createTextNode(hullContainer, txt_empty_string, divWidth - 136, 87, alignR);
 
-    let hullMaxedOut = createTextNode(txt_upgraded_fully, divWidth - 62, 87, { _textAlign: Align_Center, _colour: GREY_999 });
-    addChildNode(hullContainer, hullMaxedOut);
+    createTextNode(hullContainer, txt_upgraded_fully, divWidth - 62, 87, { _textAlign: Align_Center, _colour: GREY_999 });
 
-    let upgradeHullButton = createButtonNode(txt_upgrade, 124, 32, divWidth - 128, 80);
-    addChildNode(hullContainer, upgradeHullButton);
-    systems[5][PURCHASE_BUTTON] = upgradeHullButton;
+    systems[5][PURCHASE_BUTTON] = createButtonNode(hullContainer, txt_upgrade, 124, 32, divWidth - 128, 80);
 
     return rootId;
   };
