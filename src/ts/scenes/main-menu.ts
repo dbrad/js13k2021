@@ -1,4 +1,4 @@
-import { Align_Center, createTextNode } from "../nodes/text-node";
+import { Align_Center, Align_Right, createTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, requestFullscreen } from "../screen";
 import { createNode, nodeSize, node_enabled } from "../scene-node";
 import { gameState, hasSaveFile, initGameState, loadGame } from "../game-state";
@@ -6,6 +6,7 @@ import { gameState, hasSaveFile, initGameState, loadGame } from "../game-state";
 import { Adventure } from "./adventure";
 import { MissionSelect } from "./mission-select";
 import { ShipSelect } from "./ship-select";
+import { VERSION } from "../version";
 import { createButtonNode } from "../nodes/button-node";
 import { inputContext } from "../input";
 import { pushScene } from "../scene";
@@ -25,6 +26,7 @@ export namespace MainMenu
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     createTextNode(rootId, "2d4x13k", SCREEN_CENTER_X, 40, { _scale: 5, _textAlign: Align_Center });
+    createTextNode(rootId, "a 2d 4x inspired space game", SCREEN_CENTER_X, 82, { _textAlign: Align_Center });
 
     newGameButton = createButtonNode(rootId, "new game", 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y - 12);
 
@@ -32,6 +34,8 @@ export namespace MainMenu
     node_enabled[loadGameButton] = hasSaveFile();
 
     fullscreenButton = createButtonNode(rootId, txt_toggle_fullscreen, 288, 40, SCREEN_CENTER_X - 144, SCREEN_CENTER_Y + 100);
+
+    createTextNode(rootId, VERSION, SCREEN_WIDTH - 2, SCREEN_HEIGHT - 10, { _textAlign: Align_Right });
 
     return rootId;
   };

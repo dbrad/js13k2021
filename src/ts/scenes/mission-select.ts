@@ -124,10 +124,11 @@ export namespace MissionSelect
         lastContractType = type;
       }
 
+      let generatorLevelAdjustment = gameState._generatorLevel >= 2 ? gameState._generatorLevel >= 4 ? 2 : 1 : 0;
       let contract: Contract;
       if (type === CONTRACT_MINING)
       {
-        let amount = rand(25, 75);
+        let amount = rand(25, 75) + generatorLevelAdjustment * 15;
         contract = {
           _type: type,
           _starId: starIndex,
@@ -137,7 +138,7 @@ export namespace MissionSelect
       }
       else if (type === CONTRACT_RESEARCH)
       {
-        let amount = rand(2, 6) * 8;
+        let amount = (rand(2, 6) + generatorLevelAdjustment) * 8;
         contract = {
           _type: type,
           _starId: starIndex,
@@ -147,7 +148,7 @@ export namespace MissionSelect
       }
       else if (type === CONTRACT_BOUNTIES)
       {
-        let amount = rand(3, 5);
+        let amount = rand(2, 4) + generatorLevelAdjustment;
         contract = {
           _type: type,
           _starId: starIndex,
@@ -596,7 +597,7 @@ export namespace MissionSelect
       _maxHp: 3 + hpAdjust,
       _hp: 3 + hpAdjust,
       _hazardRange: 64,
-      _attack: [0, 1000],
+      _attack: [0, 500],
       _bounty: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
       _scale: 3
     };

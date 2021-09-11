@@ -33,8 +33,6 @@ export namespace Adventure
   const PROGRESS_BAR = 3;
   const DISABLED_TEXT = 4;
 
-  let playerShip: number;
-
   let hullBar: number;
 
   let shieldContainer: number;
@@ -46,7 +44,7 @@ export namespace Adventure
   let systemCoooldowns = [-1, 1500, 1250, 1000, 750];
   let systemProgress = [0, 0, 0, 0, 0];
 
-  let generatorBar: number;
+  let maxPowerBar: number;
 
   let playerRange: number;
   let RANGE_BASE_WIDTH = 128;
@@ -78,7 +76,6 @@ export namespace Adventure
     ////////////////////////////////////////
 
     createTextNode(rootId, txt_hull, 2, 2);
-
     hullBar = createSegmentedBarNode(rootId, 2, 12, HULL_RED, 16, 4, 4);
 
     ////////////////////////////////////////
@@ -87,7 +84,6 @@ export namespace Adventure
     moveNode(shieldContainer, 2, 30);
 
     createTextNode(shieldContainer, txt_shields);
-
     shieldBar = createSegmentedBarNode(shieldContainer, 0, 10, SHIELD_BLUE, 34, 1, 0);
 
     ////////////////////////////////////////
@@ -109,7 +105,7 @@ export namespace Adventure
 
       createTextNode(systemContainer, systemNames[i], 58, 1, { _colour: GREY_111 });
 
-      createTextNode(systemContainer, systemNames[i], 58, 0, { _colour: WHITE });
+      createTextNode(systemContainer, systemNames[i], 58, 0);
 
       let notInstalledText = createTextNode(systemContainer, txt_not_installed, 58, 14, { _colour: GREY_666 });
       systems[i][DISABLED_TEXT] = notInstalledText;
@@ -124,9 +120,8 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    createTextNode(rootId, txt_available_power, 2, 332, { _colour: WHITE });
-
-    generatorBar = createSegmentedBarNode(rootId, 2, 342, POWER_GREEN, 8, 3, 3);
+    createTextNode(rootId, txt_available_power, 2, 332);
+    maxPowerBar = createSegmentedBarNode(rootId, 2, 342, POWER_GREEN, 8, 3, 3);
 
     ////////////////////////////////////////
 
@@ -155,7 +150,7 @@ export namespace Adventure
 
     ////////////////////////////////////////
 
-    playerShip = createEntityNode(rootId, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40, TAG_ENTITY_PLAYER_SHIP);
+    createEntityNode(rootId, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40, TAG_ENTITY_PLAYER_SHIP);
 
     return rootId;
   };
@@ -172,8 +167,10 @@ export namespace Adventure
   {
     saveTimer += delta;
     if (saveTimer > 5000) { saveTimer = 0; saveGame(); }
+
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
+
     let buttonFired = inputContext._fire;
     let systemLevels = gameState._systemLevels;
 
@@ -261,7 +258,7 @@ export namespace Adventure
       updateSegmentedBarNode(shieldBar, systemLevels[SHIELDS][0], gameState._currentShield);
       node_enabled[shieldContainer] = systemLevels[SHIELDS][0] > 0;
 
-      updateSegmentedBarNode(generatorBar, maxAvailablePower(), gameState._availablePower);
+      updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState._availablePower);
 
       for (let i = 0; i < 5; i++)
       {
@@ -353,10 +350,14 @@ export namespace Adventure
           // NOTE(dbrad): STATION
           if (encounter._type === ENC_STATION)
           {
-            if (encounter._exit && encounter._position - gameState._shipPosition <= 16)
+            if (encounter._exit)
             {
-              stopped = true;
               node_enabled[leaveButton] = true;
+
+              if (encounter._position - gameState._shipPosition <= 16)
+              {
+                stopped = true;
+              }
             }
             else 
             {
@@ -469,6 +470,6 @@ export namespace Adventure
       }
       updateProgressBarNode(systems[SHIELDS][PROGRESS_BAR], shieldTimer / SHIELD_COOLDOWN * 100);
       //#endregion SHIELDS
-    }
+    };
   };
 }

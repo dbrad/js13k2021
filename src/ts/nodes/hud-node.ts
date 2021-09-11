@@ -1,4 +1,4 @@
-import { ENC_STATION, Encounter } from "../gameplay/encounters";
+import { ENC_ANOMALY, ENC_STATION, Encounter } from "../gameplay/encounters";
 import { GREY_6333, HULL_RED } from "../colour";
 import { TAG_ENTITY_NONE, createEntityNode, updateEntityNode } from "./entity-node";
 import { createNode, moveNode, node_enabled, node_render_function } from "../scene-node";
@@ -80,12 +80,16 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   {
     if (encounter._exit)
     {
-      descriptionText.push("system exit");
+      descriptionText.push("destination");
     }
     else
     {
       descriptionText.push("ship upgrades");
     }
+  }
+  if (encounter._type === ENC_ANOMALY)
+  {
+    descriptionText.push("the unknown");
   }
   updateTextNode(description, descriptionText.join(txt_empty_string));
   updateTextNode(title, encounter._title);

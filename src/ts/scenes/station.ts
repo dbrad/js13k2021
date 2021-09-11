@@ -1,13 +1,13 @@
 import { Align_Center, Align_Right, createTextNode, updateTextNode } from "../nodes/text-node";
-import { CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH, HULL, currentHull, gameState, maxHull, saveGame } from "../game-state";
-import { GREY_999, HULL_RED, WHITE } from "../colour";
+import { CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_MATERIALS_INCOMING, CURRENCY_RESEARCH, HULL, currentHull, gameState, maxAvailablePower, maxHull, saveGame } from "../game-state";
+import { GREY_999, HULL_RED, POWER_GREEN, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { buttonSound, zzfxP } from "../zzfx";
 import { createButtonNode, updateButtonNode } from "../nodes/button-node";
 import { createNode, moveNode, nodeSize, node_enabled, node_interactive } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "../nodes/segmented-bar-node";
 import { systemNames, systemUpgradeCosts } from "../gameplay/systems";
-import { txt_buy, txt_buy_raw_materials, txt_cr, txt_empty_string, txt_hull, txt_hull_repair_cost, txt_install, txt_kg, txt_leave, txt_repair, txt_repair_hull, txt_sell, txt_sell_raw_materials, txt_sell_research, txt_systems, txt_upgrade, txt_upgrade_hull, txt_upgraded_fully } from "../text";
+import { txt_available_power, txt_buy, txt_buy_raw_materials, txt_cr, txt_empty_string, txt_hull, txt_hull_repair_cost, txt_install, txt_kg, txt_leave, txt_repair, txt_repair_hull, txt_sell, txt_sell_raw_materials, txt_sell_research, txt_systems, txt_upgrade, txt_upgrade_hull, txt_upgraded_fully } from "../text";
 
 import { createCurrencyGroupNode } from "../nodes/currency-group-node";
 import { createWindowNode } from "../nodes/window-node";
@@ -35,6 +35,7 @@ export namespace Station
   let hullBar: number;
 
   let leaveStationButton: number;
+  let maxPowerBar: number;
 
   export let _setup = (): number =>
   {
@@ -59,70 +60,72 @@ export namespace Station
 
     createTextNode(systemUpdatesDiv, txt_systems, divWidth / 2, 0, { _textAlign: Align_Center, _scale: 2 });
 
-    let otherShopDiv = createNode(stationWindow);
-    nodeSize(otherShopDiv, divWidth, divHeight);
-    moveNode(otherShopDiv, divWidth + 8, 4);
-
-    leaveStationButton = createButtonNode(otherShopDiv, txt_leave, divWidth, 50, 0, divHeight - 50);
-
-    let upgradeHeight = 52;
+    let upgradeHeight = 55;
     for (let i = 0; i < 5; i++)
     {
       systems[i] = [];
       let h = 2 + i * upgradeHeight;
 
-      systems[i][SYSTEM_LABEL] = createTextNode(systemUpdatesDiv, systemNames[i], 69, 37 + h, alignR);
-
-      systems[i][COST_LABEL] = createTextNode(systemUpdatesDiv, txt_empty_string, 136, 37 + h, alignR);
-
-      createTextNode(systemUpdatesDiv, txt_upgraded_fully, divWidth - 76, 37 + h, { _textAlign: Align_Center, _colour: GREY_999 });
-
-      systems[i][PURCHASE_BUTTON] = createButtonNode(systemUpdatesDiv, txt_upgrade, 142, 32, divWidth - 150, 30 + h);
+      systems[i][SYSTEM_LABEL] = createTextNode(systemUpdatesDiv, systemNames[i], 69, 33 + h, alignR);
+      systems[i][COST_LABEL] = createTextNode(systemUpdatesDiv, txt_empty_string, 136, 33 + h, alignR);
+      createTextNode(systemUpdatesDiv, txt_upgraded_fully, divWidth - 76, 33 + h, { _textAlign: Align_Center, _colour: GREY_999 });
+      systems[i][PURCHASE_BUTTON] = createButtonNode(systemUpdatesDiv, txt_upgrade, 142, 32, divWidth - 150, 21 + h);
     }
 
     ////////////////////////////////////////
 
-    createTextNode(otherShopDiv, txt_buy_raw_materials, 6, 8);
-
-    buyMaterialsButton = createButtonNode(otherShopDiv, txt_buy, 76, 32, divWidth - 80);
-
-    createTextNode(otherShopDiv, txt_sell_raw_materials, 6, 48);
-
-    sellMaterialsButton = createButtonNode(otherShopDiv, txt_sell, 76, 32, divWidth - 80, 40);
-
-    createTextNode(otherShopDiv, txt_sell_research, 6, 88);
-
-    sellResearchButton = createButtonNode(otherShopDiv, txt_sell, 76, 32, divWidth - 80, 80);
+    let otherShopDiv = createNode(stationWindow);
+    nodeSize(otherShopDiv, divWidth, divHeight);
+    moveNode(otherShopDiv, divWidth + 8, 4);
 
     ////////////////////////////////////////
 
     let hullContainer = createNode(otherShopDiv);
-    nodeSize(hullContainer, divWidth, 118);
-    moveNode(hullContainer, 0, 118);
+    nodeSize(hullContainer, divWidth, 93);
+    moveNode(hullContainer, 0, 0);
 
-    createTextNode(hullContainer, txt_hull, 6, 6);
-
-    hullBar = createSegmentedBarNode(hullContainer, 6, 16, HULL_RED, 16, 4, 4);
+    createTextNode(hullContainer, txt_hull, divWidth / 2, 0, { _scale: 2, _textAlign: Align_Center });
 
     ////////////////////////////////////////
 
-    createTextNode(hullContainer, txt_repair_hull, 102, 52, alignR);
-
-    repairHullCost = createTextNode(hullContainer, txt_hull_repair_cost, divWidth - 136, 52, alignR);
-
-    repairHullButton = createButtonNode(hullContainer, txt_repair, 124, 32, divWidth - 128, 40);
+    createTextNode(hullContainer, txt_repair_hull, 102, 33, alignR);
+    repairHullCost = createTextNode(hullContainer, txt_hull_repair_cost, divWidth - 136, 33, alignR);
+    repairHullButton = createButtonNode(hullContainer, txt_repair, 124, 32, divWidth - 128, 21);
 
     ////////////////////////////////////////
 
     systems[5] = [];
 
-    systems[5][SYSTEM_LABEL] = createTextNode(hullContainer, txt_upgrade_hull, 102, 87, alignR);
+    systems[5][SYSTEM_LABEL] = createTextNode(hullContainer, txt_upgrade_hull, 102, 68, alignR);
+    systems[5][COST_LABEL] = createTextNode(hullContainer, txt_empty_string, divWidth - 136, 68, alignR);
+    createTextNode(hullContainer, txt_upgraded_fully, divWidth - 62, 68, { _textAlign: Align_Center, _colour: GREY_999 });
+    systems[5][PURCHASE_BUTTON] = createButtonNode(hullContainer, txt_upgrade, 124, 32, divWidth - 128, 61);
 
-    systems[5][COST_LABEL] = createTextNode(hullContainer, txt_empty_string, divWidth - 136, 87, alignR);
+    ////////////////////////////////////////
 
-    createTextNode(hullContainer, txt_upgraded_fully, divWidth - 62, 87, { _textAlign: Align_Center, _colour: GREY_999 });
+    createTextNode(otherShopDiv, "trade", divWidth / 2, 98, { _textAlign: Align_Center, _scale: 2 });
 
-    systems[5][PURCHASE_BUTTON] = createButtonNode(hullContainer, txt_upgrade, 124, 32, divWidth - 128, 80);
+    createTextNode(otherShopDiv, txt_buy_raw_materials, 6, 127);
+    buyMaterialsButton = createButtonNode(otherShopDiv, txt_buy, 76, 32, divWidth - 80, 119);
+
+    createTextNode(otherShopDiv, txt_sell_raw_materials, 6, 167);
+    sellMaterialsButton = createButtonNode(otherShopDiv, txt_sell, 76, 32, divWidth - 80, 159);
+
+    createTextNode(otherShopDiv, txt_sell_research, 6, 207);
+    sellResearchButton = createButtonNode(otherShopDiv, txt_sell, 76, 32, divWidth - 80, 199);
+
+    ////////////////////////////////////////
+
+    createTextNode(rootId, txt_hull, 2, 2);
+    hullBar = createSegmentedBarNode(rootId, 2, 12, HULL_RED, 16, 4, 4);
+
+    createTextNode(rootId, txt_available_power, 155, 2);
+    maxPowerBar = createSegmentedBarNode(rootId, 155, 12, POWER_GREEN, 8, 3, 3);
+
+    ////////////////////////////////////////
+
+    leaveStationButton = createButtonNode(otherShopDiv, txt_leave, divWidth, 50, 0, divHeight - 50);
+
 
     return rootId;
   };
@@ -136,6 +139,8 @@ export namespace Station
     let credits = currency[CURRENCY_CREDITS];
     let materials = currency[CURRENCY_MATERIALS];
     let research = currency[CURRENCY_RESEARCH];
+    updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState._availablePower);
+
     let buyMaterials = () =>
     {
       if (credits >= 100)
