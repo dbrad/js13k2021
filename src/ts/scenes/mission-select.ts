@@ -580,7 +580,7 @@ export namespace MissionSelect
       _bounty: [rand(100, 200), CURRENCY_CREDITS_INCOMING],
       _hazardRange: 104,
       _scale: 2,
-      _attack: [0, 1000]
+      _attack: [0, 1250]
     };
   };
 
@@ -597,7 +597,7 @@ export namespace MissionSelect
       _maxHp: 3 + hpAdjust,
       _hp: 3 + hpAdjust,
       _hazardRange: 64,
-      _attack: [0, 500],
+      _attack: [0, 750],
       _bounty: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
       _scale: 3
     };
