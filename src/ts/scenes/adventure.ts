@@ -247,7 +247,7 @@ export namespace Adventure
       if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]] && !stopped)
       {
         shipMovementTimer -= shipTimings[systemLevels[ENGINES][0]];
-        if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]]) shipMovementTimer = 0;
+        if (shipMovementTimer > shipTimings[systemLevels[ENGINES][0]]) shipMovementTimer -= 16;
         gameState._shipPosition += shipDistance[systemLevels[ENGINES][0]];
       }
       stopped = false;
@@ -466,7 +466,7 @@ export namespace Adventure
               encounter._attack[0] += delta;
               if (encounter._attack[0] >= encounter._attack[1])
               {
-                encounter._attack[0] = 0;
+                encounter._attack[0] -= encounter._attack[1];
                 hurtPlayer();
                 zzfxP(hullHitSound);
               }
@@ -482,7 +482,7 @@ export namespace Adventure
 
       if (entityTimer >= 16)
       {
-        entityTimer = 0;
+        entityTimer -= 16;
       }
       //#endregion Entities / Encounters
 
