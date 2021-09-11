@@ -61,7 +61,7 @@ window.addEventListener("load", async () =>
       startMusic();
 
       updateTextNode(preGameMessage, "paused");
-      doc.addEventListener("visibilitychange", () => { console.log(doc.hidden); playing = !doc.hidden; });
+      doc.addEventListener("visibilitychange", () => { playing = !doc.hidden; });
     }, 16);
   };
 
@@ -98,6 +98,10 @@ window.addEventListener("load", async () =>
   let loop = (now: number): void =>
   {
     delta = now - then;
+    if (delta > 33.33)
+    {
+      delta = 16.66;
+    }
     then = now;
     gl_clear();
 
