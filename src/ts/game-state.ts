@@ -57,12 +57,12 @@ export type Contract = {
 
 type GameState = {
   _generatorLevel: number,
-  _qLevel: number,
   _currentShield: number,
   _availablePower: number,
   _systemLevels: [number, number][],
   _currency: [number, number, number, number, number, number],
   _galaxySeed: number,
+  _contractsCompleted: number,
   _contracts: Contract[],
   _currentPlayerSystem: number,
   _destinationSystem: number,
@@ -101,7 +101,6 @@ export let quamtumLeap = (): void =>
     return;
   }
   gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
-  gameState._qLevel = 0;
   softReset();
   gameState._contracts = gameState._contracts.filter(contract => contract._type !== CONTRACT_ANOMALY);
   setDialogText("the anomaly rejects you, but bolsters your strength.\n\n+2 max power");
@@ -111,7 +110,6 @@ export let quamtumLeap = (): void =>
 export let deathReset = (): void =>
 {
   let currency = gameState._currency;
-  gameState._qLevel = 0;
   gameState._systemLevels[HULL][0] = 4;
   gameState._systemLevels[HULL][1] = 0;
   for (let i = 0; i < 5; i++)
@@ -141,7 +139,6 @@ export let initGameState = (): void =>
 {
   gameState = {
     _generatorLevel: 0,
-    _qLevel: 0,
     _currentShield: 0,
     _availablePower: 0,
     _systemLevels: [
@@ -154,6 +151,7 @@ export let initGameState = (): void =>
     ],
     _currency: [0, 0, 0, 0, 0, 0],
     _galaxySeed: performance.now(),
+    _contractsCompleted: 0,
     _contracts: [],
     _currentPlayerSystem: 0,
     _destinationSystem: -1,

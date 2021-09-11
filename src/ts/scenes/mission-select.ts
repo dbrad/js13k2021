@@ -136,7 +136,7 @@ export namespace MissionSelect
       } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex === gameState._currentPlayerSystem);
 
       let type: number;
-      if (gameState._qLevel / 6000 * (2 ** gameState._generatorLevel) >= 1)
+      if (gameState._contractsCompleted >= (gameState._generatorLevel + (2 ** gameState._generatorLevel)))
       {
         type = CONTRACT_ANOMALY;
       }
@@ -235,6 +235,7 @@ export namespace MissionSelect
         if (gameState._currentPlayerSystem === contract._starId)
         {
           gameState._currency[CURRENCY_CREDITS_INCOMING] += contract._reward;
+          gameState._contractsCompleted++;
           gameState._contracts.splice(index, 1);
           break;
         }
@@ -595,8 +596,8 @@ export namespace MissionSelect
       _position: distance,
       _title: txt_pirate_ship,
       _yOffset: rand(-30, 30),
-      _maxHp: 3,
-      _hp: 3,
+      _maxHp: 3 + hpAdjust,
+      _hp: 3 + hpAdjust,
       _bounty: [rand(100, 200), CURRENCY_CREDITS_INCOMING],
       _hazardRange: 104,
       _scale: 2,
@@ -614,8 +615,8 @@ export namespace MissionSelect
       _yOffset: rand(-30, 30),
       _colour: SPACE_BEAST_PURPLE,
       _researchable: 64,
-      _maxHp: 3,
-      _hp: 3,
+      _maxHp: 3 + hpAdjust,
+      _hp: 3 + hpAdjust,
       _hazardRange: 64,
       _attack: [0, 1000],
       _bounty: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
@@ -639,10 +640,12 @@ export namespace MissionSelect
   //#endregion Encounter Factories
 
   let encounterInterval = 750;
+  let hpAdjust = 0;
 
   let generateAdventure = () =>
   {
     entityId = 0;
+    hpAdjust = gameState._generatorLevel >= 4 ? 2 : gameState._generatorLevel >= 2 ? 1 : 0;
     let encounterDeck: Encounter[] = [];
     let currentDistance = 0;
     let i = 1;
