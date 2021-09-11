@@ -1,5 +1,5 @@
 import { GREY_111, GREY_333, GREY_666 } from "../colour";
-import { createNode, node_render_function } from "../scene-node";
+import { createNode, moveNode, node_render_function } from "../scene-node";
 
 import { pushQuad } from "../draw";
 
@@ -17,10 +17,12 @@ let node_bar_segment_width: number[] = [];
 let node_bar_active_segments: number[] = [];
 let node_bar_filled_segments: number[] = [];
 
-export let createSegmentedBarNode = (segmentColour: number, segmentWidth: number, activeSegments: number, filledSegments: number): number =>
+export let createSegmentedBarNode = (parentId: number, x: number, y: number, segmentColour: number, segmentWidth: number, activeSegments: number, filledSegments: number): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderSegmentedBar;
+
+  moveNode(nodeId, x, y);
 
   node_bar_colour[nodeId] = segmentColour;
   node_bar_segment_width[nodeId] = segmentWidth;

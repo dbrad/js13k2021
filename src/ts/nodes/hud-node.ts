@@ -1,7 +1,7 @@
-import { ENC_STATION, Encounter } from "../gameplay/encounters";
+import { ENC_ANOMALY, ENC_STATION, Encounter } from "../gameplay/encounters";
 import { GREY_6333, HULL_RED } from "../colour";
 import { TAG_ENTITY_NONE, createEntityNode, updateEntityNode } from "./entity-node";
-import { addChildNode, createNode, moveNode, node_enabled, node_render_function } from "../scene-node";
+import { createNode, moveNode, node_enabled, node_render_function } from "../scene-node";
 import { createSegmentedBarNode, updateSegmentedBarNode } from "./segmented-bar-node";
 import { createTextNode, updateTextNode } from "./text-node";
 import { txt_cr, txt_empty_string } from "../text";
@@ -15,28 +15,22 @@ let node_hud_description: number[] = [];
 let node_hud_entity: number[] = [];
 let node_hud_hp_bar: number[] = [];
 
-export let createHUDNode = (): number =>
+export let createHUDNode = (parentId: number, x: number, y: number): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderHUD;
 
-  let title = createTextNode(txt_empty_string, 2, 2, { _scale: 2 });
-  addChildNode(nodeId, title);
+  moveNode(nodeId, x, y);
+
+  let title = createTextNode(nodeId, txt_empty_string, 2, 2, { _scale: 2 });
   node_hud_title[nodeId] = title;
 
-  let description = createTextNode(txt_empty_string, 2, 22);
-  addChildNode(nodeId, description);
+  let description = createTextNode(nodeId, txt_empty_string, 2, 22);
   node_hud_description[nodeId] = description;
 
-  let hpBar = createSegmentedBarNode(HULL_RED, 8, 5, 5);
-  moveNode(hpBar, 198, 24);
-  addChildNode(nodeId, hpBar);
-  node_hud_hp_bar[nodeId] = hpBar;
+  node_hud_hp_bar[nodeId] = createSegmentedBarNode(nodeId, 198, 24, HULL_RED, 8, 5, 5);
 
-  let entity = createEntityNode(TAG_ENTITY_NONE, false);
-  moveNode(entity, 238, 2);
-  addChildNode(nodeId, entity);
-  node_hud_entity[nodeId] = entity;
+  node_hud_entity[nodeId] = createEntityNode(nodeId, 238, 2, TAG_ENTITY_NONE, false);
 
   return nodeId;
 };
@@ -86,12 +80,16 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   {
     if (encounter._exit)
     {
-      descriptionText.push("system exit");
+      descriptionText.push("destination");
     }
     else
     {
       descriptionText.push("ship upgrades");
     }
+  }
+  if (encounter._type === ENC_ANOMALY)
+  {
+    descriptionText.push("the unknown");
   }
   updateTextNode(description, descriptionText.join(txt_empty_string));
   updateTextNode(title, encounter._title);

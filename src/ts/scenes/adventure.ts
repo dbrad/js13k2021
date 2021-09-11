@@ -3,7 +3,7 @@ import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STATION } f
 import { GREY_111, GREY_666, HULL_RED, POWER_GREEN, SHIELD_BLUE, WHITE } from "../colour";
 import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { TAG_ENTITY_NONE, TAG_ENTITY_PLAYER_SHIP, createEntityNode, updateEntityNode } from "../nodes/entity-node";
-import { TAG_LOWER_POWER, TAG_RAISE_POWER, addChildNode, createNode, moveNode, nodeSize, node_enabled, node_interactive, node_tag } from "../scene-node";
+import { TAG_LOWER_POWER, TAG_RAISE_POWER, createNode, moveNode, nodeSize, node_enabled, node_interactive, node_tag } from "../scene-node";
 import { beastDieSound, hullHitSound, qDriveSound, scanSound, shipDieSound, shootSound, zzfxP } from "../zzfx";
 import { createHUDNode, updateHUDNode } from "../nodes/hud-node";
 import { createProgressBarNode, updateProgressBarNode } from "../nodes/progress-bar-node";
@@ -33,8 +33,6 @@ export namespace Adventure
   const PROGRESS_BAR = 3;
   const DISABLED_TEXT = 4;
 
-  let playerShip: number;
-
   let hullBar: number;
 
   let shieldContainer: number;
@@ -46,7 +44,7 @@ export namespace Adventure
   let systemCoooldowns = [-1, 1500, 1250, 1000, 750];
   let systemProgress = [0, 0, 0, 0, 0];
 
-  let generatorBar: number;
+  let maxPowerBar: number;
 
   let playerRange: number;
   let RANGE_BASE_WIDTH = 128;
@@ -72,128 +70,87 @@ export namespace Adventure
     // 10 used to make sure the stars don't align and cause us to have none available.
     for (let i = 0; i < 10; i++)
     {
-      let entity = createEntityNode();
-      moveNode(entity, 480, SCREEN_CENTER_Y - 40);
-      addChildNode(rootId, entity);
-      entityPool.push(entity);
+      entityPool[i] = createEntityNode(rootId, 480, SCREEN_CENTER_Y - 40);
     }
 
     ////////////////////////////////////////
 
-    let hullText = createTextNode(txt_hull, 2, 2);
-    addChildNode(rootId, hullText);
-
-    hullBar = createSegmentedBarNode(HULL_RED, 16, 4, 4);
-    moveNode(hullBar, 2, 12);
-    addChildNode(rootId, hullBar);
+    createTextNode(rootId, txt_hull, 2, 2);
+    hullBar = createSegmentedBarNode(rootId, 2, 12, HULL_RED, 16, 4, 4);
 
     ////////////////////////////////////////
 
-    shieldContainer = createNode();
+    shieldContainer = createNode(rootId);
     moveNode(shieldContainer, 2, 30);
-    addChildNode(rootId, shieldContainer);
 
-    let sheildText = createTextNode(txt_shields);
-    addChildNode(shieldContainer, sheildText);
-
-    shieldBar = createSegmentedBarNode(SHIELD_BLUE, 34, 1, 0);
-    moveNode(shieldBar, 0, 10);
-    addChildNode(shieldContainer, shieldBar);
+    createTextNode(shieldContainer, txt_shields);
+    shieldBar = createSegmentedBarNode(shieldContainer, 0, 10, SHIELD_BLUE, 34, 1, 0);
 
     ////////////////////////////////////////
     // NOTE(dbrad): This is where I set up the system power allocation per system
     for (let i = 0; i < 5; i++)
     {
       systems[i] = [];
-      let systemContainer = createNode();
+      let systemContainer = createNode(rootId);
       moveNode(systemContainer, 0, 75 + (52 * i));
-      addChildNode(rootId, systemContainer);
+      nodeSize(systemContainer, 100, 30);
 
-      let minusButton = createButtonNode("-", 26, 26, 2);
+      let minusButton = createButtonNode(systemContainer, "-", 26, 26, 2);
       node_tag[minusButton] = TAG_LOWER_POWER;
-      addChildNode(systemContainer, minusButton);
       systems[i][MINUS_BUTTON] = minusButton;
 
-      let plusButton = createButtonNode("+", 26, 26, 30);
+      let plusButton = createButtonNode(systemContainer, "+", 26, 26, 30);
       node_tag[plusButton] = TAG_RAISE_POWER;
-      addChildNode(systemContainer, plusButton);
       systems[i][PLUS_BUTTON] = plusButton;
 
-      let textShadow = createTextNode(systemNames[i], 58, 1, { _colour: GREY_111 });
-      addChildNode(systemContainer, textShadow);
+      createTextNode(systemContainer, systemNames[i], 58, 1, { _colour: GREY_111 });
 
-      let systemText = createTextNode(systemNames[i], 58, 0, { _colour: WHITE });
-      addChildNode(systemContainer, systemText);
+      createTextNode(systemContainer, systemNames[i], 58, 0);
 
-      let notInstalledText = createTextNode(txt_not_installed, 58, 14, { _colour: GREY_666 });
-      addChildNode(systemContainer, notInstalledText);
+      let notInstalledText = createTextNode(systemContainer, txt_not_installed, 58, 14, { _colour: GREY_666 });
       systems[i][DISABLED_TEXT] = notInstalledText;
 
-      let powerBar = createSegmentedBarNode(POWER_GREEN, 8, 1, 0);
-      moveNode(powerBar, 58, 10);
-      addChildNode(systemContainer, powerBar);
-      systems[i][POWER_BAR] = powerBar;
+      systems[i][POWER_BAR] = createSegmentedBarNode(systemContainer, 58, 10, POWER_GREEN, 8, 1, 0);
 
       if (i !== ENGINES)
       {
-        let progressBar = createProgressBarNode(POWER_GREEN, 100);
-        moveNode(progressBar, 2, 28);
-        addChildNode(systemContainer, progressBar);
-        systems[i][PROGRESS_BAR] = progressBar;
+        systems[i][PROGRESS_BAR] = createProgressBarNode(systemContainer, 2, 28, POWER_GREEN, 100);
       }
-
-      nodeSize(systemContainer, 100, 30);
     }
 
     ////////////////////////////////////////
 
-    let generatorText = createTextNode(txt_available_power, 2, 332, { _colour: WHITE });
-    addChildNode(rootId, generatorText);
-
-    generatorBar = createSegmentedBarNode(POWER_GREEN, 8, 3, 3);
-    moveNode(generatorBar, 2, 342);
-    addChildNode(rootId, generatorBar);
+    createTextNode(rootId, txt_available_power, 2, 332);
+    maxPowerBar = createSegmentedBarNode(rootId, 2, 342, POWER_GREEN, 8, 3, 3);
 
     ////////////////////////////////////////
 
-    playerRange = createRangeIndicator(0x99FFFFFF, rangeWidth);
-    moveNode(playerRange, SCREEN_CENTER_X, SCREEN_CENTER_Y - 84);
-    addChildNode(rootId, playerRange);
+    playerRange = createRangeIndicator(rootId, SCREEN_CENTER_X, SCREEN_CENTER_Y - 84, 0x99FFFFFF, rangeWidth);
 
     ////////////////////////////////////////
 
-    let currency = createCurrencyGroupNode();
-    moveNode(currency, 219, 0);
-    addChildNode(rootId, currency);
+    createCurrencyGroupNode(rootId, 217, 0);
 
-    menuButton = createButtonNode(txt_menu, 70, 28, SCREEN_WIDTH - 70);
-    addChildNode(rootId, menuButton);
+    menuButton = createButtonNode(rootId, txt_menu, 70, 28, SCREEN_WIDTH - 72);
 
     ////////////////////////////////////////
 
     for (let h = 0; h < 3; h++)
     {
-      let hudWindow = createHUDNode();
-      moveNode(hudWindow, 192, SCREEN_CENTER_Y + 44 * (h + 1));
-      addChildNode(rootId, hudWindow);
-      hudWindows.push(hudWindow);
+      hudWindows[h] = (createHUDNode(rootId, 192, SCREEN_CENTER_Y + 44 * (h + 1)));
     }
 
     ////////////////////////////////////////
 
-    stationButton = createButtonNode(txt_visit_station, 160, 80, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
-    addChildNode(rootId, stationButton);
+    stationButton = createButtonNode(rootId, txt_visit_station, 160, 80, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
 
     ////////////////////////////////////////
 
-    leaveButton = createButtonNode(txt_exit_system, 160, 80, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
-    addChildNode(rootId, leaveButton);
+    leaveButton = createButtonNode(rootId, txt_exit_system, 160, 80, SCREEN_WIDTH - 162, SCREEN_HEIGHT - 82);
 
     ////////////////////////////////////////
 
-    playerShip = createEntityNode(TAG_ENTITY_PLAYER_SHIP);
-    moveNode(playerShip, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40);
-    addChildNode(rootId, playerShip);
+    createEntityNode(rootId, SCREEN_CENTER_X - 16, SCREEN_CENTER_Y - 40, TAG_ENTITY_PLAYER_SHIP);
 
     return rootId;
   };
@@ -210,8 +167,10 @@ export namespace Adventure
   {
     saveTimer += delta;
     if (saveTimer > 5000) { saveTimer = 0; saveGame(); }
+
     node_enabled[stationButton] = false;
     node_enabled[leaveButton] = false;
+
     let buttonFired = inputContext._fire;
     let systemLevels = gameState._systemLevels;
 
@@ -299,7 +258,7 @@ export namespace Adventure
       updateSegmentedBarNode(shieldBar, systemLevels[SHIELDS][0], gameState._currentShield);
       node_enabled[shieldContainer] = systemLevels[SHIELDS][0] > 0;
 
-      updateSegmentedBarNode(generatorBar, maxAvailablePower(), gameState._availablePower);
+      updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState._availablePower);
 
       for (let i = 0; i < 5; i++)
       {
@@ -391,10 +350,14 @@ export namespace Adventure
           // NOTE(dbrad): STATION
           if (encounter._type === ENC_STATION)
           {
-            if (encounter._exit && encounter._position - gameState._shipPosition <= 16)
+            if (encounter._exit)
             {
-              stopped = true;
               node_enabled[leaveButton] = true;
+
+              if (encounter._position - gameState._shipPosition <= 16)
+              {
+                stopped = true;
+              }
             }
             else 
             {
@@ -507,6 +470,6 @@ export namespace Adventure
       }
       updateProgressBarNode(systems[SHIELDS][PROGRESS_BAR], shieldTimer / SHIELD_COOLDOWN * 100);
       //#endregion SHIELDS
-    }
+    };
   };
 }

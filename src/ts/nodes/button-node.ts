@@ -1,22 +1,21 @@
 import { Align_Center, createTextNode, parseText, updateTextNode } from "./text-node";
 import { GREY_222, GREY_333, GREY_666, GREY_999, WHITE } from "../colour";
-import { addChildNode, createNode, moveNode, nodeSize, node_interactive, node_render_function, node_size } from "../scene-node";
 import { buttonSound, zzfxP } from "../zzfx";
+import { createNode, moveNode, nodeSize, node_interactive, node_render_function, node_size } from "../scene-node";
 
 import { inputContext } from "../input";
 import { math } from "../math";
 import { pushQuad } from "../draw";
 
 let node_button_text_id: number[] = [];
-export let createButtonNode = (text: string, w: number, h: number, x: number = 0, y: number = 0): number =>
+export let createButtonNode = (parentId: number, text: string, w: number, h: number, x: number = 0, y: number = 0): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderButtonNode;
   nodeSize(nodeId, w, h);
   moveNode(nodeId, x, y);
   let lines = parseText(text, w, 2);
-  let textId = createTextNode(text, math.floor(w / 2), math.floor(h / 2) - (8 + (10 * (lines - 1))), { _width: w, _scale: 2, _textAlign: Align_Center });
-  addChildNode(nodeId, textId);
+  let textId = createTextNode(nodeId, text, math.floor(w / 2), math.floor(h / 2) - (8 + (10 * (lines - 1))), { _width: w, _scale: 2, _textAlign: Align_Center });
   node_button_text_id[nodeId] = textId;
   return nodeId;
 };

@@ -1,7 +1,7 @@
 import { Align_Center, createTextNode, updateTextNode } from "../nodes/text-node";
 import { MINING_LASERS, SCANNERS, WEAPONS, gameState, saveGame } from "../game-state";
 import { SCREEN_CENTER_X, SCREEN_HEIGHT, SCREEN_WIDTH, doc } from "../screen";
-import { addChildNode, createNode, nodeSize, node_interactive } from "../scene-node";
+import { createNode, nodeSize, node_interactive } from "../scene-node";
 import { popScene, pushScene } from "../scene";
 
 import { MissionSelect } from "./mission-select";
@@ -26,31 +26,23 @@ export namespace ShipSelect
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let textNodeId = createTextNode("choose a starting vessel", SCREEN_CENTER_X, 20, { _scale: 2, _textAlign: Align_Center });
-    addChildNode(rootId, textNodeId);
+    createTextNode(rootId, "choose a starting vessel", SCREEN_CENTER_X, 20, { _scale: 2, _textAlign: Align_Center });
 
-    pickScienceVessel = createButtonNode("old research vessel", 430, 40, SCREEN_CENTER_X - 215, 70);
-    addChildNode(rootId, pickScienceVessel);
+    pickScienceVessel = createButtonNode(rootId, "old research vessel", 430, 40, SCREEN_CENTER_X - 215, 70);
 
-    pickMiningVessel = createButtonNode("rusted mining vessel", 430, 40, SCREEN_CENTER_X - 215, 130);
-    addChildNode(rootId, pickMiningVessel);
+    pickMiningVessel = createButtonNode(rootId, "rusted mining vessel", 430, 40, SCREEN_CENTER_X - 215, 130);
 
-    pickCombatVessel = createButtonNode("retired combat vessel", 430, 40, SCREEN_CENTER_X - 215, 190);
-    addChildNode(rootId, pickCombatVessel);
+    pickCombatVessel = createButtonNode(rootId, "retired combat vessel", 430, 40, SCREEN_CENTER_X - 215, 190);
 
 
-    let coilBonusText = createTextNode("Fcoil Fsupporter Fbonus", SCREEN_CENTER_X, 250, { _textAlign: Align_Center });
-    addChildNode(rootId, coilBonusText);
+    createTextNode(rootId, "Fcoil Fsupporter Fbonus", SCREEN_CENTER_X, 250, { _textAlign: Align_Center });
 
 
-    coilStatusText = createTextNode(txt_empty_string, SCREEN_CENTER_X, SCREEN_HEIGHT - 16, { _textAlign: Align_Center });
-    addChildNode(rootId, coilStatusText);
+    coilStatusText = createTextNode(rootId, txt_empty_string, SCREEN_CENTER_X, SCREEN_HEIGHT - 16, { _textAlign: Align_Center });
 
-    pickCoilVessel = createButtonNode("abandoned imperial cruiser", 430, 40, SCREEN_CENTER_X - 215, 265);
-    addChildNode(rootId, pickCoilVessel);
+    pickCoilVessel = createButtonNode(rootId, "abandoned imperial cruiser", 430, 40, SCREEN_CENTER_X - 215, 265);
 
-    backButton = createButtonNode("back", 80, 40, 2, 2);
-    addChildNode(rootId, backButton);
+    backButton = createButtonNode(rootId, "back", 80, 40, 2, 2);
 
     return rootId;
   };

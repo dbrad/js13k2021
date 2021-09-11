@@ -5,7 +5,6 @@ import { SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, setupScr
 import { gl_clear, gl_flush, gl_getContext, gl_init, gl_setClear } from "./gl";
 import { initStats, tickStats } from "./stats";
 import { initializeInput, inputContext } from "./input";
-import { moveNode, renderNode } from "./scene-node";
 import { registerScene, renderScene, updateScene } from "./scene";
 import { setupAudio, startMusic } from "./zzfx";
 
@@ -21,6 +20,7 @@ import { loadSpriteSheet } from "./texture";
 import { math } from "./math";
 import { pushQuad } from "./draw";
 import { rand } from "./random";
+import { renderNode } from "./scene-node";
 import { setupDialogSystem } from "./scenes/dialog";
 
 window.addEventListener("load", async () =>
@@ -64,7 +64,7 @@ window.addEventListener("load", async () =>
 
   canvas.addEventListener("pointerdown", loadGame);
   canvas.addEventListener("touchstart", loadGame);
-  let preGameMessage = createTextNode("touch to start", SCREEN_CENTER_X, SCREEN_CENTER_Y - 10, { _scale: 2, _textAlign: Align_Center });
+  let preGameMessage = createTextNode(0, "touch to start", SCREEN_CENTER_X, SCREEN_CENTER_Y - 10, { _scale: 2, _textAlign: Align_Center });
 
   // x,y,z,timer
   let stars: [number, number, number, number][] = [];

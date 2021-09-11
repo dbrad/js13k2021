@@ -1,7 +1,7 @@
 import { ENGINES, gameState } from "../game-state";
 import { SHIELD_BLUE, WHITE, colourToHex } from "../colour";
 import { SPRITE_ANOMALY, SPRITE_ASTEROID, SPRITE_GAS_PLANET, SPRITE_PIRATE_SHIP, SPRITE_PLAYER_SHIP, SPRITE_ROCK_PLANET, SPRITE_SHIELD, SPRITE_SPACE_BEAST, SPRITE_STAR, SPRITE_STATION } from "../texture";
-import { addChildNode, createNode, moveNode, node_enabled, node_position, node_render_function } from "../scene-node";
+import { createNode, moveNode, node_enabled, node_position, node_render_function } from "../scene-node";
 import { createRangeIndicator, updateRangeIndicator } from "./range-indicator";
 import { createSpriteNode, updateSpriteNode } from "./sprite-node";
 
@@ -37,25 +37,21 @@ export const TAG_ENTITY_ANOMALY = 7;
 export const TAG_ENTITY_PLAYER_SHIP = 8;
 
 
-export let createEntityNode = (tag: number = TAG_ENTITY_NONE, enableAnimations: boolean = true): number =>
+export let createEntityNode = (parentId: number, x: number, y: number, tag: number = TAG_ENTITY_NONE, enableAnimations: boolean = true): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderEntity;
+
+  moveNode(nodeId, x, y);
 
   node_entity_id[nodeId] = -2;
 
-  let sprite = createSpriteNode('#');
-  addChildNode(nodeId, sprite);
+  let sprite = createSpriteNode(nodeId, '#', 0, 0);
   node_entity_sprite[nodeId] = sprite;
 
-  let range = createRangeIndicator(0x990000FF, 0);
-  addChildNode(nodeId, range);
-  node_entity_range[nodeId] = range;
+  node_entity_range[nodeId] = createRangeIndicator(nodeId, 0, 0, 0x990000FF, 0);
 
-  let shieldSprite = createSpriteNode(SPRITE_SHIELD, { _scale: 4, _colour: SHIELD_BLUE });
-  moveNode(shieldSprite, -16, -16);
-  addChildNode(sprite, shieldSprite);
-  node_entity_shield_sprite[nodeId] = shieldSprite;
+  node_entity_shield_sprite[nodeId] = createSpriteNode(sprite, SPRITE_SHIELD, -16, -16, { _scale: 4, _colour: SHIELD_BLUE });
 
   node_entity_particles[nodeId] = [];
   for (let i = 0; i < 50; i++)

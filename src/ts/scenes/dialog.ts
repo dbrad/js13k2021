@@ -1,6 +1,6 @@
 import { Align_Right, createTextNode, updateTextNode } from "../nodes/text-node";
 import { SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
-import { addChildNode, createNode, nodeSize, node_render_function } from "../scene-node";
+import { createNode, nodeSize, node_render_function } from "../scene-node";
 
 import { createWindowNode } from "../nodes/window-node";
 import { inputContext } from "../input";
@@ -17,14 +17,11 @@ export let setupDialogSystem = (): void =>
   nodeSize(dialogRootId, SCREEN_WIDTH, SCREEN_HEIGHT);
   node_render_function[dialogRootId] = renderDialog;
 
-  let window = createWindowNode(440, 85, 100, SCREEN_CENTER_Y / 2);
-  addChildNode(dialogRootId, window);
+  let window = createWindowNode(dialogRootId, 440, 85, 100, SCREEN_CENTER_Y / 2);
 
-  textNode = createTextNode(txt_empty_string, 10, 10, { _width: 420 });
-  addChildNode(window, textNode);
+  textNode = createTextNode(window, txt_empty_string, 10, 10, { _width: 420 });
 
-  let touchToCloseText = createTextNode("touch to close...", 430, 75, { _textAlign: Align_Right });
-  addChildNode(window, touchToCloseText);
+  createTextNode(window, "touch to close...", 430, 75, { _textAlign: Align_Right });
 };
 export let setDialogText = (text: string) =>
 {
@@ -37,7 +34,7 @@ let renderDialog = (nodeId: number, now: number, delta: number): void =>
 {
   minimumTimer += delta;
   pushQuad(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xCC000000);
-  if (inputContext._fire > -1 && minimumTimer > 1000)
+  if (inputContext._fire > -1 && minimumTimer > 500)
   {
     dialogActive = false;
   }

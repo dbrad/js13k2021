@@ -1,5 +1,5 @@
 import { Texture, getTexture } from "../texture";
-import { createNode, nodeSize, node_render_function } from "../scene-node";
+import { createNode, moveNode, nodeSize, node_render_function } from "../scene-node";
 import { gl_pushTextureQuad, gl_restore, gl_save, gl_scale, gl_translate } from "../gl";
 
 import { WHITE } from "../colour";
@@ -16,10 +16,11 @@ let node_sprite_scale: number[] = [];
 let node_sprite_flip: [boolean, boolean][] = [];
 let node_sprite_colour: number[] = [];
 
-export let createSpriteNode = (textureName: string, params: SpriteParams = {}): number =>
+export let createSpriteNode = (parentId: number, textureName: string, x: number, y: number, params: SpriteParams = {}): number =>
 {
-  let nodeId = createNode();
+  let nodeId = createNode(parentId);
   node_render_function[nodeId] = renderSpriteNode;
+  moveNode(nodeId, x, y);
   updateSpriteNode(nodeId, textureName, params);
   return nodeId;
 };
