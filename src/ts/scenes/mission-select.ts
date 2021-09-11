@@ -575,12 +575,12 @@ export namespace MissionSelect
       _position: distance,
       _title: txt_pirate_ship,
       _yOffset: rand(-30, 30),
-      _maxHp: 3 + hpAdjust,
-      _hp: 3 + hpAdjust,
+      _maxHp: 3 + powerBasedAdjustment,
+      _hp: 3 + powerBasedAdjustment,
       _bounty: [rand(100, 200), CURRENCY_CREDITS_INCOMING],
       _hazardRange: 104,
       _scale: 2,
-      _attack: [0, 1250]
+      _attack: [0, 1250 - (250 * powerBasedAdjustment)]
     };
   };
 
@@ -594,10 +594,10 @@ export namespace MissionSelect
       _yOffset: rand(-30, 30),
       _colour: SPACE_BEAST_PURPLE,
       _researchable: 64,
-      _maxHp: 3 + hpAdjust,
-      _hp: 3 + hpAdjust,
+      _maxHp: 3 + powerBasedAdjustment,
+      _hp: 3 + powerBasedAdjustment,
       _hazardRange: 64,
-      _attack: [0, 750],
+      _attack: [0, 750 - (125 * powerBasedAdjustment)],
       _bounty: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
       _scale: 3
     };
@@ -619,12 +619,12 @@ export namespace MissionSelect
   //#endregion Encounter Factories
 
   let encounterInterval = 750;
-  let hpAdjust = 0;
+  let powerBasedAdjustment = 0;
 
   let generateAdventure = () =>
   {
     entityId = 0;
-    hpAdjust = gameState._generatorLevel >= 4 ? 2 : gameState._generatorLevel >= 2 ? 1 : 0;
+    powerBasedAdjustment = gameState._generatorLevel >= 4 ? 2 : gameState._generatorLevel >= 2 ? 1 : 0;
     let encounterDeck: Encounter[] = [];
     let currentDistance = 0;
     let i = 1;
