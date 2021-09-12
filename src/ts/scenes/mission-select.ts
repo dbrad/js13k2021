@@ -110,8 +110,8 @@ export namespace MissionSelect
       do
       {
         starIndex = rand(0, 19);
-        // We don't want to add a contract onto a system that has one, or is where the player is already.
-      } while (gameState.h.some((contract) => contract.a === starIndex) || starIndex === gameState.i);
+        // We don't want to add a contract onto a system that has one, or a system that will be a delivery destination or is where the player is already.
+      } while (starIndex === gameState.i || gameState.h.some((contract) => contract.a === starIndex || (contract.i !== undefined && contract.i === starIndex)));
 
       let type: number;
       if (gameState.g >= (gameState.a + (2 ** gameState.a)))
