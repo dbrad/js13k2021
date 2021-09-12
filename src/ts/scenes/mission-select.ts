@@ -1,6 +1,6 @@
 import { CONTRACT_ANOMALY, CONTRACT_BOUNTIES, CONTRACT_DELIVERY, CONTRACT_MINING, CONTRACT_RESEARCH, CURRENCY_CREDITS, CURRENCY_CREDITS_INCOMING, CURRENCY_MATERIALS, CURRENCY_RESEARCH, CURRENCY_RESEARCH_INCOMING, Contract, gameState, saveGame, softReset } from "../game-state";
 import { ENC_ANOMALY, ENC_ASTEROID, ENC_PIRATE, ENC_SPACE_BEAST, ENC_STAR, ENC_STATION, Encounter, Planet, STATUS_LAWLESS, Star } from "../gameplay/encounters";
-import { GAS_PLANET_COLOURS, GREY_111, Q_DRIVE_PURPLE, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
+import { GAS_PLANET_COLOURS, GREY_111, GREY_999, Q_DRIVE_PURPLE, ROCK_PLANET_COLOURS, SPACE_BEAST_PURPLE, STAR_COLOURS, WHITE } from "../colour";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../screen";
 import { SPRITE_SHIELD, SPRITE_STAR } from "../texture";
 import { buttonSound, qDriveSound, zzfxP } from "../zzfx";
@@ -72,7 +72,7 @@ export namespace MissionSelect
       contractIndicators[i] = createTextNode(mapWindow, "!", SCREEN_WIDTH, SCREEN_HEIGHT, { _colour: GREY_111, _scale: 2 });
     }
 
-    playerLocationIndicator = createSpriteNode(mapWindow, SPRITE_SHIELD, SCREEN_WIDTH, SCREEN_HEIGHT, { _scale: 2 });
+    playerLocationIndicator = createSpriteNode(mapWindow, SPRITE_SHIELD, SCREEN_WIDTH, SCREEN_HEIGHT, { _scale: 2, _colour: GREY_999 });
     node_interactive[playerLocationIndicator] = false;
 
     selectedStarIndicator = createSpriteNode(mapWindow, SPRITE_SHIELD, SCREEN_WIDTH, SCREEN_HEIGHT, { _scale: 2 });
@@ -117,6 +117,7 @@ export namespace MissionSelect
       if (gameState.g >= (gameState.a + (2 ** gameState.a)))
       {
         type = CONTRACT_ANOMALY;
+        setDialogText("special contract received!\nwe must uncover the secrets of these quantum anomalies!");
       }
       else
       {
