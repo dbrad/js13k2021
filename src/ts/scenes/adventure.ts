@@ -404,14 +404,15 @@ export namespace Adventure
               else
               {
                 zzfxP(shipDieSound);
-                for (let contract of gameState.h)
+              }
+
+              for (let contract of gameState.h)
+              {
+                if (contract.c === CONTRACT_BOUNTIES)
                 {
-                  if (contract.c === CONTRACT_BOUNTIES)
-                  {
-                    assert(contract.g !== undefined, "Bounty contract with no _bountiesCollected");
-                    assert(contract.f !== undefined, "Bounty contract with no _bountiesRequired");
-                    contract.g = math.min(contract.f, contract.g + 1);
-                  }
+                  assert(contract.g !== undefined, "Bounty contract with no _bountiesCollected");
+                  assert(contract.f !== undefined, "Bounty contract with no _bountiesRequired");
+                  contract.g = math.min(contract.f, contract.g + 1);
                 }
               }
 
