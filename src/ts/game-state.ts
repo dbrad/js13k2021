@@ -166,11 +166,11 @@ export let softReset = (): void =>
 export let initGameState = (): void =>
 {
   gameState = {
-    a: 5,
+    a: 0,
     b: 0,
     c: 0,
     d: [
-      [0, 4],
+      [0, 1],
       [0, 1],
       [0, 0],
       [0, 0],
@@ -179,7 +179,7 @@ export let initGameState = (): void =>
     ],
     e: [0, 0, 0, 0, 0, 0],
     f: performance.now(),
-    g: 38,
+    g: 0,
     h: [],
     i: 0,
     j: -1,
