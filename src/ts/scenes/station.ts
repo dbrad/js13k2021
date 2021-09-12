@@ -119,8 +119,8 @@ export namespace Station
     createTextNode(rootId, txt_hull, 0, 2);
     hullBar = createSegmentedBarNode(rootId, 0, 12, HULL_RED, 16, 4, 4);
 
-    createTextNode(rootId, txt_available_power, 150, 2);
-    maxPowerBar = createSegmentedBarNode(rootId, 150, 12, POWER_GREEN, 8, 3, 3);
+    createTextNode(rootId, txt_available_power, 152, 2);
+    maxPowerBar = createSegmentedBarNode(rootId, 152, 12, POWER_GREEN, 8, 3, 3);
 
     ////////////////////////////////////////
 
