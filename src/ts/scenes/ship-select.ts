@@ -28,9 +28,9 @@ export namespace ShipSelect
 
     createTextNode(rootId, "choose a starting vessel", SCREEN_CENTER_X, 20, { _scale: 2, _textAlign: Align_Center });
 
-    pickScienceVessel = createButtonNode(rootId, "old research vessel", 430, 40, SCREEN_CENTER_X - 215, 70);
+    pickMiningVessel = createButtonNode(rootId, "rusted mining vessel", 430, 40, SCREEN_CENTER_X - 215, 70);
 
-    pickMiningVessel = createButtonNode(rootId, "rusted mining vessel", 430, 40, SCREEN_CENTER_X - 215, 130);
+    pickScienceVessel = createButtonNode(rootId, "old research vessel", 430, 40, SCREEN_CENTER_X - 215, 130);
 
     pickCombatVessel = createButtonNode(rootId, "retired combat vessel", 430, 40, SCREEN_CENTER_X - 215, 190);
 
