@@ -56,7 +56,7 @@ export namespace ShipSelect
       textShown = true;
     }
     let fire = inputContext._fire;
-    let systemLevels = gameState._systemLevels;
+    let systemLevels = gameState.d;
     let startGame = false;
     let monetization = doc.monetization;
     node_interactive[pickCoilVessel] = false;

@@ -139,11 +139,11 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
   }
 
   // Hide shield for everything but player ship
-  node_enabled[node_entity_shield_sprite[nodeId]] = isPlayerShip && gameState._currentShield > 0;
+  node_enabled[node_entity_shield_sprite[nodeId]] = isPlayerShip && gameState.b > 0;
 
   // Only render particles for ships
   if (enableAnimations
-    && ((isPlayerShip && gameState._systemLevels[ENGINES][0] > 0)
+    && ((isPlayerShip && gameState.d[ENGINES][0] > 0)
       || isPirateShip))
   {
     let particles = node_entity_particles[nodeId];
@@ -165,6 +165,6 @@ let renderEntity = (nodeId: number, now: number, delta: number): void =>
       colour = colourToHex(math.max(0, 255 - math.ceil(255 * (particle[0] / 20))), rand(125, 255), 100, 100);
       pushQuad(offsetX + particleDirection * -particle[0], offset[0] + particle[1] - 1, 2, 2, colour);
     }
-    if (isPlayerShip && gameState._systemLevels[ENGINES][0] === 0) return;
+    if (isPlayerShip && gameState.d[ENGINES][0] === 0) return;
   }
 };

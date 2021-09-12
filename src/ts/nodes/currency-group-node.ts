@@ -27,7 +27,7 @@ let updateAndRenderCurrencyGroup = (nodeId: number, now: number, delta: number) 
 {
   for (let c = 0; c < 6; c += 2)
   {
-    let incoming = gameState._currency[c];
+    let incoming = gameState.e[c];
     if (incoming > 0)
     {
       let amount = 1;
@@ -35,9 +35,9 @@ let updateAndRenderCurrencyGroup = (nodeId: number, now: number, delta: number) 
       {
         amount = math.floor(incoming * 0.25);
       }
-      gameState._currency[c] -= amount;
-      gameState._currency[c + 1] += amount;
+      gameState.e[c] -= amount;
+      gameState.e[c + 1] += amount;
     }
-    updateCurrencyNode(node_currency_nodes[nodeId][c + 1], gameState._currency[c + 1]);
+    updateCurrencyNode(node_currency_nodes[nodeId][c + 1], gameState.e[c + 1]);
   }
 };

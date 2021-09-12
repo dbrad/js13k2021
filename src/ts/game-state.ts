@@ -44,50 +44,73 @@ export const CONTRACT_DELIVERY = 3;
 export const CONTRACT_ANOMALY = 4;
 
 export type Contract = {
-  _starId: number,
-  _reward: number,
-  _type: number,
-  _materialsRequired?: number,
-  _dataRequired?: number,
-  _bountiesRequired?: number,
-  _bountiesCollected?: number,
-  _hasPackage?: boolean,
-  _destination?: number;
+  // _starId: number,
+  a: number,
+  // _reward: number,
+  b: number,
+  // _type: number,
+  c: number,
+  // _materialsRequired?: number,
+  d?: number,
+  // _dataRequired?: number,
+  e?: number,
+  // _bountiesRequired?: number,
+  f?: number,
+  // _bountiesCollected?: number,
+  g?: number,
+  // _hasPackage?: boolean,
+  h?: boolean,
+  // _destination?: number;
+  i?: number;
 };
 
 type GameState = {
-  _generatorLevel: number,
-  _currentShield: number,
-  _availablePower: number,
-  _systemLevels: [number, number][],
-  _currency: [number, number, number, number, number, number],
-  _galaxySeed: number,
-  _contractsCompleted: number,
-  _contracts: Contract[],
-  _currentPlayerSystem: number,
-  _destinationSystem: number,
-  _shipPosition: number,
-  _adventureEncounters: Encounter[],
-  _tutorial01: boolean,
-  _tutorial02: boolean,
+  // _generatorLevel: number,
+  a: number,
+  // _currentShield: number,
+  b: number,
+  // _availablePower: number,
+  c: number,
+  // _systemLevels: [number, number][],
+  d: [number, number][],
+  // _currency: [number, number, number, number, number, number],
+  e: [number, number, number, number, number, number],
+  // _galaxySeed: number,
+  f: number,
+  // _contractsCompleted: number,
+  g: number,
+  // _contracts: Contract[],
+  h: Contract[],
+  // _currentPlayerSystem: number,
+  i: number,
+  // _destinationSystem: number,
+  j: number,
+  // _shipPosition: number,
+  k: number,
+  // _adventureEncounters: Encounter[],
+  l: Encounter[],
+  // _tutorial01: boolean,
+  m: boolean,
+  // _tutorial02: boolean,
+  n: boolean,
 };
 export let gameState: GameState;
 
-export let maxHull = (): number => 4 + (gameState._systemLevels[HULL][1]);
+export let maxHull = (): number => 4 + (gameState.d[HULL][1]);
 
-export let currentHull = (): number => gameState._systemLevels[HULL][0];
+export let currentHull = (): number => gameState.d[HULL][0];
 
-export let maxAvailablePower = (): number => 3 + gameState._generatorLevel * 2;
+export let maxAvailablePower = (): number => 3 + gameState.a * 2;
 
 export let hurtPlayer = (): void =>
 {
-  if (gameState._currentShield > 0)
+  if (gameState.b > 0)
   {
-    gameState._currentShield--;
+    gameState.b--;
   }
   else
   {
-    gameState._systemLevels[HULL][0] = math.max(0, gameState._systemLevels[HULL][0] - 1);
+    gameState.d[HULL][0] = math.max(0, gameState.d[HULL][0] - 1);
   }
 };
 
@@ -95,26 +118,26 @@ export let hurtPlayer = (): void =>
 export let quamtumLeap = (): void =>
 {
   zzfxP(qDriveSound);
-  if (gameState._generatorLevel === 5)
+  if (gameState.a === 5)
   {
     setDialogText("the anomaly embraces you, releasing you from your duty to the galaxy.\n\nthank you for playing");
     return;
   }
-  gameState._generatorLevel = math.min(5, gameState._generatorLevel + 1);
+  gameState.a = math.min(5, gameState.a + 1);
   softReset();
-  gameState._contracts = gameState._contracts.filter(contract => contract._type !== CONTRACT_ANOMALY);
+  gameState.h = gameState.h.filter(contract => contract.c !== CONTRACT_ANOMALY);
   setDialogText("the anomaly rejects you, but bolsters your strength.\n\n+2 max power");
   pushScene(MissionSelect._sceneId, 1000, WHITE);
 };
 
 export let deathReset = (): void =>
 {
-  let currency = gameState._currency;
-  gameState._systemLevels[HULL][0] = 4;
-  gameState._systemLevels[HULL][1] = 0;
+  let currency = gameState.e;
+  gameState.d[HULL][0] = 4;
+  gameState.d[HULL][1] = 0;
   for (let i = 0; i < 5; i++)
   {
-    gameState._systemLevels[i][1] = math.max(math.min(gameState._systemLevels[i][1], 1), gameState._systemLevels[i][1] - 1);
+    gameState.d[i][1] = math.max(math.min(gameState.d[i][1], 1), gameState.d[i][1] - 1);
   }
   currency[CURRENCY_CREDITS] = math.floor((currency[CURRENCY_CREDITS] + currency[CURRENCY_CREDITS_INCOMING]) * 0.5);
   currency[CURRENCY_MATERIALS] = math.floor((currency[CURRENCY_MATERIALS] + currency[CURRENCY_MATERIALS_INCOMING]) * 0.5);
@@ -126,22 +149,22 @@ export let deathReset = (): void =>
 
 export let softReset = (): void =>
 {
-  gameState._currentShield = 0;
-  gameState._availablePower = maxAvailablePower();
+  gameState.b = 0;
+  gameState.c = maxAvailablePower();
   for (let i = 0; i < 5; i++)
   {
-    gameState._systemLevels[i][0] = 0;
+    gameState.d[i][0] = 0;
   }
-  gameState._shipPosition = 0;
-  gameState._adventureEncounters = [];
+  gameState.k = 0;
+  gameState.l = [];
 };
 export let initGameState = (): void =>
 {
   gameState = {
-    _generatorLevel: 0,
-    _currentShield: 0,
-    _availablePower: 0,
-    _systemLevels: [
+    a: 0,
+    b: 0,
+    c: 0,
+    d: [
       [0, 1],
       [0, 1],
       [0, 0],
@@ -149,21 +172,21 @@ export let initGameState = (): void =>
       [0, 0],
       [4, 0]
     ],
-    _currency: [0, 0, 0, 0, 0, 0],
-    _galaxySeed: performance.now(),
-    _contractsCompleted: 0,
-    _contracts: [],
-    _currentPlayerSystem: 0,
-    _destinationSystem: -1,
-    _shipPosition: 0,
-    _adventureEncounters: [],
-    _tutorial01: false,
-    _tutorial02: false,
+    e: [0, 0, 0, 0, 0, 0],
+    f: performance.now(),
+    g: 0,
+    h: [],
+    i: 0,
+    j: -1,
+    k: 0,
+    l: [],
+    m: false,
+    n: false,
   };
   softReset();
 };
 
-let saveName = `idle4xdb-save`;
+let saveName = `2d4x13k-save`;
 let storage = window.localStorage;
 export let saveGame = (): void =>
 {
