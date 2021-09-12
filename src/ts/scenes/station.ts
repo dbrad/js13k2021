@@ -42,7 +42,7 @@ export namespace Station
     let rootId = createNode();
     nodeSize(rootId, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    createCurrencyGroupNode(rootId, 289, 0);
+    createCurrencyGroupNode(rootId, 291, 0);
 
     let alignR = { _textAlign: Align_Right };
 
@@ -116,11 +116,11 @@ export namespace Station
 
     ////////////////////////////////////////
 
-    createTextNode(rootId, txt_hull, 2, 2);
-    hullBar = createSegmentedBarNode(rootId, 2, 12, HULL_RED, 16, 4, 4);
+    createTextNode(rootId, txt_hull, 0, 2);
+    hullBar = createSegmentedBarNode(rootId, 0, 12, HULL_RED, 16, 4, 4);
 
-    createTextNode(rootId, txt_available_power, 155, 2);
-    maxPowerBar = createSegmentedBarNode(rootId, 155, 12, POWER_GREEN, 8, 3, 3);
+    createTextNode(rootId, txt_available_power, 150, 2);
+    maxPowerBar = createSegmentedBarNode(rootId, 150, 12, POWER_GREEN, 8, 3, 3);
 
     ////////////////////////////////////////
 
