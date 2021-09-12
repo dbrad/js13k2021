@@ -52,7 +52,7 @@ export namespace MainMenu
     else if (inputContext._fire === loadGameButton)
     {
       loadGame();
-      if (gameState._adventureEncounters.length > 0)
+      if (gameState.l.length > 0)
       {
         pushScene(Adventure._sceneId);
       }

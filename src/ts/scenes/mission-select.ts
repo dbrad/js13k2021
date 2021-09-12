@@ -104,17 +104,17 @@ export namespace MissionSelect
   export let _update = (now: number, delta: number): void =>
   {
     if (stars.length === 0) generateGalaxy();
-    while (gameState._contracts.length < 4)
+    while (gameState.h.length < 4)
     {
       let starIndex: number;
       do
       {
         starIndex = rand(0, 19);
         // We don't want to add a contract onto a system that has one, or is where the player is already.
-      } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex === gameState._currentPlayerSystem);
+      } while (gameState.h.some((contract) => contract.a === starIndex) || starIndex === gameState.i);
 
       let type: number;
-      if (gameState._contractsCompleted >= (gameState._generatorLevel + (2 ** gameState._generatorLevel)))
+      if (gameState.g >= (gameState.a + (2 ** gameState.a)))
       {
         type = CONTRACT_ANOMALY;
       }
@@ -124,73 +124,73 @@ export namespace MissionSelect
         lastContractType = type;
       }
 
-      let generatorLevelAdjustment = gameState._generatorLevel >= 2 ? gameState._generatorLevel >= 4 ? 2 : 1 : 0;
+      let generatorLevelAdjustment = gameState.a >= 2 ? gameState.a >= 4 ? 2 : 1 : 0;
       let contract: Contract;
       if (type === CONTRACT_MINING)
       {
         let amount = rand(25, 75) + generatorLevelAdjustment * 15;
         contract = {
-          _type: type,
-          _starId: starIndex,
-          _reward: amount * 4,
-          _materialsRequired: amount,
+          c: type,
+          a: starIndex,
+          b: amount * 4,
+          d: amount,
         };
       }
       else if (type === CONTRACT_RESEARCH)
       {
         let amount = (rand(2, 6) + generatorLevelAdjustment) * 8;
         contract = {
-          _type: type,
-          _starId: starIndex,
-          _reward: amount * 5,
-          _dataRequired: amount,
+          c: type,
+          a: starIndex,
+          b: amount * 5,
+          e: amount,
         };
       }
       else if (type === CONTRACT_BOUNTIES)
       {
         let amount = rand(2, 4) + generatorLevelAdjustment;
         contract = {
-          _type: type,
-          _starId: starIndex,
-          _reward: amount * 200,
-          _bountiesRequired: amount,
-          _bountiesCollected: 0
+          c: type,
+          a: starIndex,
+          b: amount * 200,
+          f: amount,
+          g: 0
         };
       }
       else if (type === CONTRACT_DELIVERY)
       {
         // Pick a destination that isn't the sender.
         let destinationId: number;
-        do { destinationId = rand(0, stars.length - 1); } while (gameState._contracts.some((contract) => contract._starId === starIndex) || starIndex == destinationId);
+        do { destinationId = rand(0, stars.length - 1); } while (gameState.h.some((contract) => contract.a === starIndex) || starIndex == destinationId);
         let [x1, y1] = [stars[starIndex]._x, stars[starIndex]._y];
         let [x2, y2] = [stars[destinationId]._x, stars[destinationId]._y];
         let pay = math.floor((math.hypot(x2 - x1, y2 - y1) * 250) / 25);
         contract = {
-          _type: type,
-          _starId: starIndex,
-          _reward: pay,
-          _hasPackage: false,
-          _destination: destinationId
+          c: type,
+          a: starIndex,
+          b: pay,
+          h: false,
+          i: destinationId
         };
       }
       else
       {
         contract = {
-          _type: type,
-          _starId: starIndex,
-          _reward: 0
+          c: type,
+          a: starIndex,
+          b: 0
         };
       }
-      gameState._contracts.push(contract);
+      gameState.h.push(contract);
       saveGame();
     }
 
-    let ps = stars[gameState._currentPlayerSystem];
+    let ps = stars[gameState.i];
     let buttonFired = inputContext._fire;
 
     moveNode(playerLocationIndicator, ps._x - 8, ps._y - 8);
     node_interactive[completeContractButton] = false;
-    node_interactive[departButton] = gameState._destinationSystem > -1;
+    node_interactive[departButton] = gameState.j > -1;
     node_interactive[jumpButton] = false;
 
     if (buttonFired === menuButton)
@@ -199,13 +199,13 @@ export namespace MissionSelect
     }
     else if (buttonFired === completeContractButton)
     {
-      for (let [index, contract] of gameState._contracts.entries())
+      for (let [index, contract] of gameState.h.entries())
       {
-        if (gameState._currentPlayerSystem === contract._starId)
+        if (gameState.i === contract.a)
         {
-          gameState._currency[CURRENCY_CREDITS_INCOMING] += contract._reward;
-          gameState._contractsCompleted++;
-          gameState._contracts.splice(index, 1);
+          gameState.e[CURRENCY_CREDITS_INCOMING] += contract.b;
+          gameState.g++;
+          gameState.h.splice(index, 1);
           break;
         }
       }
@@ -215,7 +215,7 @@ export namespace MissionSelect
     {
       pushScene(Station._sceneId);
     }
-    else if (buttonFired === departButton && gameState._destinationSystem !== -1)
+    else if (buttonFired === departButton && gameState.j !== -1)
     {
       softReset();
       generateAdventure();
@@ -231,13 +231,13 @@ export namespace MissionSelect
         {
           if (star._nodeId === ps._nodeId) break;
           zzfxP(buttonSound);
-          gameState._destinationSystem = star._index;
+          gameState.j = star._index;
         }
       }
 
-      if (gameState._destinationSystem > -1)
+      if (gameState.j > -1)
       {
-        let star = stars[gameState._destinationSystem];
+        let star = stars[gameState.j];
         starsToGenerate = [];
 
         starsToGenerate.push([ps, distance(ps._x, ps._y)]);
@@ -260,7 +260,7 @@ export namespace MissionSelect
         destinationDescription += `target system\n\nFname ${ star._name }\nFdistance ${ targetDistance }\n\n---\n\n`;
         moveNode(selectedStarIndicator, star._x - 8, star._y - 8);
 
-        let enoughCredits = gameState._currency[CURRENCY_CREDITS] >= costToJump;
+        let enoughCredits = gameState.e[CURRENCY_CREDITS] >= costToJump;
         let isAnomaly = isAnomalySystem(star);
         node_interactive[jumpButton] = enoughCredits && !isAnomaly;
         if (isAnomaly)
@@ -277,9 +277,9 @@ export namespace MissionSelect
         }
         if (buttonFired === jumpButton)
         {
-          gameState._currency[CURRENCY_CREDITS] -= costToJump;
-          gameState._currentPlayerSystem = gameState._destinationSystem;
-          gameState._destinationSystem = -1;
+          gameState.e[CURRENCY_CREDITS] -= costToJump;
+          gameState.i = gameState.j;
+          gameState.j = -1;
           zzfxP(qDriveSound);
           pushScene(MissionSelect._sceneId, 750, WHITE);
         }
@@ -292,19 +292,19 @@ export namespace MissionSelect
       destinationDescription += `contracts\n\n`;
       let currentSystemContractText = "none";
       let i = 0;
-      for (let contract of gameState._contracts)
+      for (let contract of gameState.h)
       {
-        let star = stars[contract._starId];
+        let star = stars[contract.a];
         let [complete, text] = contractProgress(contract);
-        let bump = contract._starId === gameState._destinationSystem ? " " : txt_empty_string;
-        destinationDescription += `${ bump }Fsystem ${ star._name }\n${ bump }Ftype   ${ contractTypeName[contract._type] }\n${ bump }Fstatus ${ text }\n${ bump }Freward ${ contract._reward === 0 ? "F-" : contract._reward }\n\n`;
-        if (contract._starId === gameState._currentPlayerSystem)
+        let bump = contract.a === gameState.j ? " " : txt_empty_string;
+        destinationDescription += `${ bump }Fsystem ${ star._name }\n${ bump }Ftype   ${ contractTypeName[contract.c] }\n${ bump }Fstatus ${ text }\n${ bump }Freward ${ contract.b === 0 ? "F-" : contract.b }\n\n`;
+        if (contract.a === gameState.i)
         {
-          if (contract._type === CONTRACT_DELIVERY && !contract._hasPackage)
+          if (contract.c === CONTRACT_DELIVERY && !contract.h)
           {
-            contract._hasPackage = true;
-            assert(contract._destination !== undefined, "Delivery should have a destination");
-            contract._starId = contract._destination;
+            contract.h = true;
+            assert(contract.i !== undefined, "Delivery should have a destination");
+            contract.a = contract.i;
           }
           node_interactive[completeContractButton] = complete;
           currentSystemContractText = complete ? "Gcomplete" : "Rincomplete";
@@ -318,15 +318,15 @@ export namespace MissionSelect
       let currentSystemDescription = `current system\n\nFname ${ ps._name }\nFcontract ${ currentSystemContractText }`;
       updateTextNode(current_system_label, currentSystemDescription);
     };
-    if (!gameState._tutorial01)
+    if (!gameState.m)
     {
       setDialogText("welcome newcomer!\n\ngather resources, complete contracts, upgrade your vessel, and help unravel the mysteries of our galaxy.");
-      gameState._tutorial01 = true;
+      gameState.m = true;
     }
-    else if (!gameState._tutorial02)
+    else if (!gameState.n)
     {
       setDialogText("to get started select a nearby star from the star chart and depart on your first flight!");
-      gameState._tutorial02 = true;
+      gameState.n = true;
     }
   };
 
@@ -341,28 +341,28 @@ export namespace MissionSelect
   {
     let result = txt_empty_string;
     let complete = false;
-    if (contract._type === CONTRACT_MINING)
+    if (contract.c === CONTRACT_MINING)
     {
-      assert(contract._materialsRequired !== undefined, "Mining contract with no _materialsRequired");
-      complete = gameState._currency[CURRENCY_MATERIALS] >= contract._materialsRequired;
-      result = progressTextOf(gameState._currency[CURRENCY_MATERIALS], contract._materialsRequired, complete);
+      assert(contract.d !== undefined, "Mining contract with no _materialsRequired");
+      complete = gameState.e[CURRENCY_MATERIALS] >= contract.d;
+      result = progressTextOf(gameState.e[CURRENCY_MATERIALS], contract.d, complete);
     }
-    else if (contract._type === CONTRACT_RESEARCH)
+    else if (contract.c === CONTRACT_RESEARCH)
     {
-      assert(contract._dataRequired !== undefined, "Data contract with no _dataRequired");
-      complete = gameState._currency[CURRENCY_RESEARCH] >= contract._dataRequired;
-      result = progressTextOf(gameState._currency[CURRENCY_RESEARCH], contract._dataRequired, complete);
+      assert(contract.e !== undefined, "Data contract with no _dataRequired");
+      complete = gameState.e[CURRENCY_RESEARCH] >= contract.e;
+      result = progressTextOf(gameState.e[CURRENCY_RESEARCH], contract.e, complete);
     }
-    else if (contract._type === CONTRACT_BOUNTIES)
+    else if (contract.c === CONTRACT_BOUNTIES)
     {
-      assert(contract._bountiesCollected !== undefined, "Bounty contract with no _bountiesCollected");
-      assert(contract._bountiesRequired !== undefined, "Bounty contract with no _bountiesRequired");
-      complete = contract._bountiesCollected >= contract._bountiesRequired;
-      result = progressTextOf(contract._bountiesCollected, contract._bountiesRequired, complete);
+      assert(contract.g !== undefined, "Bounty contract with no _bountiesCollected");
+      assert(contract.f !== undefined, "Bounty contract with no _bountiesRequired");
+      complete = contract.g >= contract.f;
+      result = progressTextOf(contract.g, contract.f, complete);
     }
-    else if (contract._type === CONTRACT_DELIVERY)
+    else if (contract.c === CONTRACT_DELIVERY)
     {
-      if (!contract._hasPackage)
+      if (!contract.h)
       {
         result = "Rpickup Rreq.";
       }
@@ -405,7 +405,7 @@ export namespace MissionSelect
   let scc = String.fromCharCode;
   let generateGalaxy = (): void =>
   {
-    let [srandom, srand] = generateSRand(gameState._galaxySeed);
+    let [srandom, srand] = generateSRand(gameState.f);
     let letters = `${ scc(srand(97, 122)) + scc(srand(97, 122)) }`;
     let number = srand(10000, 99900);
     let rot = math.PI * srandom();
@@ -480,9 +480,9 @@ export namespace MissionSelect
   ////////////////////////
   let isAnomalySystem = (star: Star): boolean =>
   {
-    for (let contract of gameState._contracts)
+    for (let contract of gameState.h)
     {
-      if (star._index === contract._starId && contract._type === CONTRACT_ANOMALY)
+      if (star._index === contract.a && contract.c === CONTRACT_ANOMALY)
       {
         return true;
       }
@@ -496,13 +496,13 @@ export namespace MissionSelect
   let createStation = (distance: number, exit: boolean = false): Encounter =>
   {
     return {
-      _id: entityId++,
-      _type: ENC_STATION,
-      _position: distance,
-      _title: txt_station,
-      _yOffset: rand(-30, 30),
-      _scale: 3,
-      _exit: exit
+      a: entityId++,
+      b: ENC_STATION,
+      e: distance,
+      c: txt_station,
+      f: rand(-30, 30),
+      d: 3,
+      o: exit
     };
   };
 
@@ -510,31 +510,31 @@ export namespace MissionSelect
   {
     let cd = 1500;
     return {
-      _id: entityId++,
-      _type: ENC_STAR,
-      _position: distance,
-      _title: star._name,
-      _yOffset: rand(-60, 10),
-      _researchable: 64,
-      _colour: star._colour,
-      _scale: star._scale,
-      _hazardRange: star._scale * 8 + 16,
-      _attack: [0, cd],
+      a: entityId++,
+      b: ENC_STAR,
+      e: distance,
+      c: star._name,
+      f: rand(-60, 10),
+      h: 64,
+      g: star._colour,
+      d: star._scale,
+      l: star._scale * 8 + 16,
+      m: [0, cd],
     };
   };
 
   let createPlanet = (planet: Planet, distance: number): Encounter =>
   {
     return {
-      _id: entityId++,
-      _type: planet._type,
-      _position: distance,
-      _title: planet._name,
-      _colour: planet._colour,
-      _scale: planet._scale,
-      _yOffset: rand(-40, 30),
-      _researchable: 32,
-      _minable: rand(52, 65)
+      a: entityId++,
+      b: planet._type,
+      e: distance,
+      c: planet._name,
+      g: planet._colour,
+      d: planet._scale,
+      f: rand(-40, 30),
+      h: 32,
+      i: rand(52, 65)
     };
   };
 
@@ -542,78 +542,78 @@ export namespace MissionSelect
   {
     let type = rand(2, 3);
     return {
-      _id: entityId++,
-      _type: type,
-      _position: distance,
-      _title: `rogue planet`,
-      _colour: type === 2 ? GAS_PLANET_COLOURS[rand(0, 2)] : ROCK_PLANET_COLOURS[rand(0, 2)],
-      _scale: type === 2 ? rand(5, 7) : rand(3, 5),
-      _yOffset: rand(-40, 30),
-      _researchable: 32,
-      _minable: rand(52, 65)
+      a: entityId++,
+      b: type,
+      e: distance,
+      c: `rogue planet`,
+      g: type === 2 ? GAS_PLANET_COLOURS[rand(0, 2)] : ROCK_PLANET_COLOURS[rand(0, 2)],
+      d: type === 2 ? rand(5, 7) : rand(3, 5),
+      f: rand(-40, 30),
+      h: 32,
+      i: rand(52, 65)
     };
   };
 
   let createAsteroid = (distance: number, adjustment: number = 0): Encounter =>
   {
     return {
-      _id: entityId++,
-      _type: ENC_ASTEROID,
-      _position: distance,
-      _title: txt_asteroid,
-      _yOffset: rand(-50, 50),
-      _minable: rand(52, 65) + (adjustment * 13),
-      _scale: rand(1, 2) + (adjustment * 2)
+      a: entityId++,
+      b: ENC_ASTEROID,
+      e: distance,
+      c: txt_asteroid,
+      f: rand(-50, 50),
+      i: rand(52, 65) + (adjustment * 13),
+      d: rand(1, 2) + (adjustment * 2)
     };
   };
 
   let createPirate = (distance: number): Encounter =>
   {
     return {
-      _id: entityId++,
-      _type: ENC_PIRATE,
-      _position: distance,
-      _title: txt_pirate_ship,
-      _yOffset: rand(-30, 30),
-      _maxHp: 3 + powerBasedAdjustment,
-      _hp: 3 + powerBasedAdjustment,
-      _bounty: [rand(100, 200), CURRENCY_CREDITS_INCOMING],
-      _hazardRange: 104,
-      _scale: 2,
-      _attack: [0, 1250 - (250 * powerBasedAdjustment)]
+      a: entityId++,
+      b: ENC_PIRATE,
+      e: distance,
+      c: txt_pirate_ship,
+      f: rand(-30, 30),
+      k: 3 + powerBasedAdjustment,
+      j: 3 + powerBasedAdjustment,
+      n: [rand(100, 200), CURRENCY_CREDITS_INCOMING],
+      l: 104,
+      d: 2,
+      m: [0, 1250 - (250 * powerBasedAdjustment)]
     };
   };
 
   let createSpaceBeast = (distance: number): Encounter =>
   {
     return {
-      _id: entityId++,
-      _type: ENC_SPACE_BEAST,
-      _position: distance,
-      _title: txt_space_beast,
-      _yOffset: rand(-30, 30),
-      _colour: SPACE_BEAST_PURPLE,
-      _researchable: 64,
-      _maxHp: 3 + powerBasedAdjustment,
-      _hp: 3 + powerBasedAdjustment,
-      _hazardRange: 64,
-      _attack: [0, 750 - (125 * powerBasedAdjustment)],
-      _bounty: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
-      _scale: 3
+      a: entityId++,
+      b: ENC_SPACE_BEAST,
+      e: distance,
+      c: txt_space_beast,
+      f: rand(-30, 30),
+      g: SPACE_BEAST_PURPLE,
+      h: 64,
+      k: 3 + powerBasedAdjustment,
+      j: 3 + powerBasedAdjustment,
+      l: 64,
+      m: [0, 750 - (125 * powerBasedAdjustment)],
+      n: [rand(100, 200), CURRENCY_RESEARCH_INCOMING],
+      d: 3
     };
   };
 
   let createAnomaly = (distance: number): Encounter =>
   {
     return {
-      _id: entityId++,
-      _type: ENC_ANOMALY,
-      _position: distance,
-      _title: txt_quantum_anomaly,
-      _yOffset: rand(-30, 30),
-      _colour: Q_DRIVE_PURPLE,
-      _scale: 3,
-      _exit: true
+      a: entityId++,
+      b: ENC_ANOMALY,
+      e: distance,
+      c: txt_quantum_anomaly,
+      f: rand(-30, 30),
+      g: Q_DRIVE_PURPLE,
+      d: 3,
+      o: true
     };
   };
   //#endregion Encounter Factories
@@ -624,7 +624,7 @@ export namespace MissionSelect
   let generateAdventure = () =>
   {
     entityId = 0;
-    powerBasedAdjustment = gameState._generatorLevel >= 4 ? 2 : gameState._generatorLevel >= 2 ? 1 : 0;
+    powerBasedAdjustment = gameState.a >= 4 ? 2 : gameState.a >= 2 ? 1 : 0;
     let encounterDeck: Encounter[] = [];
     let currentDistance = 0;
     let i = 1;
@@ -657,7 +657,7 @@ export namespace MissionSelect
       }
 
       encounterDeck.push(createStar(star, distance));
-      if (gameState._shipPosition === 0) gameState._shipPosition = distance + star._scale * 16 + 240;
+      if (gameState.k === 0) gameState.k = distance + star._scale * 16 + 240;
 
       let lastStar = index === starsToGenerate.length - 1;
       if (isAnomalySystem(star) && lastStar)
@@ -696,6 +696,6 @@ export namespace MissionSelect
       }
     }
 
-    gameState._adventureEncounters = encounterDeck;
+    gameState.l = encounterDeck;
   };
 };

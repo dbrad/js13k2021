@@ -135,11 +135,11 @@ export namespace Station
   let delayTimer = 0;
   export let _update = (now: number, delta: number) =>
   {
-    let currency = gameState._currency;
+    let currency = gameState.e;
     let credits = currency[CURRENCY_CREDITS];
     let materials = currency[CURRENCY_MATERIALS];
     let research = currency[CURRENCY_RESEARCH];
-    updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState._availablePower);
+    updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState.c);
 
     let buyMaterials = () =>
     {
@@ -172,7 +172,7 @@ export namespace Station
     node_interactive[sellMaterialsButton] = materials >= 25;
     node_interactive[sellResearchButton] = research >= 32;
 
-    node_interactive[repairHullButton] = credits >= 50 && gameState._systemLevels[HULL][0] < maxHull();
+    node_interactive[repairHullButton] = credits >= 50 && gameState.d[HULL][0] < maxHull();
 
     let fire = inputContext._fire;
     let active = inputContext._active;
@@ -197,10 +197,10 @@ export namespace Station
     }
     else if (fire === repairHullButton)
     {
-      if (credits >= 50 && gameState._systemLevels[HULL][0] < maxHull())
+      if (credits >= 50 && gameState.d[HULL][0] < maxHull())
       {
         currency[CURRENCY_CREDITS] -= 50;
-        gameState._systemLevels[HULL][0] = math.min(gameState._systemLevels[HULL][0] + 1, maxHull());
+        gameState.d[HULL][0] = math.min(gameState.d[HULL][0] + 1, maxHull());
       }
     }
     else if (active === buyMaterialsButton
@@ -228,7 +228,7 @@ export namespace Station
 
     for (let i = 0; i < 6; i++)
     {
-      let level = gameState._systemLevels[i][1];
+      let level = gameState.d[i][1];
       let canUpgrade = level < 4;
       updateTextNode(systems[i][SYSTEM_LABEL], `${ systemNames[i] }\nFlvl${ level }`);
 
@@ -257,11 +257,11 @@ export namespace Station
           {
             if (i == 5)
             {
-              gameState._systemLevels[i][0] += 1;
+              gameState.d[i][0] += 1;
             }
             currency[CURRENCY_CREDITS] -= creditCost;
             currency[CURRENCY_MATERIALS] -= materialCost;
-            gameState._systemLevels[i][1] = math.min(4, gameState._systemLevels[i][1] + 1);
+            gameState.d[i][1] = math.min(4, gameState.d[i][1] + 1);
             updateButtonNode(systems[i][PURCHASE_BUTTON], txt_upgrade);
           }
         }

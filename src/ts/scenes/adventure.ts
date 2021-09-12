@@ -171,7 +171,7 @@ export namespace Adventure
     node_enabled[leaveButton] = false;
 
     let buttonFired = inputContext._fire;
-    let systemLevels = gameState._systemLevels;
+    let systemLevels = gameState.d;
 
     if (systemLevels[HULL][0] === 0)
     {
@@ -187,8 +187,8 @@ export namespace Adventure
     else if (buttonFired === leaveButton)
     {
       softReset();
-      gameState._currentPlayerSystem = gameState._destinationSystem;
-      gameState._destinationSystem = -1;
+      gameState.i = gameState.j;
+      gameState.j = -1;
       systemLevels[ENGINES][0] = 1;
       saveGame();
       pushScene(MissionSelect._sceneId);
@@ -205,7 +205,7 @@ export namespace Adventure
       if (shipMovementTimer >= 16 && !stopped)
       {
         shipMovementTimer -= 16;
-        gameState._shipPosition += shipDistance[systemLevels[ENGINES][0]];
+        gameState.k += shipDistance[systemLevels[ENGINES][0]];
       }
       stopped = false;
       //#endregion SHIP MOVEMENET
@@ -237,26 +237,26 @@ export namespace Adventure
         if ((node_tag[buttonFired] === TAG_LOWER_POWER) && systemLevels[systemAffected][0] > 0)
         {
           systemLevels[systemAffected][0] -= 1;
-          gameState._availablePower += 1;
+          gameState.c += 1;
           if (systemAffected === SHIELDS)
           {
-            gameState._currentShield = math.min(gameState._currentShield, systemLevels[SHIELDS][0]);
+            gameState.b = math.min(gameState.b, systemLevels[SHIELDS][0]);
           }
         }
 
-        if ((node_tag[buttonFired] === TAG_RAISE_POWER) && systemLevels[systemAffected][0] < systemLevels[systemAffected][1] && gameState._availablePower > 0)
+        if ((node_tag[buttonFired] === TAG_RAISE_POWER) && systemLevels[systemAffected][0] < systemLevels[systemAffected][1] && gameState.c > 0)
         {
           systemLevels[systemAffected][0] += 1;
-          gameState._availablePower -= 1;
+          gameState.c -= 1;
         }
       }
       systemAffected = -1;
 
       updateSegmentedBarNode(hullBar, maxHull(), currentHull());
-      updateSegmentedBarNode(shieldBar, systemLevels[SHIELDS][0], gameState._currentShield);
+      updateSegmentedBarNode(shieldBar, systemLevels[SHIELDS][0], gameState.b);
       node_enabled[shieldContainer] = systemLevels[SHIELDS][0] > 0;
 
-      updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState._availablePower);
+      updateSegmentedBarNode(maxPowerBar, maxAvailablePower(), gameState.c);
 
       for (let i = 0; i < 5; i++)
       {
@@ -299,41 +299,41 @@ export namespace Adventure
       node_enabled[hudWindows[1]] = false;
       node_enabled[hudWindows[2]] = false;
 
-      for (let encounter of gameState._adventureEncounters)
+      for (let encounter of gameState.l)
       {
         // Check if an encounter in onscreenish
-        assert(encounter._position !== undefined, `No position for encounter`);
+        assert(encounter.e !== undefined, `No position for encounter`);
         if (
           (
-            (encounter._type === ENC_ASTEROID && encounter._scale < 3)
-            || encounter._type === ENC_PIRATE
-            || encounter._type === ENC_SPACE_BEAST
+            (encounter.b === ENC_ASTEROID && encounter.d < 3)
+            || encounter.b === ENC_PIRATE
+            || encounter.b === ENC_SPACE_BEAST
           )
           && entityTimer >= 16)
         {
-          encounter._position--;
+          encounter.e--;
         }
 
-        if (encounter._position > gameState._shipPosition - 520 && encounter._position < gameState._shipPosition + 520)
+        if (encounter.e > gameState.k - 520 && encounter.e < gameState.k + 520)
         {
-          if (encounter._maxHp && !encounter._hp)
+          if (encounter.k && !encounter.j)
           {
             updateEntityNode(entityPool[entityIndex], TAG_ENTITY_NONE);
           }
           else
           {
-            updateEntityNode(entityPool[entityIndex], encounter._type, encounter._id, { _scale: encounter._scale, _colour: encounter._colour, _range: encounter._hazardRange });
-            let position = (SCREEN_CENTER_X - 16) + (encounter._position - gameState._shipPosition);
-            moveNode(entityPool[entityIndex], position, SCREEN_CENTER_Y - 40 + encounter._yOffset);
+            updateEntityNode(entityPool[entityIndex], encounter.b, encounter.a, { _scale: encounter.d, _colour: encounter.g, _range: encounter.l });
+            let position = (SCREEN_CENTER_X - 16) + (encounter.e - gameState.k);
+            moveNode(entityPool[entityIndex], position, SCREEN_CENTER_Y - 40 + encounter.f);
           }
           entityIndex++;
         }
 
-        if (encounter._type === ENC_ANOMALY && encounter._position - gameState._shipPosition <= 0)
+        if (encounter.b === ENC_ANOMALY && encounter.e - gameState.k <= 0)
         {
           stopped = true;
-          gameState._currentPlayerSystem = gameState._destinationSystem;
-          gameState._destinationSystem = -1;
+          gameState.i = gameState.j;
+          gameState.j = -1;
           quamtumLeap();
           systemLevels[ENGINES][0] = 1;
           saveGame();
@@ -341,9 +341,9 @@ export namespace Adventure
         }
 
         // Check if in range and alive if it has HP
-        if (encounter._position + 16 * (encounter._scale || 1) > gameState._shipPosition - rangeWidth + 16
-          && encounter._position < gameState._shipPosition + rangeWidth + 16
-          && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
+        if (encounter.e + 16 * (encounter.d || 1) > gameState.k - rangeWidth + 16
+          && encounter.e < gameState.k + rangeWidth + 16
+          && (!encounter.k || (encounter.k && encounter.j)))
         {
           if (hudIndex < hudWindows.length)
           {
@@ -352,13 +352,13 @@ export namespace Adventure
           }
 
           // NOTE(dbrad): STATION
-          if (encounter._type === ENC_STATION)
+          if (encounter.b === ENC_STATION)
           {
-            if (encounter._exit)
+            if (encounter.o)
             {
               node_enabled[leaveButton] = true;
 
-              if (encounter._position - gameState._shipPosition <= 16)
+              if (encounter.e - gameState.k <= 16)
               {
                 stopped = true;
               }
@@ -369,71 +369,71 @@ export namespace Adventure
             }
           }
 
-          let currency = gameState._currency;
+          let currency = gameState.e;
           // NOTE(dbrad): MINABLE
-          if (encounter._minable && systemProgress[MINING_LASERS] === 100)
+          if (encounter.i && systemProgress[MINING_LASERS] === 100)
           {
             systemProgress[MINING_LASERS]++;
-            let minerals = math.min(encounter._minable, 13);
-            encounter._minable -= minerals;
+            let minerals = math.min(encounter.i, 13);
+            encounter.i -= minerals;
             currency[CURRENCY_MATERIALS_INCOMING] += minerals;
             zzfxP(shootSound);
           }
 
           // NOTE(dbrad): RESARCHABLE
-          if (encounter._researchable && systemProgress[SCANNERS] === 100 && (!encounter._maxHp || (encounter._maxHp && encounter._hp)))
+          if (encounter.h && systemProgress[SCANNERS] === 100 && (!encounter.k || (encounter.k && encounter.j)))
           {
             systemProgress[SCANNERS]++;
-            let data = math.min(encounter._researchable, 8);
-            encounter._researchable -= data;
+            let data = math.min(encounter.h, 8);
+            encounter.h -= data;
             currency[CURRENCY_RESEARCH_INCOMING] += data;
             zzfxP(scanSound);
           }
 
           // NOTE(dbrad): COMBAT
-          if (encounter._hp && encounter._hp > 0 && systemProgress[WEAPONS] === 100)
+          if (encounter.j && encounter.j > 0 && systemProgress[WEAPONS] === 100)
           {
             systemProgress[WEAPONS]++;
-            encounter._hp = math.max(0, encounter._hp - 1);
-            if (encounter._hp === 0)
+            encounter.j = math.max(0, encounter.j - 1);
+            if (encounter.j === 0)
             {
-              if (encounter._type === ENC_SPACE_BEAST)
+              if (encounter.b === ENC_SPACE_BEAST)
               {
                 zzfxP(beastDieSound);
               }
               else
               {
                 zzfxP(shipDieSound);
-                for (let contract of gameState._contracts)
+                for (let contract of gameState.h)
                 {
-                  if (contract._type === CONTRACT_BOUNTIES)
+                  if (contract.c === CONTRACT_BOUNTIES)
                   {
-                    assert(contract._bountiesCollected !== undefined, "Bounty contract with no _bountiesCollected");
-                    assert(contract._bountiesRequired !== undefined, "Bounty contract with no _bountiesRequired");
-                    contract._bountiesCollected = math.min(contract._bountiesRequired, contract._bountiesCollected + 1);
+                    assert(contract.g !== undefined, "Bounty contract with no _bountiesCollected");
+                    assert(contract.f !== undefined, "Bounty contract with no _bountiesRequired");
+                    contract.g = math.min(contract.f, contract.g + 1);
                   }
                 }
               }
 
-              if (encounter._bounty)
+              if (encounter.n)
               {
-                currency[encounter._bounty[1]] += encounter._bounty[0];
+                currency[encounter.n[1]] += encounter.n[0];
               }
             }
             zzfxP(shootSound);
           }
 
-          if (encounter._hazardRange)
+          if (encounter.l)
           {
-            let encounterMiddle = encounter._position + encounter._scale * 8;
-            if (gameState._shipPosition + 32 > encounterMiddle - encounter._hazardRange
-              && gameState._shipPosition < encounterMiddle + encounter._hazardRange)
+            let encounterMiddle = encounter.e + encounter.d * 8;
+            if (gameState.k + 32 > encounterMiddle - encounter.l
+              && gameState.k < encounterMiddle + encounter.l)
             {
-              assert(encounter._attack !== undefined, `hazard range with no attack setup`);
-              encounter._attack[0] += delta;
-              if (encounter._attack[0] >= encounter._attack[1])
+              assert(encounter.m !== undefined, `hazard range with no attack setup`);
+              encounter.m[0] += delta;
+              if (encounter.m[0] >= encounter.m[1])
               {
-                encounter._attack[0] = 0;
+                encounter.m[0] = 0;
                 hurtPlayer();
                 zzfxP(hullHitSound);
               }
@@ -455,7 +455,7 @@ export namespace Adventure
 
       //#region SHIELDS
       // NOTE(david): We only increment the sheild cooldown is the current shield value is lower than the max.
-      if (gameState._currentShield < systemLevels[SHIELDS][0])
+      if (gameState.b < systemLevels[SHIELDS][0])
       {
         shieldTimer += delta;
       }
@@ -467,9 +467,9 @@ export namespace Adventure
       if (shieldTimer > SHIELD_COOLDOWN)
       {
         shieldTimer -= SHIELD_COOLDOWN;
-        if (gameState._currentShield < systemLevels[SHIELDS][0])
+        if (gameState.b < systemLevels[SHIELDS][0])
         {
-          gameState._currentShield += 1;
+          gameState.b += 1;
         }
       }
       updateProgressBarNode(systems[SHIELDS][PROGRESS_BAR], shieldTimer / SHIELD_COOLDOWN * 100);

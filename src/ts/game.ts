@@ -111,7 +111,7 @@ window.addEventListener("load", async () =>
       {
         let star = stars[i];
         star[3] += delta;
-        if (star[3] > starSpeedTable[star[2]] * (5 - (gameState._systemLevels[ENGINES][0])))
+        if (star[3] > starSpeedTable[star[2]] * (5 - (gameState.d[ENGINES][0])))
         {
           star[3] = 0;
           star[0] -= 1;

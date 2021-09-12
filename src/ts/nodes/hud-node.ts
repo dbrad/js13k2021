@@ -42,43 +42,43 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
   let description = node_hud_description[nodeId];
 
   node_enabled[nodeId] = true;
-  updateEntityNode(node_hud_entity[nodeId], encounter._type, encounter._id, { _scale: 1, _colour: encounter._colour });
+  updateEntityNode(node_hud_entity[nodeId], encounter.b, encounter.a, { _scale: 1, _colour: encounter.g });
 
   node_enabled[hpBar] = false;
-  if (encounter._maxHp)
+  if (encounter.k)
   {
     node_enabled[hpBar] = true;
-    assert(encounter._hp !== undefined, `Entity has max hp, but no set hp.`);
-    updateSegmentedBarNode(hpBar, encounter._maxHp, encounter._hp);
-    let x = 256 - 2 - 6 - (encounter._maxHp * 10);
+    assert(encounter.j !== undefined, `Entity has max hp, but no set hp.`);
+    updateSegmentedBarNode(hpBar, encounter.k, encounter.j);
+    let x = 256 - 2 - 6 - (encounter.k * 10);
     moveNode(hpBar, x, 24);
   }
 
   let descriptionText: string[] = [];
-  if (encounter._hazardRange)
+  if (encounter.l)
   {
     descriptionText.push("hazard");
-    if (encounter._bounty)
+    if (encounter.n)
     {
-      let currency = encounter._bounty[1] === CURRENCY_CREDITS_INCOMING ? txt_cr : "kb";
-      descriptionText.push(` - bounty ${ encounter._bounty[0] }${ currency }\n`);
+      let currency = encounter.n[1] === CURRENCY_CREDITS_INCOMING ? txt_cr : "kb";
+      descriptionText.push(` - bounty ${ encounter.n[0] }${ currency }\n`);
     }
     else
     {
       descriptionText.push("\n");
     }
   }
-  if (encounter._minable)
+  if (encounter.i)
   {
-    descriptionText.push(`minable - ${ encounter._minable }kg\n`);
+    descriptionText.push(`minable - ${ encounter.i }kg\n`);
   }
-  if (encounter._researchable)
+  if (encounter.h)
   {
-    descriptionText.push(`researchable - ${ encounter._researchable }kb`);
+    descriptionText.push(`researchable - ${ encounter.h }kb`);
   }
-  if (encounter._type === ENC_STATION)
+  if (encounter.b === ENC_STATION)
   {
-    if (encounter._exit)
+    if (encounter.o)
     {
       descriptionText.push("destination");
     }
@@ -87,12 +87,12 @@ export let updateHUDNode = (nodeId: number, encounter: Encounter): void =>
       descriptionText.push("ship upgrades");
     }
   }
-  if (encounter._type === ENC_ANOMALY)
+  if (encounter.b === ENC_ANOMALY)
   {
     descriptionText.push("the unknown");
   }
   updateTextNode(description, descriptionText.join(txt_empty_string));
-  updateTextNode(title, encounter._title);
+  updateTextNode(title, encounter.c);
 };
 
 let renderHUD = (nodeId: number, now: number, delta: number) =>
