@@ -336,7 +336,6 @@ export namespace Adventure
           gameState.j = -1;
           quamtumLeap();
           systemLevels[ENGINES][0] = 1;
-          saveGame();
           return;
         }
 

@@ -1,6 +1,7 @@
 import { music, qDriveSound, startMusic, zzfxP } from "./zzfx";
 
 import { Encounter } from "./gameplay/encounters";
+import { MainMenu } from "./scenes/main-menu";
 import { MissionSelect } from "./scenes/mission-select";
 import { WHITE } from "./colour";
 import { math } from "./math";
@@ -120,7 +121,10 @@ export let quamtumLeap = (): void =>
   zzfxP(qDriveSound);
   if (gameState.a === 5)
   {
-    setDialogText("the anomaly embraces you, releasing you from your duty to the galaxy.\n\nthank you for playing");
+    initGameState();
+    storage.removeItem(saveName);
+    setDialogText("the anomaly embraces you.\nit absorbs your power and begins to pull all nearby matter into itself.\n\nnothing escapes, everything becomes one.");
+    pushScene(MainMenu._sceneId, 2000, WHITE);
     return;
   }
   gameState.a = math.min(5, gameState.a + 1);
@@ -128,6 +132,7 @@ export let quamtumLeap = (): void =>
   gameState.h = gameState.h.filter(contract => contract.c !== CONTRACT_ANOMALY);
   setDialogText("the anomaly rejects you, but bolsters your strength.\n\n+2 max power");
   pushScene(MissionSelect._sceneId, 1000, WHITE);
+  saveGame();
 };
 
 export let deathReset = (): void =>
@@ -161,11 +166,11 @@ export let softReset = (): void =>
 export let initGameState = (): void =>
 {
   gameState = {
-    a: 0,
+    a: 5,
     b: 0,
     c: 0,
     d: [
-      [0, 1],
+      [0, 4],
       [0, 1],
       [0, 0],
       [0, 0],
@@ -174,7 +179,7 @@ export let initGameState = (): void =>
     ],
     e: [0, 0, 0, 0, 0, 0],
     f: performance.now(),
-    g: 0,
+    g: 38,
     h: [],
     i: 0,
     j: -1,
